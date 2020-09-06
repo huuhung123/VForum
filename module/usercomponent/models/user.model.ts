@@ -1,14 +1,26 @@
+import { RoleCode } from "../../../common/model/common.model";
+import { string } from "joi";
+
 export interface IUserCreateForm {
-  id: String;
-  email: String;
-  password: String;
-  display_name: String;
-  gender: String;
-  role: String;
-  createdAt: String;
+  id: string;
+  email: string;
+  password: string;
+  display_name: string;
+  gender: string;
+  role: RoleCode;
+  createdAt: string;
+  // createdBy: string;
 }
 
 export interface IUserLoginForm {
   email: string;
-  password: String;
+  password: string;
+}
+export interface IUserUpdateForm {
+  oldpassword: string;
+  newpassword: string;
+  renewpassword: string;
+  // updatedBy: object;
+  updatedAt: string;
+  id: string;
 }

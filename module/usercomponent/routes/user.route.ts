@@ -1,21 +1,41 @@
 import express from "express";
 import { UserController } from "../controllers/user.controller";
 
-// import { commonValidateBody } from "../../../middlewares/validatebody.middleware";
+import { commonValidateBody } from "../../../middlewares/validatebody.middleware";
+import { commonCheckAuth } from "../../../middlewares/checkauth.middleware";
 
-import { UserCreateSchema, UserLoginSchema } from "../DTO/user.dto";
+import { UserCreateSchema, UserLoginSchema, UserChangeSchema } from "../DTO/user.dto";
 
 export class UserRoute {
   public userController: UserController = new UserController();
 
   public routes(app: express.Application): void {
     app
-      .route("/vi/api/signup")
- //   .post(commonValidateBody(UserCreateSchema),this.userController.createUser)
-      .post(this.userController.createUser);
+      .route("/v1/api/signup")
+      .post(commonValidateBody(UserCreateSchema),this.userController.createUser)
+//5f549adf37005322c4a43134
     app
-      .route("/vi/api/login") 
- //     .post(commonValidateBody(UserLoginSchema), this.userController.loginUser)
-      .post(this.userController.loginUser)
+      .route("/v1/api/login")
+      .post(commonValidateBody(UserLoginSchema), this.userController.loginUser)
+
+    app
+      .route("/v1/api/home")
+      // .patch(commonCheckAuth, commonValidateBody(UserChangeSchema), this.userController.changeUser)
+      .patch(commonValidateBody(UserChangeSchema), this.userController.updateUser)
+    //  .delete(commonCheckAuth ,this.userController.deleteUser);
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

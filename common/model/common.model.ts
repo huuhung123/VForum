@@ -3,12 +3,25 @@ import mongoose, {
   SchemaDefinition,
   SchemaTypes,
   Schema,
+  Types,
 } from "mongoose";
+
+import { Request } from "express";
+import { object } from "joi";
+
+export const UserSchemaName = "User";
+export const GroupSchemaName = "Group";
+export const PostSchemaName = "Post";
+export const TopicSchemaName = "Topic";
+export const FeedSchemaName = "Feed";
+export const LikePostSchemaName = "LikePost";
+export const LikeFeedSchemaName = "LikeFeed";
+export const CommentPostSchemaName = "CommentPost";
+export const CommentFeedSchemaName = "CommentFeed";
 
 export enum StatusCode {
   Active = "active",
-  Suspended = "suspended",
-  Deleted = "deleted",
+  Deactive = "deactive",
 }
 
 export enum GenderCode {
@@ -24,18 +37,30 @@ export enum RoleCode {
 }
 
 export interface IModelBase extends Document {
-  _id: String;
-  status: StatusCode;
-  createdAt: String;
-  updatedAt?: Date;
+  _id: string;
+  status: string;
+  createdBy?: string;
+  updatedBy?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export function SchemaBase(schema: SchemaDefinition) {
+export function SchemaBase(schema: mongoose.SchemaDefinition) {
   const defaultSchema: SchemaDefinition = {
     status: {
       type: String,
-      required: true,
+      enum: [StatusCode.Active, StatusCode.Deactive],
       default: StatusCode.Active,
+      required: true,
+    },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: UserSchemaName,
+    },
+
+    updatedBy: {
+      type: Schema.Types.ObjectId,
+      ref: UserSchemaName,
     },
   };
 
@@ -45,107 +70,27 @@ export function SchemaBase(schema: SchemaDefinition) {
   };
 }
 
-export const DefaultPassword = "123456789";
-export const UserSchemaName = "User";
-
 export interface IUser extends IModelBase {
   email: string;
   password: string;
   display_name: string;
-  gender: GenderCode;
-  role: RoleCode;
+  gender: string;
+  role: string;
+  groups: Types.Array<object>;
+  feeds: Types.Array<object>;
 }
 
-export interface IGroup {
-  company_id: string;
-  name: string;
-  topics: [
-    {
-      type: Schema.Types.ObjectId;
-      ref: "ITopic";
-    }
-  ];
-}
-
-export interface IPost {
-  title: string;
-  description: string;
-  account_id: {
-    type: Schema.Types.ObjectId;
-    ref: "IUser";
-  };
-  comments_post: [
-    {
-      type: Schema.Types.ObjectId;
-      ref: "ICommmentPost";
-    }
-  ];
-  likes_post: [
-    {
-      type: Schema.Types.ObjectId;
-      ref: "ILikePost";
-    }
-  ];
-}
-
-export interface ICommmentPost {
-  post_id: Schema.Types.ObjectId;
-  account_id: Schema.Types.ObjectId;
-  description: string;
-}
-
-export interface ILikePost {
-  post_id: Schema.Types.ObjectId;
-  account_id: Schema.Types.ObjectId;
-}
-
-export interface IFeed {
-  account_id: number;
-  tagging: Array<number>;
-  description: string;
-  attachments: [
-    {
-      type: Schema.Types.ObjectId;
-      ref: "IAttachment";
-    }
-  ];
-  comments: [
-    {
-      type: Schema.Types.ObjectId;
-      ref: "ICommentFeed";
-    }
-  ];
-  likes: [
-    {
-      type: Schema.Types.ObjectId;
-      ref: "ILikeFeed";
-    }
-  ];
-}
-
-export interface IAttachment {}
-
-export interface ICommentFeed {
-  feed_id: Schema.Types.ObjectId;
-  account_id: Schema.Types.ObjectId;
-  description: string;
-}
-
-export interface ILikeFeed {
-  feed_id: Schema.Types.ObjectId;
-  account_id: Schema.Types.ObjectId;
-}
-
-const UserSchema = new mongoose.Schema(
+export const UserSchema = new mongoose.Schema(
   SchemaBase({
     email: {
       type: String,
+      unique: true,
       required: true,
+      match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
     },
     password: {
       type: String,
       required: true,
-      default: DefaultPassword,
     },
     display_name: {
       type: String,
@@ -153,17 +98,293 @@ const UserSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
+      enum: [GenderCode.Female, GenderCode.Male, GenderCode.Lgbt],
       required: true,
     },
     role: {
       type: String,
+      enum: [RoleCode.Admin, RoleCode.Member, RoleCode.Moderator],
+      default: RoleCode.Member,
       required: true,
-      role: RoleCode.Member,
     },
-    createdAt: {
+    feeds: [
+      {
+        type: Object,
+        default: true,
+      },
+    ],
+    groups: [
+      {
+        type: Object,
+        default: true,
+      },
+    ],
+    // createdAt: {
+    //   type: String,
+    //   default: true,
+    // },
+    // updatedAt: {
+    //   type: String,
+    //   default: true,
+    // },
+  }),
+  {
+    timestamps: true,
+  }
+);
+export interface IGroup extends IModelBase {
+  name: string;
+  topics: Types.Array<object>;
+}
+
+const GroupSchema = new Schema(
+  SchemaBase({
+    name: {
       type: String,
+      default: true,
     },
-  })
+    topics: [
+      {
+        type: Object,
+        default: true,
+      },
+    ],
+    createdBy: {
+      type: UserSchema,
+      default: true,
+    },
+    updatedBy: {
+      type: UserSchema,
+      default: true,
+    },
+  }),
+  {
+    timestamps: true,
+  }
+);
+
+export interface ITopic extends IModelBase {
+  name: string;
+  description: string;
+  posts: Types.Array<object>;
+}
+
+const TopicSchema = new Schema(
+  SchemaBase({
+    name: {
+      type: String,
+      default: true,
+    },
+    description: {
+      type: String,
+      default: true,
+    },
+    posts: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Post",
+        default: true,
+      },
+    ],
+  }),
+  {
+    timestamps: true,
+  }
+);
+
+export interface IPost extends IModelBase {
+  title: string;
+  description: string;
+  commentsPost: Types.Array<object>;
+  likesPost: Types.Array<object>;
+}
+
+const PostSchema = new Schema(
+  SchemaBase({
+    title: {
+      type: String,
+      default: true,
+    },
+    description: {
+      type: String,
+      default: true,
+    },
+    commentsPost: [
+      {
+        type: Object,
+        //  ref: "CommentPost",
+        default: true,
+      },
+    ],
+    likesPost: [
+      {
+        type: Object,
+        // ref: "LikePost",
+        default: true,
+      },
+    ],
+  }),
+  {
+    timestamps: true,
+  }
+);
+
+export interface ICommentPost extends IModelBase {
+  postId: string;
+  description: string;
+}
+
+const CommentPostSchema = new Schema(
+  SchemaBase({
+    postId: {
+      type: Schema.Types.ObjectId,
+      default: true,
+    },
+    description: {
+      type: String,
+      default: true,
+    },
+  }),
+  {
+    timestamps: true,
+  }
+);
+
+export interface ILikePost extends IModelBase {
+  postId: string;
+  accountId: string;
+}
+
+const LikePostSchema = new Schema(
+  SchemaBase({
+    postId: {
+      type: Schema.Types.ObjectId,
+      default: true,
+    },
+    accountId: {
+      type: Schema.Types.ObjectId,
+      default: true,
+    },
+  }),
+  {
+    timestamps: true,
+  }
+);
+export interface IFeed extends IModelBase {
+  accountId: string;
+  description: string;
+  tagging: Types.Array<object>;
+  attachments: Types.Array<object>;
+  commentsFeed: Types.Array<object>;
+  likesFeed: Types.Array<object>;
+}
+
+const FeedSchema = new Schema(
+  SchemaBase({
+    accountId: {
+      type: String,
+      default: true,
+    },
+    description: {
+      type: String,
+      default: true,
+    },
+    tagging: {
+      type: Object,
+      // default: true,
+    },
+    attachments: [
+      {
+        type: Object,
+        // ref: "Attachment",
+      },
+    ],
+    comments: [
+      {
+        type: Object,
+        // ref: "CommentFeed",
+      },
+    ],
+    likes: [
+      {
+        type: Object,
+        // ref: "LikeFeed",
+      },
+    ],
+  }),
+  {
+    timestamps: true,
+  }
+);
+
+export interface IAttachment {}
+
+export interface ICommentFeed extends IModelBase {
+  feedId: string;
+  accountId: string;
+  description: string;
+}
+
+const CommentFeedSchema = new Schema(
+  SchemaBase({
+    feedId: {
+      type: Schema.Types.ObjectId,
+      default: true,
+    },
+    accountId: {
+      type: Schema.Types.ObjectId,
+      default: true,
+    },
+    description: {
+      type: String,
+      default: true,
+    },
+  }),
+  {
+    timestamps: true,
+  }
+);
+
+export interface ILikeFeed extends IModelBase {
+  feedId: string;
+  accountId: string;
+}
+
+const LikeFeedSchema = new Schema(
+  SchemaBase({
+    feedId: {
+      type: Schema.Types.ObjectId,
+      default: true,
+    },
+    accountId: {
+      type: Schema.Types.ObjectId,
+      default: true,
+    },
+  }),
+  {
+    timestamps: true,
+  }
 );
 
 export const User = mongoose.model<IUser>(UserSchemaName, UserSchema);
+export const Group = mongoose.model<IGroup>(GroupSchemaName, GroupSchema);
+export const Post = mongoose.model<IPost>(PostSchemaName, PostSchema);
+export const CommentPost = mongoose.model<ICommentPost>(
+  CommentPostSchemaName,
+  CommentPostSchema
+);
+export const LikePost = mongoose.model<ILikePost>(
+  LikePostSchemaName,
+  LikePostSchema
+);
+export const Feed = mongoose.model<IFeed>(FeedSchemaName, FeedSchema);
+export const CommentFeed = mongoose.model<ICommentFeed>(
+  CommentFeedSchemaName,
+  CommentFeedSchema
+);
+export const LikeFeed = mongoose.model<ILikeFeed>(
+  LikeFeedSchemaName,
+  LikeFeedSchema
+);
+
+export const Topic = mongoose.model<ITopic>(TopicSchemaName, TopicSchema);

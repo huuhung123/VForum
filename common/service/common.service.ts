@@ -8,47 +8,44 @@ export abstract class BaseService {
     this.model = model;
   }
 
-  // Get all
-
-  // getAll = async (req: Request, res: Response) => {
-  //   try {
-  //     const docs = await this.model.find({});
-  //     res.status(200).json(docs);
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
-
-  // // Get by ID
-
-  // getByID = async (req: Request, res: Response) => {
-  //   try {
-  //     const item = this.model.findOne({ _id: req.params.id });
-  //     res.status(200).json(item);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
-  // Post
-
   create = async (item: any) => {
-  
-  const newItem = new this.model(item);
-  await newItem.save();
-
-  return newItem
-
+    try {
+      const newItem = new this.model(item);
+      await newItem.save();
+      return newItem;
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  // Delete by ID
+  findByEmail = async (item: any) => {
+    try {
+      const checkedEmail = await this.model.find({ email: item.email });
+      return checkedEmail;
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  // delete = async (req: Request, res: Response) => {
-  //   try {
-  //     await this.model.findOneAndDelete({ _id: req.params.id });
-  //     res.json({ response: "Deleted successfully" });
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
+  findByIdAndDelete = async (item: any) => {
+    try {
+      const checkedId = await this.model.findById(item);
+      if (checkedId) {
+        await this.model.findOneAndDelete({ _id: item });
+        return checkedId;
+      }
+      return checkedId;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  findById = async (item: any) => {
+    try {
+      const checkedId = await this.model.findById(item.id);
+      return checkedId;
+    } catch (error) {
+      console.log(error);
+    }
+  };
 }
