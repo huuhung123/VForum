@@ -5,9 +5,9 @@ import {
   serializeCreateTopic,
   serializeUpdateTopic,
 } from "../serializers/topic.serializer";
-import { Topic, Group, Post, User } from "../../../common/model/common.model";
-
-// 5f54461fcef2cc4254c2552a
+import { Topic } from "../../../common/model/topic.model";
+import { Group } from "../../../common/model/group.model";
+import { User } from "../../../common/model/user.model";
 
 export class TopicController {
   public topicService: TopicService = new TopicService(Topic);
@@ -35,6 +35,12 @@ export class TopicController {
     try {
       const { group_id } = req.params;
       const form: ITopicCreateForm = req.body;
+      const check = await Topic.find({ name: form.name });
+
+      if (check.length > 0) {
+        return res.json({ Error: "Name is exist. Please enter again" });
+      }
+
       // const userId = req!.session!.user._id
       // form.createdBy = userId
 

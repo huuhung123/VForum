@@ -8,13 +8,12 @@ import {
   serialCreateCommentPost,
   serialUpdateCommentPost,
 } from "../serializers/commentpost.serializer";
-import {
-  CommentPost,
-  Post,
-  Topic,
-  Group,
-  User,
-} from "../../../common/model/common.model";
+
+import { CommentPost } from "../../../common/model/commentpost.model";
+import { Post } from "../../../common/model/post.model";
+import { Topic } from "../../../common/model/topic.model";
+import { Group } from "../../../common/model/group.model";
+import { User } from "../../../common/model/user.model";
 
 export class CommentPostController {
   public commentPostService: CommentPostService = new CommentPostService(

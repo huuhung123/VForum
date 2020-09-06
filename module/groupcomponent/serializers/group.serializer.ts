@@ -1,7 +1,4 @@
 import { IGroupCreateForm, IGroupUpdateForm } from "../models/group.model";
-import { Schema, Types } from "mongoose";
-import { IUser } from "../../../common/model/common.model";
-
 export interface IGroupCreateResponse {
   id: string;
   name: string;

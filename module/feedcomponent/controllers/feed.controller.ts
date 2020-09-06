@@ -1,18 +1,21 @@
 import { Request, Response } from "express";
 import { FeedService } from "../services/feed.service";
 import { IFeedCreateForm } from "../models/feed.model";
-import { serializeFeed } from "../serializers/feed.serializer";
-import { Feed } from "../../../common/model/common.model";
+import {
+  serializeCreateFeed,
+  serializeUpdateFeed,
+} from "../serializers/feed.serializer";
+
+import { Feed } from "../../../common/model/feed.model";
+import { User } from "../../../common/model/user.model";
 
 export class FeedController {
   public feedService: FeedService = new FeedService(Feed);
 
   getAllFeed = async (req: Request, res: Response) => {
     try {
-      const result = await Feed.find({})
-        .populate("commentsPost")
-        .populate("likesPost");
-      return res.json({ Message: result });
+      const result = await Feed.find({});
+      return res.json({ data: result });
     } catch (error) {
       return res.json({ Message: error });
     }
@@ -21,10 +24,8 @@ export class FeedController {
   getFeed = async (req: Request, res: Response) => {
     try {
       const { post_id } = req.params;
-      const result = await Feed.find({ _id: post_id })
-        .populate("commentsPost")
-        .populate("likesPost");
-      return res.json({ Message: result });
+      const result = await Feed.findById(post_id);
+      return res.json({ data: result });
     } catch (error) {
       return res.json({ Message: error });
     }
@@ -32,30 +33,56 @@ export class FeedController {
 
   createFeed = async (req: Request, res: Response) => {
     try {
-      const { user_id, topic_id } = req.params;
+      // const { role, _id } = req!.session!.user;
+      // if (role === "admin" || role === "moderator") {
+      //   const form: IFeedCreateForm = req.body;
+      //   const check = await Feed.find({ title: form.title });
+      //   if (check.length > 0) {
+      //     return res.json({ Error: "Title is exist. Please enter again" });
+      //   }
+      //   // form.createdBy = _id;
+      //   const newFeed = await this.feedService.create(form);
+      //   User.findByIdAndUpdate(
+      //     _id,
+      //     {
+      //       $push: {
+      //         feeds: newFeed,
+      //       },
+      //     },
+      //     {
+      //       new: true,
+      //       useFindAndModify: false,
+      //     }
+      //   );
+      //   return res.json(serializeCreateFeed(newFeed));
+      // }
+      // return res.json({ Message: "You cannot create feed" });
 
       const form: IFeedCreateForm = req.body;
-
-      form.createdAt = new Date().toJSON().slice(0, 10).replace(/-/g, "/");
-      form.accountId = user_id;
-      const post = await this.feedService.create(form);
-
-      // await Topic.findByIdAndUpdate(
-      //   topic._id,
-      //   {$push: {groups: req.params.group_id }},
-      //   {new: true, useFindAndModify: false }
-      // )
-
-      await Feed.findByIdAndUpdate(
-        topic_id,
-        { $push: { posts: post._id } },
+      const check = await Feed.find({ title: form.title });
+      if (check.length > 0) {
+        return res.json({ Error: "Name is exist. Please enter again" });
+      }
+      const newFeed = await this.feedService.create(form);
+      await User.findByIdAndUpdate(
+        "5f54a0fd94273a271497a1d",
+        {
+          $push: {
+            feeds: newFeed,
+          },
+        },
+        {
+          new: true,
+        }
       );
 
-      return res.json(serializeFeed(post));
+      return res.json(serializeCreateFeed(newFeed));
     } catch (error) {
       return res.json({ Error: error });
     }
   };
+
+  updateFeed = async (req: Request, res: Response) => {};
 
   deleteFeed = async (req: Request, res: Response) => {};
 }

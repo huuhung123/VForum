@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { CommentFeedService } from "../services/commentfeed.service";
 import { ICommentFeedCreateForm } from "../models/commentfeed.model";
 import { serializeCommentFeed } from "../serializers/commentfeed.serializer";
-import { CommentFeed } from "../../../common/model/common.model";
+import { CommentFeed } from "../../../common/model/commentfeed.model"
 
 export class CommentFeedController {
   public commentfeedService: CommentFeedService = new CommentFeedService(

@@ -1,4 +1,4 @@
-import { RoleCode } from "../../../common/model/common.model";
+import { RoleCode } from "../../../common/model/user.model";
 import { string } from "joi";
 
 export interface IUserCreateForm {

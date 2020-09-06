@@ -5,13 +5,11 @@ import {
   serializeCreatePost,
   serializeUpdatePost,
 } from "../serializers/post.serializer";
-import {
-  Post,
-  Topic,
-  CommentPost,
-  Group,
-  User,
-} from "../../../common/model/common.model";
+
+import { Post } from "../../../common/model/post.model";
+import { Topic } from "../../../common/model/topic.model";
+import { Group } from "../../../common/model/group.model";
+import { User } from "../../../common/model/user.model";
 
 export class PostController {
   public postservice: PostService = new PostService(Post);
@@ -39,6 +37,12 @@ export class PostController {
     try {
       const { group_id, topic_id } = req.params;
       const form: IPostCreateForm = req.body;
+
+      const check = await Post.find({ title: form.title });
+      if (check.length > 0) {
+        return res.json({ Error: "Title is exist. Please enter again" });
+      }
+
       // const userId = req!.session!.user._id
       // form.createdBy = userId
 

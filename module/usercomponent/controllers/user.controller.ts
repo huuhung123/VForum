@@ -9,7 +9,7 @@ import {
   serializeCreateUser,
   serializeUpdateUser,
 } from "../serializers/user.serializer";
-import { User } from "../../../common/model/common.model";
+import { User } from "../../../common/model/user.model";
 import bcrypt, { compareSync } from "bcrypt";
 import jwt from "jsonwebtoken";
 import { json } from "body-parser";

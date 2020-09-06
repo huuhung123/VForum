@@ -1,5 +1,3 @@
-import { Schema } from "mongoose";
-
 export interface ICommentPostCreateForm {
   id: string;
   description: string;

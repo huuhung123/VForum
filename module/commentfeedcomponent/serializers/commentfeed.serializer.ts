@@ -7,7 +7,9 @@ export interface ICommentFeedCreateResponse {
   accountId: string;
 }
 
-export function serializeCommentFeed(model: ICommentFeedCreateForm): ICommentFeedCreateResponse {
+export function serializeCommentFeed(
+  model: ICommentFeedCreateForm
+): ICommentFeedCreateResponse {
   if (!model) {
   }
 

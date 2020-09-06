@@ -5,9 +5,10 @@ import {
   serialCreateGroup,
   serialUpdateGroup,
 } from "../serializers/group.serializer";
-import { Group, User, StatusCode } from "../../../common/model/common.model";
-import jwt from "jsonwebtoken";
-import { Schema } from "mongoose";
+
+import { StatusCode } from "../../../common/model/common.model";
+import { Group } from "../../../common/model/group.model";
+import { User } from "../../../common/model/user.model";
 
 export class GroupController {
   public groupService: GroupService = new GroupService(Group);
