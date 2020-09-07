@@ -30,9 +30,11 @@ export class UserController {
       form.password = await bcrypt.hash(req.body.password, 10);
 
       const user = await this.userService.create(form);
-      return res.json(serializeCreateUser(user));
+      //return res.json(serializeCreateUser(user));
+      return res.json({ status: true });
     } catch (error) {
-      return res.json({ Error: error });
+      return res.json({ status: false });
+      //return res.json({Error: error})
     }
   };
 
@@ -65,15 +67,20 @@ export class UserController {
               expiresIn: "1h",
             }
           );
+          // return res.json({
+          //   message: "Successfully",
+          //   id: user[0]._id,
+          //   token: token,
+          // });
           return res.json({
-            message: "Successfully",
-            id: user[0]._id,
-            token: token,
+            status: 1,
           });
         }
-        return res.json({ error: "Password error" });
+        //return res.json({ error: "Password error" });
+        return res.json({ status: 2 });
       }
-      return res.json({ Error: "User not found, email doesn't exist" });
+      // return res.json({ Error: "User not found, email doesn't exist" });
+      return res.json({ status: 3 });
     } catch (error) {
       res.json({ Error: error });
     }

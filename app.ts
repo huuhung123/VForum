@@ -5,16 +5,19 @@ import { UserRoute } from "./module/usercomponent/routes/user.route";
 import { TopicRoute } from "./module/topiccomponent/routes/topic.route";
 import { GroupRoute } from "./module/groupcomponent/routes/group.route";
 import { PostRoute } from "./module/postcomponent/routes/post.route";
-
 import { FeedRoute } from "./module/feedcomponent/routes/feed.route";
 import { CommentFeedRoute } from "./module/commentfeedcomponent/routes/commentfeed.route";
 
+import morgan from "morgan";
+import * as dotenv from "dotenv";
+import * as cors from "cors";
 import session from "express-session";
-// import { SSession } from "./middlewares/session.middleware";
 
 class Server {
   public app: express.Application;
-  public mongoUrl: string = "mongodb://localhost:27017/VForum";
+  public MONGODB_URL: string = "mongodb+srv://huuhung:987654321@cluster0.g4atc.mongodb.net/test";
+
+  // "mongodb+srv://huuhung:987654321@cluster0.g4atc.mongodb.net/test";
 
   public userRoute: UserRoute = new UserRoute();
   public topicRoute: TopicRoute = new TopicRoute();
@@ -27,6 +30,7 @@ class Server {
     this.app = express();
     this.config();
     this.mongoSetup();
+    dotenv.config();
     this.middlewares();
 
     // this.app.use('/v1/api', this.userRoute.routes(this.app))
@@ -40,20 +44,21 @@ class Server {
   }
 
   private config(): void {
-    this.app.set("port", process.env.PORT || 3000);
+    this.app.set("port", process.env.PORT || 4000);
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: false }));
+    this.app.use(morgan("dev"));
   }
 
   private middlewares(): void {
     this.app.use(
       session({
         name: "Hung",
-        secret: "NguyenHuuHung",
+        secret: "123456789",
         resave: false,
         saveUninitialized: false,
         cookie: {
-          maxAge: 2 * 60 * 60,
+          maxAge: 60 * 60,
           sameSite: true,
           secure: false,
         },
@@ -62,10 +67,21 @@ class Server {
   }
 
   private mongoSetup(): void {
-    mongoose.connect(this.mongoUrl, {
-      useNewUrlParser: true,
+    // mongoose.connect(this.MONGODB_URL, {
+    //   dbName: process.env.DB_NAME,
+    //   user: process.env.DB_USER,
+    //   pass: process.env.DB_PASS,
+    //   useNewUrlParser: true,
+    //   useUnifiedTopology: true,
+    //   useFindAndModify: false,
+    // });
+
+    mongoose.connect(this.MONGODB_URL, {
+      useFindAndModify: false,
       useUnifiedTopology: true,
+      useNewUrlParser: true,
     });
+
     const db = mongoose.connection;
     db.on("error", console.error.bind(console, "connection error:"));
     db.once("open", function () {
