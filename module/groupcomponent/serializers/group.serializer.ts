@@ -3,7 +3,7 @@ export interface IGroupCreateResponse {
   id: string;
   name: string;
   createdAt: string;
-  // createdBy: object;
+  createdBy: string;
 }
 
 export function serialCreateGroup(
@@ -16,7 +16,7 @@ export function serialCreateGroup(
     id: model.id,
     name: model.name,
     createdAt: model.createdAt,
-    // createdBy: model.createdBy,
+    createdBy: model.createdBy,
   };
 }
 
@@ -24,7 +24,7 @@ export interface IGroupUpdateResponse {
   id: string;
   name: string;
   updatedAt: string;
-  // updatedBy: object;
+  updatedBy: string;
 }
 
 export function serialUpdateGroup(
@@ -37,6 +37,6 @@ export function serialUpdateGroup(
     id: model.id,
     name: model.name,
     updatedAt: model.updatedAt,
-    // createdBy: model.createdBy,
+    updatedBy: model.updatedBy,
   };
 }

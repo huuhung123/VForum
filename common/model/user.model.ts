@@ -14,15 +14,12 @@ export enum RoleCode {
 }
 
 export const UserSchemaName = "User";
-
 export interface IUser extends IModelBase {
   email: string;
   password: string;
   display_name: string;
   gender: string;
   role: string;
-  groups: Types.Array<object>;
-  feeds: Types.Array<object>;
 }
 
 export const UserSchema = new mongoose.Schema(
@@ -52,26 +49,6 @@ export const UserSchema = new mongoose.Schema(
       default: RoleCode.Member,
       required: true,
     },
-    feeds: [
-      {
-        type: Object,
-        default: true,
-      },
-    ],
-    groups: [
-      {
-        type: Object,
-        default: true,
-      },
-    ],
-    // createdAt: {
-    //   type: String,
-    //   default: true,
-    // },
-    // updatedAt: {
-    //   type: String,
-    //   default: true,
-    // },
   }),
   {
     timestamps: true,

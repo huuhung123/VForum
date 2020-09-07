@@ -10,16 +10,13 @@ export const UserCreateSchema = Joi.object({
 
 export const UserLoginSchema = Joi.object({
   email: Joi.string().email().min(10).required(),
-  password: Joi.string().min(8).required()
-})
+  password: Joi.string().min(8).required(),
+});
 
 export const UserChangeSchema = Joi.object({
   oldpassword: Joi.string().min(8).required(),
   newpassword: Joi.string().min(8).required(),
-  renewpassword: Joi.string().min(8).required()
-})
-
-
-
+  renewpassword: Joi.string().min(8).required(),
+});
 
 

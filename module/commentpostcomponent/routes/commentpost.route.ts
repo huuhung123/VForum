@@ -15,34 +15,23 @@ export class CommentPostRoute {
   public routes(app: express.Application): void {
     app
       .route("/v1/api/group/:group_id/topic/topic_id/post/:post_id/comment")
-      // .get(commonCheckAuth, this.commentPostController.getAllCommentPost)
-      .get(this.commentPostController.getAllCommentPost)
-      // .post(
-      //   commonCheckAuth,
-      //   commonValidateBody(CommentPostCreateSchema),
-      //   this.commentPostController.getAllCommentPost
-      // )
+      .get(commonCheckAuth, this.commentPostController.getAllCommentPost)
       .post(
+        commonCheckAuth,
         commonValidateBody(CommentPostCreateSchema),
-        this.commentPostController.createCommentPost
+        this.commentPostController.getAllCommentPost
       );
 
     app
       .route(
         "/v1/api/group/:group_id/topic/topic_id/post/:post_id/comment/:comment_id"
       )
-      // .get(commonCheckAuth, this.commentPostController.getCommentPost)
-      .get(this.commentPostController.getCommentPost)
-      // .patch(
-      //   commonCheckAuth,
-      //   commonValidateBody(CommentPostUpdateSchema),
-      //   this.commentPostController.updateCommentPost
-      // )
+      .get(commonCheckAuth, this.commentPostController.getCommentPost)
       .patch(
+        commonCheckAuth,
         commonValidateBody(CommentPostUpdateSchema),
         this.commentPostController.updateCommentPost
       )
-      // .delete(commonCheckAuth, this.commentPostController.deleteCommentPost)
-      .delete(this.commentPostController.deleteCommentPost);
+      .delete(commonCheckAuth, this.commentPostController.deleteCommentPost);
   }
 }

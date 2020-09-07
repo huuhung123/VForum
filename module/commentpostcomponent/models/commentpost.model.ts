@@ -3,7 +3,7 @@ export interface ICommentPostCreateForm {
   description: string;
   postId: string;
   createdAt: string;
-  // createdBy: object
+  createdBy: string
 }
 
 export interface ICommentPostUpdateForm {
@@ -11,5 +11,5 @@ export interface ICommentPostUpdateForm {
   description: string;
   postId: string;
   updatedAt: string;
-  // updatedBy: object
+  updatedBy: string
 }

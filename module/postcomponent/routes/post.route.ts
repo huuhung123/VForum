@@ -12,21 +12,21 @@ export class PostRoute {
   public routes(app: express.Application): void {
     app
       .route("/v1/api/group/:group_id/topic/:topic_id/post")
-      // .get(commonCheckAuth, this.postController.getAllPost)
-      .get(this.postController.getAllPost)
-      // .post(commonCheckAuth, commonValidateBody(PostCreateSchema), this.postController.createPost)
+      .get(commonCheckAuth, this.postController.getAllPost)
       .post(
+        commonCheckAuth,
         commonValidateBody(PostCreateSchema),
         this.postController.createPost
       );
 
     app
       .route("/v1/api/group/:group_id/topic/:topic_id/post/:post_id")
-      // .get(commonCheckAuth, this.postController.getPost)
-      .get(this.postController.getPost)
-      // .patch(commonCheckAuth,commonValidateBody(PostUpdateSchema), this.postController.updatePost)
-      // .patch(commonValidateBody(PostUpdateSchema), this.postController.updatePost)
-      // .delete(commonCheckAuth, this.postController.deletePost)
-      .delete(this.postController.deletePost);
+      .get(commonCheckAuth, this.postController.getPost)
+      .patch(
+        commonCheckAuth,
+        commonValidateBody(PostUpdateSchema),
+        this.postController.updatePost
+      )
+      .delete(commonCheckAuth, this.postController.deletePost);
   }
 }

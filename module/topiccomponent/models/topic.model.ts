@@ -5,7 +5,7 @@ export interface ITopicCreateForm {
   name: string;
   description: string;
   createdAt: string;
-  // createdBy: object
+  createdBy: string
 }
 
 export interface ITopicUpdateForm {
@@ -13,5 +13,5 @@ export interface ITopicUpdateForm {
   name: string;
   description: string;
   updatedAt: string;
-  //updatedBy: object
+  updatedBy: string
 }

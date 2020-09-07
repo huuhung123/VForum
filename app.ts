@@ -10,14 +10,18 @@ import { CommentFeedRoute } from "./module/commentfeedcomponent/routes/commentfe
 
 import morgan from "morgan";
 import * as dotenv from "dotenv";
-import * as cors from "cors";
+import cors from "cors";
 import session from "express-session";
+import connectMongo, { MongoStore } from "connect-mongo";
+import { any } from "joi";
 
 class Server {
   public app: express.Application;
-  public MONGODB_URL: string = "mongodb+srv://huuhung:987654321@cluster0.g4atc.mongodb.net/test";
-
+  public MONGODB_URL: string =
+    "mongodb+srv://huuhung:987654321@cluster0.g4atc.mongodb.net/test";
   // "mongodb+srv://huuhung:987654321@cluster0.g4atc.mongodb.net/test";
+
+  public MongoStore = connectMongo(session);
 
   public userRoute: UserRoute = new UserRoute();
   public topicRoute: TopicRoute = new TopicRoute();
@@ -48,17 +52,28 @@ class Server {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: false }));
     this.app.use(morgan("dev"));
+    this.app.use(cors());
   }
 
   private middlewares(): void {
+    const sessionStore = new this.MongoStore({
+      mongooseConnection: mongoose.createConnection(this.MONGODB_URL, {
+        useFindAndModify: false,
+        useUnifiedTopology: true,
+        useNewUrlParser: true,
+      }),
+      collection: "sessions",
+    });
+
     this.app.use(
       session({
-        name: "Hung",
+        name: "hung",
         secret: "123456789",
         resave: false,
-        saveUninitialized: false,
+        saveUninitialized: true,
+        store: sessionStore,
         cookie: {
-          maxAge: 60 * 60,
+          maxAge: 1000 * 60 * 60,
           sameSite: true,
           secure: false,
         },

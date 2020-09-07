@@ -1,21 +1,12 @@
-import session from "express-session";
+import { Request, Response, NextFunction } from "express";
 
-const TWO_HOURS = 60 * 60 * 2;
-
-const SESS_NAME = "hung";
-const SESS_SECRET = "nguyenhuuhung";
-const SESS_LIFETIME = TWO_HOURS;
-
-export function Session() {
-  return session({
-    name: SESS_NAME,
-    resave: false,
-    saveUninitialized: false,
-    secret: SESS_SECRET,
-    cookie: {
-      maxAge: SESS_LIFETIME,
-      sameSite: true,
-      secure: true,
-    },
-  });
-}
+export const commonCheckSession = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req!.session!.userId) {
+    return res.json({ data: "You're note authencicated. First, you login" });
+  }
+  next();
+};

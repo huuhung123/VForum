@@ -12,24 +12,21 @@ export class GroupRoute {
   public routes(app: express.Application): void {
     app
       .route("/v1/api/group")
-      //.get(commonCheckAuth, this.groupController.getAllGroup)
-      .get(this.groupController.getAllGroup)
-      //.post(commonCheckAuth ,commonValidateBody(GroupCreateSchema), this.groupController.createGroup)
+      .get(commonCheckAuth, this.groupController.getAllGroup)
       .post(
+        commonCheckAuth,
         commonValidateBody(GroupCreateSchema),
         this.groupController.createGroup
       );
 
     app
       .route("/v1/api/group/:group_id")
-      // .get(commonCheckAuth, this.groupController.getGroup)
-      .get(this.groupController.getGroup)
-      // .patch(commonCheckAuth, commonValidateBody(GroupUpdateSchema), this.groupController.updateGroup)
+      .get(commonCheckAuth, this.groupController.getGroup)
       .patch(
+        commonCheckAuth,
         commonValidateBody(GroupUpdateSchema),
         this.groupController.updateGroup
       )
-      // .delete(commonCheckAuth, this.groupController.deleteGroup)
-      .delete(this.groupController.deleteGroup);
+      .delete(commonCheckAuth, this.groupController.deleteGroup);
   }
 }

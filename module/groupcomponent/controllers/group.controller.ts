@@ -6,16 +6,16 @@ import {
   serialUpdateGroup,
 } from "../serializers/group.serializer";
 
-import { StatusCode } from "../../../common/model/common.model";
 import { Group } from "../../../common/model/group.model";
-import { User } from "../../../common/model/user.model";
 
+import { StatusCode } from "../../../common/model/common.model";
+import { RoleCode } from "../../../common/model/user.model";
 export class GroupController {
   public groupService: GroupService = new GroupService(Group);
 
   getAllGroup = async (req: Request, res: Response) => {
     try {
-      const result = await Group.find({});
+      const result = await Group.find({ status: StatusCode.Active });
       return res.json({ data: result });
     } catch (error) {
       return res.json({ Error: error });
@@ -25,65 +25,36 @@ export class GroupController {
   getGroup = async (req: Request, res: Response) => {
     try {
       const { group_id } = req.params;
-      const result = await Group.findById(group_id);
+
+      const result = await Group.find({
+        status: StatusCode.Active,
+        _id: group_id,
+      });
       return res.json({ data: result });
     } catch (error) {
       return res.json({ Error: error });
     }
   };
-
+  // xoa roi tao cai moi thi ntn ???
   createGroup = async (req: Request, res: Response) => {
     try {
-      // const groupter = req!.session!.user;
-      // const { role } = req!.session!.user;
-      // const  userId  = req!.session!.user.id;
+      const { role, userId } = res.locals.user;
 
-      // if (role === "admin" || role === "moderator") {
-      //   const formGroup: IGroupCreateForm = req.body;
-      // const check = await Group.find({ name: formGroup.name });
-      // if (check.length > 0) {
-      //   return res.json({ Error: "Name is exist. Please enter again" });
-      // }
+      if (role === RoleCode.Admin || role === RoleCode.Moderator) {
+        const formGroup: IGroupCreateForm = req.body;
 
-      //   formGroup.createdBy = groupter;
-      //   const group = await this.groupService.create(formGroup);
+        const check = await Group.find({ name: formGroup.name });
+        if (check.length > 0) {
+          return res.json({ Error: "Name is exist. Please enter again" });
+        }
 
-      //   User.findByIdAndUpdate(userId, {
-      //     $push: {
-      //       groups: group,
-      //     },
-      // {
-      //   new: true,
-      //   useFindAndModify: false
-      // }
-      //   });
+        formGroup.createdBy = userId;
+        const group = await this.groupService.create(formGroup);
 
-      //   return res.json(serialCreateGroup(group));
-      // }
-      // return res.json({ Message: "You cannot create group" });
-
-      const formGroup: IGroupCreateForm = req.body;
-
-      const check = await Group.find({ name: formGroup.name });
-      if (check.length > 0) {
-        return res.json({ Error: "Name is exist. Please enter again" });
+        return res.json(serialCreateGroup(group));
       }
 
-      const group = await this.groupService.create(formGroup);
-
-      await User.findByIdAndUpdate(
-        "5f54a0fd94273a271497a1d8",
-        {
-          $push: {
-            groups: group,
-          },
-        },
-        {
-          new: true,
-        }
-      );
-
-      return res.json(serialCreateGroup(group));
+      return res.json({ Message: "You cannot create group" });
     } catch (error) {
       return res.json({ Message: error });
     }
@@ -91,121 +62,44 @@ export class GroupController {
 
   updateGroup = async (req: Request, res: Response) => {
     try {
-      // const groupter = req!.session!.user;
-      // const { role, id } = req!.session!.user;
-      // const { group_id } = req.params
-
-      // if (role === "admin" || role === "moderator") {
-
-      // const check: any = await Group.findById({ _id: group_id });
-      // if (check.name === formGroup.name) {
-      //   return res.json({Error: "Sorry!. Please enter name again"})
-      // }
-
-      //   const formGroup: IGroupCreateForm = req.body;
-      //   formGroup.updatedBy = groupter;
-
-      // const group: any = await Group.findByIdAndUpdate(
-      //   group_id,
-      //   {
-      //     $set: {
-      //       name: req.body.name,
-      //     },
-      //      $push: {
-      //      updatedBy: req!.session!.user
-      //     }
-      //   },
-      //   {
-      //     new: true,
-      //     useFindAndModify: false,
-      //   }
-      // );
-
-      // await User.findByIdAndUpdate(
-      //   , //userid maf ng ta tao
-      //   {
-      //     $set: {
-      //       groups: group
-      //     }
-      //   },
-      //   {
-      //     new: true,
-      //     useFindAndModify: false,
-      //   }
-      // )
-
-      // return res.json(serialUpdateGroup(group));
-
-      //   User.findByIdAndUpdate(userId, {
-      //     $push: {
-      //       groups: group,
-      //     },
-      //   });
-
-      //   return res.json(serialCreateGroup(group));
-      // }
-      // return res.json({ Message: "You cannot create group" });
-
+      const { role, userId } = res.locals.user;
       const { group_id } = req.params;
-      const formGroup: IGroupUpdateForm = req.body;
 
-      const check: any = await Group.findById({ _id: group_id });
-      if (check.name === formGroup.name) {
-        return res.json({ Error: "Sorry!. Please enter name again" });
+      if (role === RoleCode.Admin || role === RoleCode.Moderator) {
+        const formGroup: IGroupUpdateForm = req.body;
+
+        const check: any = await Group.find({
+          _id: group_id,
+          status: StatusCode.Active,
+        });
+        if (check.length === 0) {
+          return res.json({
+            Error: "Group has been deleted. You can not update",
+          });
+        }
+
+        if (check.name === formGroup.name) {
+          return res.json({ Error: "Sorry!. Please enter name again" });
+        }
+
+        const group: any = await Group.findByIdAndUpdate(
+          group_id,
+          {
+            $set: {
+              name: formGroup.name,
+              updatedBy: userId,
+            },
+          },
+          {
+            new: true,
+            useFindAndModify: false,
+          }
+        );
+
+        return res.json(serialUpdateGroup(group));
       }
 
-      const group: any = await Group.findByIdAndUpdate(
-        group_id,
-        {
-          $set: {
-            name: req.body.name,
-          },
-        },
-        {
-          new: true,
-        }
-      );
-
-      // await User.update(
-      //   { _id: "5f54a0fd94273a271497a1d8", "groups._id": group_id },
-      //   {
-      //     $set: {
-      //       "groups.$.name": req.body.name,
-      //       "groups.$.updatedAt": group.updatedAt,
-      //       //"groups.$.updatedBy": req!.session!.user
-      //     },
-      //   }
-      // );
-
-      // await User.findByIdAndUpdate(
-      //   { _id: "5f54a0fd94273a271497a1d8" },
-      //   {
-      //     $set: {
-      //       "groups.$[el].name": String(req.body.name),
-      //       "groups.$[el].updatedAt": String(group.updatedAt),
-      //     },
-      //   },
-      //   {
-      //     arrayFilters: [{ "el._id": group_id }],
-      //     new: true,
-      //   }
-      // );
-
-      // await User.updateOne(
-      //   {
-      //     _id: "5f54a0fd94273a271497a1d8",
-      //     groups: { $elemMatch: { _id: group_id } },
-      //   },
-      //   { $set: { "groups.$.name": req.body.name } }
-      // );
-
-      // await User.update(
-      //   { _id: "5f54a0fd94273a271497a1d8" },
-      //   { $pull: { groups: { _id: group_id } } },
-      //   { safe: true }
-      // );
-
-      return res.json(serialUpdateGroup(group));
+      return res.json({ Message: "You cannot update group" });
     } catch (error) {
       return res.json({ Message: error });
     }
@@ -213,43 +107,30 @@ export class GroupController {
 
   deleteGroup = async (req: Request, res: Response) => {
     try {
-      // const { role, id } = req!.session!.user;
-      // if (role == "admin" || role == "moderator") {
-      //   const { group_id } = req.params;
+      const { role } = res.locals.user;
+      if (role == RoleCode.Admin) {
+        const { group_id } = req.params;
 
-      // const createdUser = await Group.findByIdAndUpdate(group_id, {
-      //   $set: {
-      //     status: StatusCode.Active,
-      //   },
-      // });
+        const check: any = await Group.find({
+          _id: group_id,
+          status: StatusCode.Active,
+        });
+        if (check.length === 0) {
+          return res.json({
+            Error: "Group has been deleted. You can not delete",
+          });
+        }
 
-      //   await User.updateOne(
-      //     {
-      //       _id: createdUser.createdBy , // user tao ra ?
-      //       groups: { $elemMatch: { _id: group_id } },
-      //     },
-      //     { $set: { "groups.$.status": StatusCode.Deactive } }
-      //   );
-      //   return res.json({ Message: "Deleted successfully" });
-      // }
+        await Group.findByIdAndUpdate(group_id, {
+          $set: {
+            status: StatusCode.Deactive,
+          },
+        });
 
-      // return res.json({ Message: "You cannot remove group" });
+        return res.json({ Message: "Deleted successfully" });
+      }
 
-      const { group_id } = req.params;
-      await Group.findByIdAndUpdate(group_id, {
-        $set: {
-          status: StatusCode.Deactive,
-        },
-      });
-      await User.updateOne(
-        {
-          _id: "5f54a0fd94273a271497a1d8",
-          groups: { $elemMatch: { _id: group_id } },
-        },
-        { $set: { "groups.$.status": StatusCode.Deactive } }
-      );
-
-      return res.json({ Message: "Deleted successfully" });
+      return res.json({ Message: "You cannot remove group" });
     } catch (error) {
       return res.json({ Message: error });
     }

@@ -5,7 +5,7 @@ export interface IPostCreateResponse {
   title: string;
   description: string;
   createdAt: string;
-  // createdBy: object
+  createdBy: string;
 }
 
 export function serializeCreatePost(
@@ -19,6 +19,7 @@ export function serializeCreatePost(
     title: model.title,
     description: model.description,
     createdAt: model.createdAt,
+    createdBy: model.createdBy,
   };
 }
 
@@ -27,7 +28,7 @@ export interface IPostUpdateResponse {
   title: string;
   description: string;
   updatedAt: string;
-  // updatedBy: string
+  updatedBy: string;
 }
 
 export function serializeUpdatePost(
@@ -41,5 +42,6 @@ export function serializeUpdatePost(
     title: model.title,
     description: model.description,
     updatedAt: model.updatedAt,
+    updatedBy: model.updatedBy,
   };
 }

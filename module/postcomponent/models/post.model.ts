@@ -3,7 +3,7 @@ export interface IPostCreateForm {
   title: string;
   description: string;
   createdAt: string;
-  // createdBy: string
+  createdBy: string
 }
 
 export interface IPostUpdateForm {
@@ -11,5 +11,5 @@ export interface IPostUpdateForm {
   title: string;
   description: string;
   updatedAt: string;
-  // updatedBy: string
+  updatedBy: string
 }

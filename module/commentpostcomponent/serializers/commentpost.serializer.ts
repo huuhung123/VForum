@@ -8,7 +8,7 @@ export interface ICommentPostCreateResponse {
   description: string;
   postId: string;
   createdAt: string;
-  // createdBy: object;
+  createdBy: string;
 }
 
 export function serialCreateCommentPost(
@@ -22,7 +22,7 @@ export function serialCreateCommentPost(
     description: model.description,
     postId: model.postId,
     createdAt: model.createdAt,
-    // updatedBy: model.updatedBy
+    createdBy: model.createdBy,
   };
 }
 
@@ -31,7 +31,7 @@ export interface ICommentPostUpdateResponse {
   description: string;
   postId: string;
   updatedAt: string;
-  // updatedBy: object;
+  updatedBy: string;
 }
 
 export function serialUpdateCommentPost(
@@ -45,6 +45,6 @@ export function serialUpdateCommentPost(
     description: model.description,
     postId: model.postId,
     updatedAt: model.updatedAt,
-    // updatedBy: model.updatedBy
+    updatedBy: model.updatedBy,
   };
 }

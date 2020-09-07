@@ -22,3 +22,9 @@ export function commonValidateBody(schema: SchemaLike) {
       });
   };
 }
+
+// const { value, error } = Joi.validate(data, schema);
+// if (error && error.details) {
+//   return { error };
+// }
+// };

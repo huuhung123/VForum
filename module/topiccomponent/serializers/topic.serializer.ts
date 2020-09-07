@@ -5,7 +5,7 @@ export interface ITopicCreateResponse {
   name: string;
   description: string;
   createdAt: string;
-  // createdBy: object;
+  createdBy: string;
 }
 
 export function serializeCreateTopic(
@@ -19,7 +19,7 @@ export function serializeCreateTopic(
     name: model.name,
     description: model.description,
     createdAt: model.createdAt,
-    // createdBy: model.createdBy,
+    createdBy: model.createdBy,
   };
 }
 
@@ -28,7 +28,7 @@ export interface ITopicUpdateResponse {
   name: string;
   description: string;
   updatedAt: string;
-  // updatedBy: object;
+  updatedBy: string;
 }
 
 export function serializeUpdateTopic(
@@ -42,6 +42,6 @@ export function serializeUpdateTopic(
     id: model.id,
     description: model.description,
     updatedAt: model.updatedAt,
-    // updatedBy: model.updatedBy
+    updatedBy: model.updatedBy,
   };
 }
