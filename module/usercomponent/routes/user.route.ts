@@ -40,5 +40,14 @@ export class UserRoute {
       .route("/v1/api/admin/:user_id")
       .patch(commonCheckAuth, this.userController.changeRoleUser)
       .delete(commonCheckAuth, this.userController.deleteUser);
+
+    // Recover
+    app
+      .route("/v1/api/admin/recover")
+      .get(commonCheckAuth, this.userController.getRecover);
+
+    app
+      .route("/v1/api/admin/recover/:group_id?:topic_id?:post_id?:comment_id?")
+      .patch(commonCheckAuth, this.userController.patchRecover);
   }
 }

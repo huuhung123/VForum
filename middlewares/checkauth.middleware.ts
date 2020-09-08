@@ -13,7 +13,7 @@ export const commonCheckAuth = async (
       const bearer = bearerHeader.split(" ");
       const bearerToken = bearer[1];
       const decoded = jwt.verify(bearerToken, "secret");
-
+      // const decoded = jwt.verify(bearerToken, process.env.JWT_KEY)
       res.locals.user = decoded;
       next();
     }
@@ -21,6 +21,3 @@ export const commonCheckAuth = async (
     return res.json({ Error: "Auth failed" });
   }
 };
-
-
-

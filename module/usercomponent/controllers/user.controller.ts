@@ -15,6 +15,10 @@ import jwt from "jsonwebtoken";
 
 import { User, RoleCode } from "../../../common/model/user.model";
 import { StatusCode } from "../../../common/model/common.model";
+import { Group } from "../../../common/model/group.model";
+import { Topic } from "../../../common/model/topic.model";
+import { Post } from "../../../common/model/post.model";
+import { CommentPost } from "../../../common/model/commentpost.model";
 
 export class UserController {
   public userService: UserService = new UserService(User);
@@ -140,7 +144,10 @@ export class UserController {
     try {
       const { role } = res.locals.user;
       if (role === RoleCode.Admin) {
-        const result = await User.find({}, '_id email display_name gender role status');
+        const result = await User.find(
+          {},
+          "_id email display_name gender role status"
+        );
         return res.json({ data: result });
       }
       return res.json({ Error: "You cannot get user" });
@@ -182,6 +189,74 @@ export class UserController {
       return res.json({ Error: "You cannot change role user" });
     } catch (error) {
       return res.json({ Error: error });
+    }
+  };
+
+  getRecover = async (req: Request, res: Response) => {
+    try {
+      //
+    } catch (error) {
+      return res.json({ Error: error });
+    }
+  };
+
+  patchRecover = async (req: Request, res: Response) => {
+    const { group_id, topic_id, post_id, comment_id } = req.params;
+    if (group_id !== undefined) {
+      Group.findByIdAndUpdate(
+        group_id,
+        {
+          $set: {
+            status: StatusCode.Active,
+          },
+        },
+        {
+          new: true,
+          useFindAndModify: false,
+        }
+      );
+    }
+    if (topic_id !== undefined) {
+      Topic.findByIdAndUpdate(
+        topic_id,
+        {
+          $set: {
+            status: StatusCode.Active,
+          },
+        },
+        {
+          new: true,
+          useFindAndModify: false,
+        }
+      );
+    }
+    if (post_id !== undefined) {
+      Post.findByIdAndUpdate(
+        post_id,
+        {
+          $set: {
+            status: StatusCode.Active,
+          },
+        },
+        {
+          new: true,
+          useFindAndModify: false,
+        }
+      );
+    }
+    if (comment_id !== undefined) {
+      CommentPost.findByIdAndUpdate(
+        comment_id,
+        {
+          $set: {
+            status: StatusCode.Active,
+          },
+        },
+        {
+          new: true,
+          useFindAndModify: false,
+        }
+      );
     }
   };
 }
