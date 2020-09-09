@@ -39,7 +39,7 @@ export class PostController {
 
   createPost = async (req: Request, res: Response) => {
     try {
-      const { userId } = res.locals.user;
+      const { _id } = req.authorized_user;
       const { group_id, topic_id } = req.params;
 
       const formPost: IPostCreateForm = req.body;
@@ -48,7 +48,7 @@ export class PostController {
         return res.json({ Error: "Title is exist. Please enter again" });
       }
 
-      formPost.createdBy = userId;
+      formPost.createdBy = _id;
 
       const post = await this.postservice.create(formPost);
       const newTopic = await Topic.findByIdAndUpdate(topic_id, {
@@ -68,7 +68,7 @@ export class PostController {
 
   updatePost = async (req: Request, res: Response) => {
     try {
-      const { userId } = res.locals.user;
+      const { _id } = req.authorized_user;
       const { post_id } = req.params;
 
       const check: any = await Post.find({
@@ -80,7 +80,7 @@ export class PostController {
           Error: "Post has been deleted. You can not update",
         });
       }
-      if (userId !== check.createdAt) {
+      if (_id !== check.createdAt) {
         return res.json({ Error: "You cannot update post" });
       }
 
@@ -95,7 +95,7 @@ export class PostController {
           $set: {
             title: formPost.title,
             description: formPost.description,
-            updatedBy: userId,
+            updatedBy: _id,
           },
         },
         {
@@ -111,7 +111,7 @@ export class PostController {
   };
 
   deletePost = async (req: Request, res: Response) => {
-    const { _id, role } = res.locals.user;
+    const { _id, role } = req.authorized_user;
     const { post_id } = req.params;
 
     const check: any = await Post.find({

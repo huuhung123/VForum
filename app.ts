@@ -19,7 +19,6 @@ class Server {
   public app: express.Application;
   public MONGODB_URL: string =
     "mongodb+srv://huuhung:987654321@cluster0.g4atc.mongodb.net/test";
-  // "mongodb+srv://huuhung:987654321@cluster0.g4atc.mongodb.net/test";
 
   public MongoStore = connectMongo(session);
 

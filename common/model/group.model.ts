@@ -22,11 +22,11 @@ const GroupSchema = new mongoose.Schema(
       },
     ],
     createdBy: {
-      type: UserSchema,
+      type: String,
       default: true,
     },
     updatedBy: {
-      type: UserSchema,
+      type: String,
       default: true,
     },
   }),

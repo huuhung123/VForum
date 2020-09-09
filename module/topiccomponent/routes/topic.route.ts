@@ -2,7 +2,7 @@ import express from "express";
 import { TopicController } from "../controllers/topic.controller";
 
 import { commonValidateBody } from "../../../middlewares/validatebody.middleware";
-import { commonCheckAuth } from "../../../middlewares/checkauth.middleware";
+import { isAuth } from "../../../middlewares/auth.middleware";
 
 import { TopicCreateSchema, TopicUpdateSchema } from "../DTO/topic.dto";
 
@@ -12,21 +12,21 @@ export class TopicRoute {
   public routes(app: express.Application): void {
     app
       .route("/v1/api/group/:group_id/topic")
-      .get(commonCheckAuth, this.topicController.getAllTopic)
+      .get(isAuth, this.topicController.getAllTopic)
       .post(
-        commonCheckAuth,
+        isAuth,
         commonValidateBody(TopicCreateSchema),
         this.topicController.createTopic
       );
 
     app
       .route("/v1/api/group/:group_id/topic/:topic_id")
-      .get(commonCheckAuth, this.topicController.getTopic)
+      .get(isAuth, this.topicController.getTopic)
       .patch(
-        commonCheckAuth,
+        isAuth,
         commonValidateBody(TopicUpdateSchema),
         this.topicController.updateTopic
       )
-      .delete(commonCheckAuth, this.topicController.deleteTopic);
+      .delete(isAuth, this.topicController.deleteTopic);
   }
 }

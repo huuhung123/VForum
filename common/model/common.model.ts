@@ -51,13 +51,15 @@ export function SchemaBase(schema: mongoose.SchemaDefinition) {
       required: true,
     },
     createdBy: {
-      type: Schema.Types.ObjectId,
-      ref: UserSchemaName,
+      // type: Schema.Types.ObjectId,
+      // ref: UserSchemaName,
+      type: String,
     },
 
     updatedBy: {
-      type: Schema.Types.ObjectId,
-      ref: UserSchemaName,
+      // type: Schema.Types.ObjectId,
+      // ref: UserSchemaName,
+      type: String,
     },
   };
 

@@ -11,7 +11,6 @@ import {
 } from "../serializers/user.serializer";
 
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 
 import { User, RoleCode } from "../../../common/model/user.model";
 import { StatusCode } from "../../../common/model/common.model";
@@ -19,6 +18,12 @@ import { Group } from "../../../common/model/group.model";
 import { Topic } from "../../../common/model/topic.model";
 import { Post } from "../../../common/model/post.model";
 import { CommentPost } from "../../../common/model/commentpost.model";
+
+import { Token } from "../../../common/model/token.model";
+import {
+  generateToken,
+  verifyToken,
+} from "../../../middlewares/helper.middleware";
 
 export class UserController {
   public userService: UserService = new UserService(User);
@@ -30,22 +35,19 @@ export class UserController {
 
       if (mailExist.length === 1) {
         return res.json({ Error: "Email existed" });
-        // return res.json({ data: false });
       }
 
       const result = await User.find({ display_name: form.display_name });
       if (result.length !== 0) {
         return res.json({ Error: "Please, you enter display_name again" });
-        // return res.json({data: })
       }
 
       form.password = await bcrypt.hash(req.body.password, 10);
 
       const user = await this.userService.create(form);
       // return res.json(serializeCreateUser(user));
-      return res.json({ data: true });
+      return res.json({ Message: "Register successfully" });
     } catch (error) {
-      // return res.json({ data: false });
       return res.json({ Error: error });
     }
   };
@@ -54,41 +56,80 @@ export class UserController {
     try {
       const form: IUserLoginForm = req.body;
       const user = await this.userService.findByEmail(form); // array
-
       if (user.length === 1) {
         const check = await bcrypt.compare(form.password, user[0].password);
         if (check) {
-          // const token = jwt.sign(
-          //   {
-          //     userId: user[0]._id,
-          //     email: user[0].email,
-          //     role: user[0].role,
-          //   },
-          //   // process.env.JWT_KEY,
-          //   "secret",
-          //   {
-          //     expiresIn: "1h",
-          //   }
-          // );
-          // return res.json({
-          //   message: "Successfully",
-          //   id: user[0]._id,
-          //   token: token,
-          // });
-          // // return res.json({
-          // //   data: 1,
-          // // });
+          const accessTokenLife = "1h";
+          // process.env.ACCESS_TOKEN_LIFE
+          const accessTokenSecret = "secret";
+          // process.env.ACCESS_TOKEN_SECRET
+          const refreshTokenLife = "3650d";
+          // process.env.REFRESH_TOKEN_LIFE
+          const refreshTokenSecret = "secret";
+          // process.env.REFRESH_TOKEN_SECRET
 
-          // const;
+          const accessToken = await generateToken(
+            user[0],
+            accessTokenSecret,
+            accessTokenLife
+          );
+
+          const refreshToken = await generateToken(
+            user[0],
+            refreshTokenSecret,
+            refreshTokenLife
+          );
+
+          const newToken = new Token({
+            accessToken,
+            refreshToken,
+          });
+          await newToken.save();
+
+          return res.status(200).json({
+            accessToken,
+            refreshToken,
+          });
         }
         return res.json({ error: "Password error" });
-        // return res.json({ data: 2 });
       }
       return res.json({ Error: "User not found, email doesn't exist" });
-      // return res.json({ data: 3 });
     } catch (error) {
       res.json({ Error: error });
     }
+  };
+
+  refreshToken = async (req: Request, res: Response) => {
+    const refreshTokenFromClient = req.body.refreshToken;
+    const refreshTokenSecret = "secret";
+    const accessTokenSecret = "secret";
+    const accessTokenLife = "1h";
+
+    const checkToken = await Token.find({
+      refreshToken: refreshTokenFromClient,
+    });
+    if (refreshTokenFromClient && checkToken.length > 0) {
+      try {
+        const decoded = await verifyToken(
+          refreshTokenFromClient,
+          refreshTokenSecret
+        );
+
+        const accessToken = await generateToken(
+          decoded,
+          accessTokenSecret,
+          accessTokenLife
+        );
+      } catch (error) {
+        return res.status(403).send({
+          message: "Invalid refresh token",
+        });
+      }
+    }
+
+    return res.status(403).send({
+      message: "No token provided",
+    });
   };
 
   updateUser = async (req: Request, res: Response) => {
@@ -96,15 +137,15 @@ export class UserController {
       const { oldpassword, newpassword, renewpassword } = req.body;
       const form: IUserUpdateForm = req.body;
 
-      const { userId, password } = res.locals.user;
+      const { _id } = req.authorized_user;
 
-      const user: any = await User.findById(userId);
+      const user: any = await User.findById(_id);
       const check = await bcrypt.compare(oldpassword, user.password);
 
       if (check) {
         if (newpassword == renewpassword) {
           await User.findByIdAndUpdate(
-            userId,
+            _id,
             {
               $set: {
                 password: await bcrypt.hash(newpassword, 10),
@@ -116,7 +157,7 @@ export class UserController {
             }
           );
 
-          const result: any = await User.findById(userId);
+          const result: any = await User.findById(_id);
           return res.json(serializeUpdateUser(result));
         }
         return res.json({ Error: "Re-password invalid" });
@@ -129,7 +170,7 @@ export class UserController {
 
   deleteUser = async (req: Request, res: Response) => {
     try {
-      const { role } = res.locals.user;
+      const { role } = req.authorized_user;
       if (role === RoleCode.Admin) {
         const { user_id } = req.params;
 
@@ -153,9 +194,26 @@ export class UserController {
     }
   };
 
+  getUserById = async (req: Request, res: Response) => {
+    try {
+      const { role } = req.authorized_user;
+      if (role === RoleCode.Admin) {
+        const { user_id } = req.params;
+        const result = await User.findById(
+          user_id,
+          "_id email display_name gender role status"
+        );
+        return res.json({ data: result });
+      }
+      return res.json({ Error: "You cannot get user" });
+    } catch (error) {
+      return res.json({ Error: error });
+    }
+  };
+
   getUser = async (req: Request, res: Response) => {
     try {
-      const { role } = res.locals.user;
+      const { role } = req.authorized_user;
       if (role === RoleCode.Admin) {
         const result = await User.find(
           {},
@@ -171,8 +229,8 @@ export class UserController {
 
   changeRoleUser = async (req: Request, res: Response) => {
     try {
-      const { role } = res.locals.user;
-      const { status } = req.params; //
+      const { role } = req.authorized_user;
+      const { status } = req.params; // ???
       if (role === RoleCode.Admin) {
         const { user_id } = req.params;
         if (status == RoleCode.Admin) {
@@ -182,7 +240,7 @@ export class UserController {
             },
           });
           return res.json({ Message: "Change role user successfully" });
-        } else if (role === RoleCode.Moderator) {
+        } else if (status === RoleCode.Moderator) {
           await User.findByIdAndUpdate(user_id, {
             $set: {
               status: RoleCode.Moderator,

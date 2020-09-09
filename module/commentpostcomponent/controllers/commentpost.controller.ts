@@ -11,8 +11,6 @@ import {
 
 import { CommentPost } from "../../../common/model/commentpost.model";
 import { Post } from "../../../common/model/post.model";
-import { Topic } from "../../../common/model/topic.model";
-import { Group } from "../../../common/model/group.model";
 import { RoleCode } from "../../../common/model/user.model";
 import { StatusCode } from "../../../common/model/common.model";
 
@@ -45,10 +43,10 @@ export class CommentPostController {
 
   createCommentPost = async (req: Request, res: Response) => {
     try {
-      const { userId } = res.locals.user;
+      const { _id } = req.authorized_user;
       const { post_id } = req.params;
       const formComment: ICommentPostCreateForm = req.body;
-      formComment.createdBy = userId;
+      formComment.createdBy = _id;
       formComment.postId = post_id;
 
       const commentpost = await this.commentPostService.create(formComment);
@@ -65,7 +63,7 @@ export class CommentPostController {
 
   updateCommentPost = async (req: Request, res: Response) => {
     try {
-      const { userId } = res.locals.user;
+      const { _id } = req.authorized_user;
       const { post_id, comment_id } = req.params;
 
       const check: any = await CommentPost.find({
@@ -77,7 +75,7 @@ export class CommentPostController {
           Error: "CommentPost has been deleted. You can not update",
         });
       }
-      if (userId !== check.createdAt) {
+      if (_id !== check.createdAt) {
         return res.json({ Error: "You cannot update commentpost" });
       }
 
@@ -91,7 +89,7 @@ export class CommentPostController {
         {
           $set: {
             description: req.body.description,
-            updatedBy: userId,
+            updatedBy: _id,
           },
         },
         {
@@ -117,7 +115,7 @@ export class CommentPostController {
 
   deleteCommentPost = async (req: Request, res: Response) => {
     try {
-      const { userId, role } = res.locals.user;
+      const { _id, role } = req.authorized_user;
       const { post_id, comment_id } = req.params;
 
       const check: any = await CommentPost.find({
@@ -130,7 +128,7 @@ export class CommentPostController {
         });
       }
 
-      if (role === RoleCode.Admin || userId === check._id) {
+      if (role === RoleCode.Admin || _id === check._id) {
         const newCommentPost = await CommentPost.findByIdAndUpdate(comment_id, {
           $set: {
             status: StatusCode.Deactive,

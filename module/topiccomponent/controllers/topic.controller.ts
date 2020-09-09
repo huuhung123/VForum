@@ -41,7 +41,7 @@ export class TopicController {
 
   createTopic = async (req: Request, res: Response) => {
     try {
-      const { userId, role } = res.locals.user;
+      const { _id, role } = req.authorized_user;
       if (role === RoleCode.Member) {
         return res.json({ Error: "You cannot create topic" });
       }
@@ -53,7 +53,7 @@ export class TopicController {
         return res.json({ Error: "Name is exist. Please enter again" });
       }
 
-      formTopic.createdBy = userId;
+      formTopic.createdBy = _id;
       const topic = await this.topicService.create(formTopic);
 
       await Group.findByIdAndUpdate(group_id, {
@@ -68,7 +68,7 @@ export class TopicController {
 
   updateTopic = async (req: Request, res: Response) => {
     try {
-      const { userId, role } = res.locals.user;
+      const { _id, role } = req.authorized_user;
       if (role === RoleCode.Member) {
         return res.json({ Error: "You cannot create topic" });
       }
@@ -85,7 +85,7 @@ export class TopicController {
         });
       }
 
-      if (userId !== check.createdAt) {
+      if (_id !== check.createdAt) {
         return res.json({ Error: "You cannot update topic" });
       }
 
@@ -100,7 +100,7 @@ export class TopicController {
           $set: {
             name: formTopic.name,
             description: formTopic.description,
-            updatedBy: userId,
+            updatedBy: _id,
           },
         },
         {
@@ -126,7 +126,7 @@ export class TopicController {
 
   deleteTopic = async (req: Request, res: Response) => {
     try {
-      const { _id, role } = res.locals.user;
+      const { _id, role } = req.authorized_user;
       const { group_id, topic_id } = req.params;
 
       const check: any = await Topic.find({
@@ -162,6 +162,7 @@ export class TopicController {
           },
         });
 
+  
         await Group.updateOne(
           { _id: group_id, "topics._id": topic_id },
           {

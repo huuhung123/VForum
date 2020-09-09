@@ -2,7 +2,7 @@ import express from "express";
 import { UserController } from "../controllers/user.controller";
 
 import { commonValidateBody } from "../../../middlewares/validatebody.middleware";
-import { commonCheckAuth } from "../../../middlewares/checkauth.middleware";
+import { isAuth } from "../../../middlewares/auth.middleware";
 
 import {
   UserCreateSchema,
@@ -20,34 +20,39 @@ export class UserRoute {
         commonValidateBody(UserCreateSchema),
         this.userController.createUser
       );
+
     app
       .route("/v1/api/login")
       .post(commonValidateBody(UserLoginSchema), this.userController.loginUser);
 
     app
-      .route("/v1/api/home")
+      .route("/v1/api/refresh-token")
+      .post(this.userController.refreshToken);
+
+    app
+      .route("/v1/api/info")
       .patch(
-        commonCheckAuth,
+        isAuth,
         commonValidateBody(UserChangeSchema),
         this.userController.updateUser
       );
 
     app
-      .route("/v1/api/admin")
-      .get(commonCheckAuth, this.userController.getUser);
+      .route("/v1/api/admin/info")
+      .get(isAuth, this.userController.getUser);
 
     app
-      .route("/v1/api/admin/:user_id")
-      .patch(commonCheckAuth, this.userController.changeRoleUser)
-      .delete(commonCheckAuth, this.userController.deleteUser);
+      .route("/v1/api/admin/info/:user_id")
+      .get(isAuth, this.userController.getUserById)
+      .patch(isAuth, this.userController.changeRoleUser)
+      .delete(isAuth, this.userController.deleteUser);
 
-    // Recover
     app
       .route("/v1/api/admin/recover")
-      .get(commonCheckAuth, this.userController.getRecover);
+      .get(isAuth, this.userController.getRecover);
 
     app
       .route("/v1/api/admin/recover/:group_id?:topic_id?:post_id?:comment_id?")
-      .patch(commonCheckAuth, this.userController.patchRecover);
+      .patch(isAuth, this.userController.patchRecover);
   }
 }

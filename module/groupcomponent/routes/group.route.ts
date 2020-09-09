@@ -2,7 +2,7 @@ import express from "express";
 import { GroupController } from "../controllers/group.controller";
 
 import { commonValidateBody } from "../../../middlewares/validatebody.middleware";
-import { commonCheckAuth } from "../../../middlewares/checkauth.middleware";
+import { isAuth } from "../../../middlewares/auth.middleware";
 
 import { GroupCreateSchema, GroupUpdateSchema } from "../DTO/group.dto";
 
@@ -12,21 +12,21 @@ export class GroupRoute {
   public routes(app: express.Application): void {
     app
       .route("/v1/api/group")
-      .get(commonCheckAuth, this.groupController.getAllGroup)
+      .get(isAuth, this.groupController.getAllGroup)
       .post(
-        commonCheckAuth,
+        isAuth,
         commonValidateBody(GroupCreateSchema),
         this.groupController.createGroup
       );
 
     app
       .route("/v1/api/group/:group_id")
-      .get(commonCheckAuth, this.groupController.getGroup)
+      .get(isAuth, this.groupController.getGroup)
       .patch(
-        commonCheckAuth,
+        isAuth,
         commonValidateBody(GroupUpdateSchema),
         this.groupController.updateGroup
       )
-      .delete(commonCheckAuth, this.groupController.deleteGroup);
+      .delete(isAuth, this.groupController.deleteGroup);
   }
 }

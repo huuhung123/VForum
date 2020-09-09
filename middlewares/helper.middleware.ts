@@ -13,7 +13,7 @@ export const generateToken = async (
     };
 
     jwt.sign(
-      { data: userData },
+      userData,
       secretSignature,
       {
         algorithm: "HS256",

@@ -1,5 +1,6 @@
 import { generateToken, verifyToken } from "./helper.middleware";
 import { Request, Response, NextFunction } from "express";
+import { any } from "joi";
 
 const accessTokenSecret = "secret";
 // process.env.ACCESS_TOKEN_SECRET
@@ -16,8 +17,8 @@ export const isAuth = async (
       const bearer = tokenFromClient.split(" ");
       const bearerToken = bearer[1];
 
-      const decoded = await verifyToken(bearerToken, accessTokenSecret);
-      //  req.authorized_user = decoded;
+      const decoded: any = await verifyToken(bearerToken, accessTokenSecret);
+      req.authorized_user = decoded;
 
       next();
     } catch (error) {
@@ -27,7 +28,7 @@ export const isAuth = async (
     }
   }
 
-  return res.status(403).send({
-    message: "No token prived",
-  });
+  // return res.status(403).send({
+  //   message: "No token provided",
+  // });
 };

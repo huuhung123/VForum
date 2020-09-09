@@ -2,7 +2,7 @@ import express from "express";
 import { CommentPostController } from "../controllers/commentpost.controller";
 
 import { commonValidateBody } from "../../../middlewares/validatebody.middleware";
-import { commonCheckAuth } from "../../../middlewares/checkauth.middleware";
+import { isAuth } from "../../../middlewares/auth.middleware";
 
 import {
   CommentPostCreateSchema,
@@ -15,9 +15,9 @@ export class CommentPostRoute {
   public routes(app: express.Application): void {
     app
       .route("/v1/api/group/:group_id/topic/topic_id/post/:post_id/comment")
-      .get(commonCheckAuth, this.commentPostController.getAllCommentPost)
+      .get(isAuth, this.commentPostController.getAllCommentPost)
       .post(
-        commonCheckAuth,
+        isAuth,
         commonValidateBody(CommentPostCreateSchema),
         this.commentPostController.getAllCommentPost
       );
@@ -26,12 +26,12 @@ export class CommentPostRoute {
       .route(
         "/v1/api/group/:group_id/topic/topic_id/post/:post_id/comment/:comment_id"
       )
-      .get(commonCheckAuth, this.commentPostController.getCommentPost)
+      .get(isAuth, this.commentPostController.getCommentPost)
       .patch(
-        commonCheckAuth,
+        isAuth,
         commonValidateBody(CommentPostUpdateSchema),
         this.commentPostController.updateCommentPost
       )
-      .delete(commonCheckAuth, this.commentPostController.deleteCommentPost);
+      .delete(isAuth, this.commentPostController.deleteCommentPost);
   }
 }
