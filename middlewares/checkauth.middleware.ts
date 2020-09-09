@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import { func, any } from "joi";
 
 export const commonCheckAuth = async (
   req: Request,

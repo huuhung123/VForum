@@ -121,6 +121,18 @@ export class GroupController {
           });
         }
 
+        const result = await Group.aggregate()
+          .match({ _id: group_id })
+          .project({ topics: 1 })
+          .unwind("$topics")
+          .group({ _id: "$status", count: { $sum: 1 } });
+
+        result.sort((d1, d2) => d1._id - d2._id);
+
+        if (result[0] !== 0) {
+          return res.json({ Error: "You can deleted all topic in group" });
+        }
+
         await Group.findByIdAndUpdate(group_id, {
           $set: {
             status: StatusCode.Deactive,

@@ -1,8 +1,5 @@
-import { Schema } from "mongoose";
-
 import { Request, Response, NextFunction } from "express";
 import { SchemaLike, ValidationError, validate } from "joi";
-
 
 export function commonValidateBody(schema: SchemaLike) {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -17,7 +14,7 @@ export function commonValidateBody(schema: SchemaLike) {
           code: firstError.type,
           message: firstError.message,
         };
-          
+
         return res.json(error);
       });
   };

@@ -33,11 +33,17 @@ export class UserController {
         // return res.json({ data: false });
       }
 
+      const result = await User.find({ display_name: form.display_name });
+      if (result.length !== 0) {
+        return res.json({ Error: "Please, you enter display_name again" });
+        // return res.json({data: })
+      }
+
       form.password = await bcrypt.hash(req.body.password, 10);
 
       const user = await this.userService.create(form);
-      return res.json(serializeCreateUser(user));
-      // return res.json({ data: true });
+      // return res.json(serializeCreateUser(user));
+      return res.json({ data: true });
     } catch (error) {
       // return res.json({ data: false });
       return res.json({ Error: error });
@@ -52,27 +58,28 @@ export class UserController {
       if (user.length === 1) {
         const check = await bcrypt.compare(form.password, user[0].password);
         if (check) {
-          // req!.session!.userId = user[0]._id;
-          const token = jwt.sign(
-            {
-              userId: user[0]._id,
-              email: user[0].email,
-              role: user[0].role,
-            },
-            // process.env.JWT_KEY,
-            "secret",
-            {
-              expiresIn: "1h",
-            }
-          );
-          return res.json({
-            message: "Successfully",
-            id: user[0]._id,
-            token: token,
-          });
+          // const token = jwt.sign(
+          //   {
+          //     userId: user[0]._id,
+          //     email: user[0].email,
+          //     role: user[0].role,
+          //   },
+          //   // process.env.JWT_KEY,
+          //   "secret",
+          //   {
+          //     expiresIn: "1h",
+          //   }
+          // );
           // return res.json({
-          //   data: 1,
+          //   message: "Successfully",
+          //   id: user[0]._id,
+          //   token: token,
           // });
+          // // return res.json({
+          // //   data: 1,
+          // // });
+
+          // const;
         }
         return res.json({ error: "Password error" });
         // return res.json({ data: 2 });
@@ -125,6 +132,12 @@ export class UserController {
       const { role } = res.locals.user;
       if (role === RoleCode.Admin) {
         const { user_id } = req.params;
+
+        const check: any = await User.findById(user_id);
+        if (check.role === RoleCode.Admin) {
+          return res.json({ Error: "You can not delete admin" });
+        }
+
         await User.findByIdAndUpdate(user_id, {
           $set: {
             status: StatusCode.Deactive,

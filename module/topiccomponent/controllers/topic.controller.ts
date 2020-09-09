@@ -10,6 +10,7 @@ import { Topic } from "../../../common/model/topic.model";
 import { Group } from "../../../common/model/group.model";
 import { StatusCode } from "../../../common/model/common.model";
 import { RoleCode } from "../../../common/model/user.model";
+import { count } from "console";
 
 export class TopicController {
   public topicService: TopicService = new TopicService(Topic);
@@ -143,6 +144,18 @@ export class TopicController {
         role === RoleCode.Moderator ||
         _id === check.createdAt
       ) {
+        const check = await Topic.aggregate()
+          .match({ _id: topic_id })
+          .project({ posts: 1 })
+          .unwind("$posts")
+          .group({ _id: "$status", count: { $sum: 1 } });
+
+        check.sort((d1, d2) => d1._id - d2._id);
+
+        if (check[0] !== 0) {
+          return res.json({ Error: "You can deleted all post in topic" });
+        }
+
         const newTopic = await Topic.findByIdAndUpdate(topic_id, {
           $set: {
             status: StatusCode.Deactive,
