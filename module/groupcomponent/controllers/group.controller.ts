@@ -130,15 +130,14 @@ export class GroupController {
           });
         }
 
+        await Group.findByIdAndUpdate(group_id, {
+          $set: {
+            status: StatusCode.Deactive,
+          },
+        });
         await this.groupService.callbackDeleteTopic(group_id);
         await this.groupService.callbackDeletePost(group_id);
         await this.groupService.callbackDeleteCommentPost(group_id);
-
-        // await Group.findByIdAndUpdate(group_id, {
-        //   $set: {
-        //     status: StatusCode.Deactive,
-        //   },
-        // });
 
         return res.json({ message: "You Deleted group successfully" });
       }

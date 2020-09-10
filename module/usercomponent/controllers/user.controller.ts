@@ -120,6 +120,11 @@ export class UserController {
           accessTokenSecret,
           accessTokenLife
         );
+
+        return res.json({
+          accessToken,
+          refreshTokenFromClient,
+        });
       } catch (error) {
         return res.status(403).send({
           message: "Invalid refresh token",

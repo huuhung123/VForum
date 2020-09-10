@@ -46,6 +46,15 @@ export class UserRoute {
       );
 
     app
+      .route("/v1/api/admin-info")
+      .get(isAuth, this.userController.getUser)
+      .patch(
+        isAuth,
+        commonValidateBody(UserChangeSchema),
+        this.userController.updateUser
+      );
+
+    app
       .route("/v1/api/admin/info/:user_id")
       .get(isAuth, this.userController.getUserById)
       .patch(isAuth, this.userController.changeRoleUser)

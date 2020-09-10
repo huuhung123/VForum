@@ -105,7 +105,7 @@ export class PostController {
           useFindAndModify: false,
         }
       );
-        return res.json({message: "You have been updated post successfully"})
+      return res.json({ message: "You have been updated post successfully" });
       // return res.json(serializeUpdatePost(newPost));
     } catch (error) {
       return res.json({ error: error });
@@ -127,11 +127,12 @@ export class PostController {
     }
 
     if (role === RoleCode.Admin || _id === check._id) {
-      const newPost = await Post.findByIdAndUpdate(post_id, {
+      await Post.findByIdAndUpdate(post_id, {
         $set: {
           status: StatusCode.Deactive,
         },
       });
+      this.postservice.callbackDeleteCommentPost(post_id);
 
       return res.json({ message: "You have been deleted post successfully" });
     }

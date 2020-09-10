@@ -146,32 +146,26 @@ export class TopicController {
         role === RoleCode.Moderator ||
         _id === check.createdAt
       ) {
-        const check = await Topic.aggregate()
-          .match({ _id: topic_id })
-          .project({ posts: 1 })
-          .unwind("$posts")
-          .group({ _id: "$status", count: { $sum: 1 } });
+        // const check = await Topic.aggregate()
+        //   .match({ _id: topic_id })
+        //   .project({ posts: 1 })
+        //   .unwind("$posts")
+        //   .group({ _id: "$status", count: { $sum: 1 } });
 
-        check.sort((d1, d2) => d1._id - d2._id);
+        // check.sort((d1, d2) => d1._id - d2._id);
 
-        if (check[0] !== 0) {
-          return res.json({ error: "You can deleted all post in topic" });
-        }
+        // if (check[0] !== 0) {
+        //   return res.json({ error: "You can deleted all post in topic" });
+        // }
 
-        const newTopic = await Topic.findByIdAndUpdate(topic_id, {
+        await Topic.findByIdAndUpdate(topic_id, {
           $set: {
             status: StatusCode.Deactive,
           },
         });
 
-        await Group.updateOne(
-          { _id: group_id, "topics._id": topic_id },
-          {
-            $set: {
-              "topics.$": newTopic,
-            },
-          }
-        );
+        await this.topicService.callbackDeletePost(topic_id);
+        await this.topicService.callbackDeleteCommentPost(topic_id);
 
         return res.json({ message: "Deleted successfully" });
       }
