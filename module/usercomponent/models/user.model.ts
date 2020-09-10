@@ -9,7 +9,6 @@ export interface IUserCreateForm {
   gender: string;
   role: RoleCode;
   createdAt: string;
-  // createdBy: string;
 }
 
 export interface IUserLoginForm {
@@ -20,7 +19,7 @@ export interface IUserUpdateForm {
   oldpassword: string;
   newpassword: string;
   renewpassword: string;
-  // updatedBy: object;
+  updatedBy: string;
   updatedAt: string;
   id: string;
 }

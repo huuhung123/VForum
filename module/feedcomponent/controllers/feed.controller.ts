@@ -17,7 +17,7 @@ export class FeedController {
       const result = await Feed.find({});
       return res.json({ data: result });
     } catch (error) {
-      return res.json({ Message: error });
+      return res.json({ error: error });
     }
   };
 
@@ -27,7 +27,7 @@ export class FeedController {
       const result = await Feed.findById(post_id);
       return res.json({ data: result });
     } catch (error) {
-      return res.json({ Message: error });
+      return res.json({ error: error });
     }
   };
 

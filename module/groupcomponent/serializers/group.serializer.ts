@@ -1,7 +1,6 @@
 import { IGroupCreateForm, IGroupUpdateForm } from "../models/group.model";
 export interface IGroupCreateResponse {
   id: string;
-  name: string;
   createdAt: string;
   createdBy: string;
 }
@@ -14,7 +13,6 @@ export function serialCreateGroup(
 
   return {
     id: model.id,
-    name: model.name,
     createdAt: model.createdAt,
     createdBy: model.createdBy,
   };
@@ -22,7 +20,6 @@ export function serialCreateGroup(
 
 export interface IGroupUpdateResponse {
   id: string;
-  name: string;
   updatedAt: string;
   updatedBy: string;
 }
@@ -35,7 +32,6 @@ export function serialUpdateGroup(
 
   return {
     id: model.id,
-    name: model.name,
     updatedAt: model.updatedAt,
     updatedBy: model.updatedBy,
   };

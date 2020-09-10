@@ -10,19 +10,16 @@ import { Topic } from "../../../common/model/topic.model";
 import { Group } from "../../../common/model/group.model";
 import { StatusCode } from "../../../common/model/common.model";
 import { RoleCode } from "../../../common/model/user.model";
-import { count } from "console";
 
 export class TopicController {
   public topicService: TopicService = new TopicService(Topic);
 
   getAllTopic = async (req: Request, res: Response) => {
     try {
-      const result = await Topic.find({ status: StatusCode.Active }).populate(
-        "posts"
-      );
+      const result = await Topic.find({ status: StatusCode.Active });
       return res.json({ data: result });
     } catch (error) {
-      return res.json({ Message: error });
+      return res.json({ error: error });
     }
   };
 
@@ -32,10 +29,10 @@ export class TopicController {
       const result = await Topic.find({
         _id: topic_id,
         status: StatusCode.Active,
-      }).populate("posts");
+      });
       return res.json({ data: result });
     } catch (error) {
-      return res.json({ Message: error });
+      return res.json({ error: error });
     }
   };
 
@@ -43,26 +40,30 @@ export class TopicController {
     try {
       const { _id, role } = req.authorized_user;
       if (role === RoleCode.Member) {
-        return res.json({ Error: "You cannot create topic" });
+        return res.json({ error: "You cannot create topic" });
       }
       const { group_id } = req.params;
       const formTopic: ITopicCreateForm = req.body;
       const check = await Topic.find({ name: formTopic.name });
 
       if (check.length > 0) {
-        return res.json({ Error: "Name is exist. Please enter again" });
+        return res.json({
+          error: "Name has been existed. Please enter name again",
+        });
       }
 
       formTopic.createdBy = _id;
+      formTopic.groupId = group_id;
       const topic = await this.topicService.create(formTopic);
 
       await Group.findByIdAndUpdate(group_id, {
         $push: { topics: topic },
       });
 
-      return res.json(serializeCreateTopic(topic));
+      return res.json({ message: "You have been created topic successfully" });
+      //return res.json(serializeCreateTopic(topic));
     } catch (error) {
-      return res.json({ Message: error });
+      return res.json({ error: error });
     }
   };
 
@@ -70,7 +71,7 @@ export class TopicController {
     try {
       const { _id, role } = req.authorized_user;
       if (role === RoleCode.Member) {
-        return res.json({ Error: "You cannot create topic" });
+        return res.json({ error: "You cannot create topic" });
       }
 
       const { group_id, topic_id } = req.params;
@@ -81,17 +82,17 @@ export class TopicController {
       });
       if (check.length === 0) {
         return res.json({
-          Error: "Topic has been deleted. You can not update",
+          error: "Topic has been deleted. You can not update",
         });
       }
 
       if (_id !== check.createdAt) {
-        return res.json({ Error: "You cannot update topic" });
+        return res.json({ error: "You cannot update topic" });
       }
 
       const formTopic: ITopicUpdateForm = req.body;
       if (check.name === formTopic.name) {
-        return res.json({ Error: "Sorry!. Please enter name again" });
+        return res.json({ error: "Sorry!. Please enter name again" });
       }
 
       const newTopic: any = await Topic.findByIdAndUpdate(
@@ -118,9 +119,10 @@ export class TopicController {
         }
       );
 
-      return res.json(serializeUpdateTopic(newTopic));
+      return res.json({ message: "You have been updated topic successfully" });
+      // return res.json(serializeUpdateTopic(newTopic));
     } catch (error) {
-      return res.json(error);
+      return res.json({ error: error });
     }
   };
 
@@ -135,7 +137,7 @@ export class TopicController {
       });
       if (check.length === 0) {
         return res.json({
-          Error: "Topic has been deleted. You can not delete",
+          error: "Topic has been deleted. You can not delete",
         });
       }
 
@@ -153,7 +155,7 @@ export class TopicController {
         check.sort((d1, d2) => d1._id - d2._id);
 
         if (check[0] !== 0) {
-          return res.json({ Error: "You can deleted all post in topic" });
+          return res.json({ error: "You can deleted all post in topic" });
         }
 
         const newTopic = await Topic.findByIdAndUpdate(topic_id, {
@@ -162,7 +164,6 @@ export class TopicController {
           },
         });
 
-  
         await Group.updateOne(
           { _id: group_id, "topics._id": topic_id },
           {
@@ -172,11 +173,11 @@ export class TopicController {
           }
         );
 
-        return res.json({ Message: "Deleted successfully" });
+        return res.json({ message: "Deleted successfully" });
       }
-      return res.json({ Message: "You cannot deleted topic" });
+      return res.json({ error: "You cannot deleted topic" });
     } catch (error) {
-      return res.json({ Message: error });
+      return res.json({ error: error });
     }
   };
 }

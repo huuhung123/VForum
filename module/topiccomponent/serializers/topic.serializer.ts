@@ -2,8 +2,7 @@ import { ITopicCreateForm, ITopicUpdateForm } from "../models/topic.model";
 
 export interface ITopicCreateResponse {
   id: string;
-  name: string;
-  description: string;
+  groupId: string
   createdAt: string;
   createdBy: string;
 }
@@ -16,8 +15,7 @@ export function serializeCreateTopic(
 
   return {
     id: model.id,
-    name: model.name,
-    description: model.description,
+    groupId: model.groupId,
     createdAt: model.createdAt,
     createdBy: model.createdBy,
   };
@@ -25,10 +23,7 @@ export function serializeCreateTopic(
 
 export interface ITopicUpdateResponse {
   id: string;
-  name: string;
-  description: string;
   updatedAt: string;
-  updatedBy: string;
 }
 
 export function serializeUpdateTopic(
@@ -38,10 +33,7 @@ export function serializeUpdateTopic(
   }
 
   return {
-    name: model.name,
     id: model.id,
-    description: model.description,
     updatedAt: model.updatedAt,
-    updatedBy: model.updatedBy,
   };
 }

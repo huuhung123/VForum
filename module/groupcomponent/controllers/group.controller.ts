@@ -10,6 +10,7 @@ import { Group } from "../../../common/model/group.model";
 
 import { StatusCode } from "../../../common/model/common.model";
 import { RoleCode } from "../../../common/model/user.model";
+
 export class GroupController {
   public groupService: GroupService = new GroupService(Group);
 
@@ -18,7 +19,7 @@ export class GroupController {
       const result = await Group.find({ status: StatusCode.Active });
       return res.json({ data: result });
     } catch (error) {
-      return res.json({ Error: error });
+      return res.json({ error: error });
     }
   };
 
@@ -32,7 +33,7 @@ export class GroupController {
       });
       return res.json({ data: result });
     } catch (error) {
-      return res.json({ Error: error });
+      return res.json({ error: error });
     }
   };
   // xoa roi tao cai moi thi ntn ???
@@ -45,18 +46,23 @@ export class GroupController {
 
         const check = await Group.find({ name: formGroup.name });
         if (check.length > 0) {
-          return res.json({ Error: "Name is exist. Please enter again" });
+          return res.json({
+            error: "Name has been existed. Please enter name again",
+          });
         }
 
         formGroup.createdBy = _id;
         const group = await this.groupService.create(formGroup);
 
-        return res.json(serialCreateGroup(group));
+        return res.json({
+          message: "You have been created group successfully",
+        });
+        // return res.json(serialCreateGroup(group));
       }
 
-      return res.json({ Error: "You cannot create group" });
+      return res.json({ error: "You cannot create group" });
     } catch (error) {
-      return res.json({ Message: error });
+      return res.json({ error: error });
     }
   };
 
@@ -74,12 +80,12 @@ export class GroupController {
         });
         if (check.length === 0) {
           return res.json({
-            Error: "Group has been deleted. You can not update",
+            error: "Group has been deleted. You can not update",
           });
         }
 
         if (check.name === formGroup.name) {
-          return res.json({ Error: "Sorry!. Please enter name again" });
+          return res.json({ error: "Sorry!. Please enter name again" });
         }
 
         const group: any = await Group.findByIdAndUpdate(
@@ -96,12 +102,15 @@ export class GroupController {
           }
         );
 
-        return res.json(serialUpdateGroup(group));
+        // return res.json(serialUpdateGroup(group));
+        return res.json({
+          message: "You have been updated group successfully",
+        });
       }
 
-      return res.json({ Message: "You cannot update group" });
+      return res.json({ message: "You cannot update group" });
     } catch (error) {
-      return res.json({ Message: error });
+      return res.json({ error: error });
     }
   };
 
@@ -117,23 +126,26 @@ export class GroupController {
         });
         if (check.length === 0) {
           return res.json({
-            Error: "Group has been deleted. You can not delete",
+            error: "Group has been deleted. You can not delete",
           });
         }
-        // callbackDeletePost() trong service
 
-        await Group.findByIdAndUpdate(group_id, {
-          $set: {
-            status: StatusCode.Deactive,
-          },
-        });
+        await this.groupService.callbackDeleteTopic(group_id);
+        await this.groupService.callbackDeletePost(group_id);
+        await this.groupService.callbackDeleteCommentPost(group_id);
 
-        return res.json({ Message: "Deleted successfully" });
+        // await Group.findByIdAndUpdate(group_id, {
+        //   $set: {
+        //     status: StatusCode.Deactive,
+        //   },
+        // });
+
+        return res.json({ message: "You Deleted group successfully" });
       }
 
-      return res.json({ Message: "You cannot remove group" });
+      return res.json({ error: "You cannot delete group" });
     } catch (error) {
-      return res.json({ Message: error });
+      return res.json({ error: error });
     }
   };
 }

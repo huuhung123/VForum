@@ -4,8 +4,9 @@ export interface ITopicCreateForm {
   id: string;
   name: string;
   description: string;
+  groupId: string;
   createdAt: string;
-  createdBy: string
+  createdBy: string;
 }
 
 export interface ITopicUpdateForm {
@@ -13,5 +14,5 @@ export interface ITopicUpdateForm {
   name: string;
   description: string;
   updatedAt: string;
-  updatedBy: string
 }
+

@@ -9,7 +9,5 @@ export interface ICommentPostCreateForm {
 export interface ICommentPostUpdateForm {
   id: string;
   description: string;
-  postId: string;
   updatedAt: string;
-  updatedBy: string
 }

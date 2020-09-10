@@ -33,7 +33,7 @@ export class PostController {
       });
       return res.json({ data: result });
     } catch (error) {
-      return res.json({ Message: error });
+      return res.json({ error: error });
     }
   };
 
@@ -45,10 +45,11 @@ export class PostController {
       const formPost: IPostCreateForm = req.body;
       const check = await Post.find({ title: formPost.title });
       if (check.length > 0) {
-        return res.json({ Error: "Title is exist. Please enter again" });
+        return res.json({ error: "Title is exist. Please enter again" });
       }
 
-      formPost.createdBy = _id;
+      formPost.userId = _id;
+      formPost.topicId = topic_id;
 
       const post = await this.postservice.create(formPost);
       const newTopic = await Topic.findByIdAndUpdate(topic_id, {
@@ -60,9 +61,10 @@ export class PostController {
           topics: newTopic,
         },
       });
-      return res.json(serializeCreatePost(post));
+      return res.json({ message: "You have created post successfully" });
+      // return res.json(serializeCreatePost(post));
     } catch (error) {
-      return res.json({ Error: error });
+      return res.json({ error: error });
     }
   };
 
@@ -77,16 +79,16 @@ export class PostController {
       });
       if (check.length === 0) {
         return res.json({
-          Error: "Post has been deleted. You can not update",
+          error: "Post has been deleted. You can not update",
         });
       }
       if (_id !== check.createdAt) {
-        return res.json({ Error: "You cannot update post" });
+        return res.json({ error: "You cannot update post" });
       }
 
       const formPost: IPostUpdateForm = req.body;
       if (check.title === formPost.title) {
-        return res.json({ Error: "Sorry!. Please enter title again" });
+        return res.json({ error: "Sorry!. Please enter title again" });
       }
 
       const newPost: any = await Post.findByIdAndUpdate(
@@ -103,10 +105,10 @@ export class PostController {
           useFindAndModify: false,
         }
       );
-
-      return res.json(serializeUpdatePost(newPost));
+        return res.json({message: "You have been updated post successfully"})
+      // return res.json(serializeUpdatePost(newPost));
     } catch (error) {
-      return res.json({ Error: error });
+      return res.json({ error: error });
     }
   };
 
@@ -120,7 +122,7 @@ export class PostController {
     });
     if (check.length === 0) {
       return res.json({
-        Error: "Group has been deleted. You can not delete",
+        error: "Post has been deleted. You can not delete",
       });
     }
 
@@ -131,8 +133,8 @@ export class PostController {
         },
       });
 
-      return res.json({ Message: "Deleted successfully" });
+      return res.json({ message: "You have been deleted post successfully" });
     }
-    return res.json({ Message: "You cannot deleted topic" });
+    return res.json({ error: "You cannot deleted post" });
   };
 }

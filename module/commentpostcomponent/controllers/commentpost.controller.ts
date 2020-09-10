@@ -24,7 +24,7 @@ export class CommentPostController {
       const result = await CommentPost.find({ status: StatusCode.Active });
       return res.json({ data: result });
     } catch (error) {
-      return res.json({ Message: error });
+      return res.json({ error: error });
     }
   };
 
@@ -37,7 +37,7 @@ export class CommentPostController {
       });
       return res.json({ data: result });
     } catch (error) {
-      return res.json({ Message: error });
+      return res.json({ error: error });
     }
   };
 
@@ -46,6 +46,7 @@ export class CommentPostController {
       const { _id } = req.authorized_user;
       const { post_id } = req.params;
       const formComment: ICommentPostCreateForm = req.body;
+
       formComment.createdBy = _id;
       formComment.postId = post_id;
 
@@ -55,9 +56,10 @@ export class CommentPostController {
         $push: { commentsPost: commentpost },
       });
 
-      return res.json(serialCreateCommentPost(commentpost));
+      return res.json({ message: "You have created commentpost successfully" });
+      // return res.json(serialCreateCommentPost(commentpost));
     } catch (error) {
-      return res.json({ Message: error });
+      return res.json({ error: error });
     }
   };
 
@@ -72,16 +74,16 @@ export class CommentPostController {
       });
       if (check.length === 0) {
         return res.json({
-          Error: "CommentPost has been deleted. You can not update",
+          error: "CommentPost has been deleted. You can not update",
         });
       }
       if (_id !== check.createdAt) {
-        return res.json({ Error: "You cannot update commentpost" });
+        return res.json({ error: "You cannot update commentpost" });
       }
 
       const form: ICommentPostUpdateForm = req.body;
       if (check.description === form.description) {
-        return res.json({ Error: "Sorry!. Please enter description again" });
+        return res.json({ error: "Sorry!. Please enter description again" });
       }
 
       const newCommentPost: any = await CommentPost.findByIdAndUpdate(
@@ -107,9 +109,12 @@ export class CommentPostController {
         }
       );
 
-      return res.json(serialUpdateCommentPost(newCommentPost));
+      return res.json({
+        message: "You have been updated commentpost successfully",
+      });
+      // return res.json(serialUpdateCommentPost(newCommentPost));
     } catch (error) {
-      return res.json({ Message: error });
+      return res.json({ error: error });
     }
   };
 
@@ -124,7 +129,7 @@ export class CommentPostController {
       });
       if (check.length === 0) {
         return res.json({
-          Error: "CommentPost has been deleted. You can not delete",
+          error: "CommentPost has been deleted. You can not delete",
         });
       }
 
@@ -144,11 +149,11 @@ export class CommentPostController {
           }
         );
 
-        return res.json({ Message: "Deleted successfully" });
+        return res.json({ message: "Deleted successfully" });
       }
-      return res.json({ Message: "You cannot deleted commentpost" });
+      return res.json({ error: "You cannot deleted commentpost" });
     } catch (error) {
-      return res.json({ Error: error });
+      return res.json({ error: error });
     }
   };
 }

@@ -5,8 +5,6 @@ import {
 
 export interface ICommentPostCreateResponse {
   id: string;
-  description: string;
-  postId: string;
   createdAt: string;
   createdBy: string;
 }
@@ -19,8 +17,6 @@ export function serialCreateCommentPost(
 
   return {
     id: model.id,
-    description: model.description,
-    postId: model.postId,
     createdAt: model.createdAt,
     createdBy: model.createdBy,
   };
@@ -28,10 +24,7 @@ export function serialCreateCommentPost(
 
 export interface ICommentPostUpdateResponse {
   id: string;
-  description: string;
-  postId: string;
   updatedAt: string;
-  updatedBy: string;
 }
 
 export function serialUpdateCommentPost(
@@ -42,9 +35,6 @@ export function serialUpdateCommentPost(
 
   return {
     id: model.id,
-    description: model.description,
-    postId: model.postId,
     updatedAt: model.updatedAt,
-    updatedBy: model.updatedBy,
   };
 }

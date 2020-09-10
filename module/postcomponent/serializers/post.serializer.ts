@@ -2,10 +2,8 @@ import { IPostCreateForm, IPostUpdateForm } from "../models/post.model";
 
 export interface IPostCreateResponse {
   id: string;
-  title: string;
-  description: string;
   createdAt: string;
-  createdBy: string;
+  userId: string;
 }
 
 export function serializeCreatePost(
@@ -16,19 +14,14 @@ export function serializeCreatePost(
 
   return {
     id: model.id,
-    title: model.title,
-    description: model.description,
     createdAt: model.createdAt,
-    createdBy: model.createdBy,
+    userId: model.userId,
   };
 }
 
 export interface IPostUpdateResponse {
   id: string;
-  title: string;
-  description: string;
   updatedAt: string;
-  updatedBy: string;
 }
 
 export function serializeUpdatePost(
@@ -39,9 +32,6 @@ export function serializeUpdatePost(
 
   return {
     id: model.id,
-    title: model.title,
-    description: model.description,
     updatedAt: model.updatedAt,
-    updatedBy: model.updatedBy,
   };
 }

@@ -143,7 +143,12 @@ export class UserController {
       const check = await bcrypt.compare(oldpassword, user.password);
 
       if (check) {
-        if (newpassword == renewpassword) {
+        if (oldpassword === newpassword) {
+          return res.json({
+            error: "newpassword has different from oldpassword",
+          });
+        }
+        if (newpassword === renewpassword) {
           await User.findByIdAndUpdate(
             _id,
             {
@@ -216,7 +221,7 @@ export class UserController {
       const { _id } = req.authorized_user;
       const result = await User.findById(
         _id,
-        "_id email display_name gender role status"
+        "_id email display_name gender role"
       );
       return res.json({ data: result });
     } catch (error) {

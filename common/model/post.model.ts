@@ -30,6 +30,7 @@ const PostSchema = new Schema(
     commentsPost: [
       {
         type: Object,
+        default: true,
         required: true,
       },
     ],
