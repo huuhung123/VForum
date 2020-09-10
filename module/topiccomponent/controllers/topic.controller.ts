@@ -44,7 +44,7 @@ export class TopicController {
       }
       const { group_id } = req.params;
       const formTopic: ITopicCreateForm = req.body;
-      const check = await Topic.find({ name: formTopic.name });
+      const check = await Topic.find({ name: formTopic.name, status: StatusCode.Active });
 
       if (check.length > 0) {
         return res.json({

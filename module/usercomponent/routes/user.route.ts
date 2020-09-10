@@ -21,6 +21,7 @@ export class UserRoute {
         this.userController.createUser
       );
 
+  
     app
       .route("/v1/api/login")
       .post(commonValidateBody(UserLoginSchema), this.userController.loginUser);

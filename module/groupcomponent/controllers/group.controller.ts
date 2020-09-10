@@ -16,7 +16,10 @@ export class GroupController {
 
   getAllGroup = async (req: Request, res: Response) => {
     try {
-      const result = await Group.find({ status: StatusCode.Active });
+      const result = await Group.find(
+        { status: StatusCode.Active },
+        "name createdBy createdAt"
+      );
       return res.json({ data: result });
     } catch (error) {
       return res.json({ error: error });
@@ -27,10 +30,13 @@ export class GroupController {
     try {
       const { group_id } = req.params;
 
-      const result = await Group.find({
-        status: StatusCode.Active,
-        _id: group_id,
-      });
+      const result = await Group.find(
+        {
+          status: StatusCode.Active,
+          _id: group_id,
+        },
+        "name createdBy createdAt"
+      );
       return res.json({ data: result });
     } catch (error) {
       return res.json({ error: error });
@@ -39,19 +45,22 @@ export class GroupController {
   // xoa roi tao cai moi thi ntn ???
   createGroup = async (req: Request, res: Response) => {
     try {
-      const { role, _id } = req.authorized_user;
-
+      const { role, display_name } = req.authorized_user;
+      console.log(role);
       if (role === RoleCode.Admin || role === RoleCode.Moderator) {
         const formGroup: IGroupCreateForm = req.body;
 
-        const check = await Group.find({ name: formGroup.name });
+        const check = await Group.find({
+          name: formGroup.name,
+          status: StatusCode.Active,
+        });
         if (check.length > 0) {
           return res.json({
             error: "Name has been existed. Please enter name again",
           });
         }
 
-        formGroup.createdBy = _id;
+        formGroup.createdBy = display_name;
         const group = await this.groupService.create(formGroup);
 
         return res.json({
@@ -60,7 +69,7 @@ export class GroupController {
         // return res.json(serialCreateGroup(group));
       }
 
-      return res.json({ error: "You cannot create group" });
+      return res.json({ error: "You cannot create group, you aren't admin" });
     } catch (error) {
       return res.json({ error: error });
     }

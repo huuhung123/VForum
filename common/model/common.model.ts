@@ -23,7 +23,7 @@ export enum StatusCode {
 export interface IModelBase extends Document {
   _id: string;
   status: string;
-  createdBy?: string;
+  createdBy: string;
   updatedBy?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -39,6 +39,7 @@ export function SchemaBase(schema: mongoose.SchemaDefinition) {
     },
     createdBy: {
       type: String,
+      required: true,
     },
 
     updatedBy: {

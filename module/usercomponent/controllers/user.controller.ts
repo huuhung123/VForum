@@ -34,28 +34,31 @@ export class UserController {
       const mailExist = await this.userService.findByEmail(form);
 
       if (mailExist.length === 1) {
-        return res.json({ Error: "Email existed" });
+        return res.json({ error: "Email has been existed" });
       }
 
       const result = await User.find({ display_name: form.display_name });
       if (result.length !== 0) {
-        return res.json({ Error: "Please, you enter display_name again" });
+        return res.json({ error: "Display_name has been existed" });
       }
 
       form.password = await bcrypt.hash(req.body.password, 10);
 
       const user = await this.userService.create(form);
       // return res.json(serializeCreateUser(user));
-      return res.json({ Message: "Register successfully" });
+      return res.json({ message: "You have registered account successfully" });
     } catch (error) {
-      return res.json({ Error: error });
+      return res.json({ error: error });
     }
   };
 
   loginUser = async (req: Request, res: Response) => {
     try {
       const form: IUserLoginForm = req.body;
-      const user = await this.userService.findByEmail(form); // array
+      const user = await User.find({
+        email: form.email,
+        status: StatusCode.Active,
+      });
       if (user.length === 1) {
         const check = await bcrypt.compare(form.password, user[0].password);
         if (check) {
@@ -93,9 +96,9 @@ export class UserController {
         }
         return res.json({ error: "Password error" });
       }
-      return res.json({ Error: "User not found, email doesn't exist" });
+      return res.json({ error: "Email hasn't been existed" });
     } catch (error) {
-      res.json({ Error: error });
+      res.json({ error: error });
     }
   };
 
@@ -127,13 +130,13 @@ export class UserController {
         });
       } catch (error) {
         return res.status(403).send({
-          message: "Invalid refresh token",
+          error: "Invalid refresh token",
         });
       }
     }
 
     return res.status(403).send({
-      message: "No token provided",
+      error: "No token provided",
     });
   };
 
@@ -150,7 +153,7 @@ export class UserController {
       if (check) {
         if (oldpassword === newpassword) {
           return res.json({
-            error: "newpassword has different from oldpassword",
+            error: "Newpassword has different from oldpassword",
           });
         }
         if (newpassword === renewpassword) {
@@ -168,13 +171,16 @@ export class UserController {
           );
 
           const result: any = await User.findById(_id);
-          return res.json(serializeUpdateUser(result));
+          return res.json({
+            message: "You have updated account unsuccessfully",
+          });
+          //return res.json(serializeUpdateUser(result));
         }
-        return res.json({ Error: "Re-password invalid" });
+        return res.json({ error: "Re-password invalid" });
       }
-      return res.json({ Error: "Oldpassword user unsuccessfully" });
+      return res.json({ error: "Oldpassword user unsuccessfully" });
     } catch (error) {
-      return res.json({ Error: "Update unsuccessfully" });
+      return res.json({ error: error });
     }
   };
 
@@ -186,7 +192,11 @@ export class UserController {
 
         const check: any = await User.findById(user_id);
         if (check.role === RoleCode.Admin) {
-          return res.json({ Error: "You can not delete admin" });
+          return res.json({ error: "You can not delete admin" });
+        }
+
+        if (check.status === StatusCode.Deactive) {
+          return res.json({ error: "User has been deleted" });
         }
 
         await User.findByIdAndUpdate(user_id, {
@@ -195,12 +205,12 @@ export class UserController {
           },
         });
 
-        return res.json({ Message: "Deleted user successfully" });
+        return res.json({ message: "You have deleted user successfully" });
       }
 
-      return res.json({ Error: "You cannot delete user" });
+      return res.json({ error: "You cannot delete user, you aren't admin" });
     } catch (error) {
-      return res.json({ Error: error });
+      return res.json({ error: error });
     }
   };
 
@@ -215,9 +225,9 @@ export class UserController {
         );
         return res.json({ data: result });
       }
-      return res.json({ Error: "You cannot get user" });
+      return res.json({ error: "You cannot get user, you aren't admin" });
     } catch (error) {
-      return res.json({ Error: error });
+      return res.json({ error: error });
     }
   };
 
@@ -230,7 +240,7 @@ export class UserController {
       );
       return res.json({ data: result });
     } catch (error) {
-      return res.json({ Error: error });
+      return res.json({ error: error });
     }
   };
 
@@ -244,45 +254,57 @@ export class UserController {
         );
         return res.json({ data: result });
       }
-      return res.json({ Error: "You cannot get user" });
+      return res.json({ error: "You cannot get all user, you aren't admin" });
     } catch (error) {
-      return res.json({ Error: error });
+      return res.json({ error: error });
     }
   };
 
   changeRoleUser = async (req: Request, res: Response) => {
     try {
       const { role } = req.authorized_user;
-      const { status } = req.params; // ???
+      const { newRole } = req.body; // ???
       if (role === RoleCode.Admin) {
         const { user_id } = req.params;
-        if (status == RoleCode.Admin) {
+        const user: any = await User.findById(user_id);
+        if (newRole === user.role) {
+          return res.json({ error: "Newrole has been diffirent from oldrole" });
+        }
+        if (newRole == RoleCode.Admin) {
           await User.findByIdAndUpdate(user_id, {
             $set: {
-              status: RoleCode.Admin,
+              role: RoleCode.Admin,
             },
           });
-          return res.json({ Message: "Change role user successfully" });
-        } else if (status === RoleCode.Moderator) {
+          return res.json({
+            message: "You have changed user's role - admin successfully",
+          });
+        } else if (newRole === RoleCode.Moderator) {
           await User.findByIdAndUpdate(user_id, {
             $set: {
-              status: RoleCode.Moderator,
+              role: RoleCode.Moderator,
             },
           });
-          return res.json({ Message: "Change role user successfully" });
+          return res.json({
+            message: "You have changed user's role - moderator successfully",
+          });
         }
 
         await User.findByIdAndUpdate(user_id, {
           $set: {
-            status: RoleCode.Member,
+            role: RoleCode.Member,
           },
         });
-        return res.json({ Message: "Change role user successfully" });
+        return res.json({
+          message: "You have changed user's role - member successfully",
+        });
       }
 
-      return res.json({ Error: "You cannot change role user" });
+      return res.json({
+        error: "You cannot change role user, you aren't admin",
+      });
     } catch (error) {
-      return res.json({ Error: error });
+      return res.json({ error: "123" });
     }
   };
 
@@ -290,7 +312,7 @@ export class UserController {
     try {
       //
     } catch (error) {
-      return res.json({ Error: error });
+      return res.json({ error: error });
     }
   };
 

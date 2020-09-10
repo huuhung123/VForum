@@ -10,6 +10,7 @@ export const generateToken = async (
       _id: user._id,
       email: user.email,
       role: user.role,
+      display_name: user.display_name,
     };
 
     jwt.sign(

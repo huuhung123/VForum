@@ -43,7 +43,7 @@ export class PostController {
       const { group_id, topic_id } = req.params;
 
       const formPost: IPostCreateForm = req.body;
-      const check = await Post.find({ title: formPost.title });
+      const check = await Post.find({ title: formPost.title, status: StatusCode.Active });
       if (check.length > 0) {
         return res.json({ error: "Title is exist. Please enter again" });
       }

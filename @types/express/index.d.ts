@@ -3,7 +3,7 @@ declare namespace Express {
     authorized_user: {
       role: string;
       _id: string;
-      email: string
-    }
+      display_name: string;
+    };
   }
 }
