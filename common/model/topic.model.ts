@@ -6,26 +6,23 @@ export const TopicSchemaName = "Topic";
 export interface ITopic extends IModelBase {
   name: string;
   description: string;
-  posts: Types.Array<object>;
+  groupId: string;
 }
 
 const TopicSchema = new Schema(
   SchemaBase({
     name: {
       type: String,
-      default: true,
+      required: true,
     },
     description: {
       type: String,
-      default: true,
+      required: true,
     },
-    posts: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Post",
-        default: true,
-      },
-    ],
+    groupId: {
+      type: String,
+      required: true,
+    },
   }),
   {
     timestamps: true,

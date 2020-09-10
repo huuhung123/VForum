@@ -2,7 +2,6 @@ import express from "express";
 import { FeedController } from "../controllers/feed.controller";
 
 import { commonValidateBody } from "../../../middlewares/validatebody.middleware";
-import { commonCheckAuth } from "../../../middlewares/checkauth.middleware";
 
 import { FeedCreateSchema, FeedUpdateSchema } from "../DTO/feed.dto";
 

@@ -201,7 +201,7 @@ export class UserController {
         const { user_id } = req.params;
         const result = await User.findById(
           user_id,
-          "_id email display_name gender role status"
+          "_id _email display_name gender role status"
         );
         return res.json({ data: result });
       }
@@ -212,6 +212,19 @@ export class UserController {
   };
 
   getUser = async (req: Request, res: Response) => {
+    try {
+      const { _id } = req.authorized_user;
+      const result = await User.findById(
+        _id,
+        "_id email display_name gender role status"
+      );
+      return res.json({ data: result });
+    } catch (error) {
+      return res.json({ Error: error });
+    }
+  };
+
+  getAllUser = async (req: Request, res: Response) => {
     try {
       const { role } = req.authorized_user;
       if (role === RoleCode.Admin) {

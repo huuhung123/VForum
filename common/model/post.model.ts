@@ -6,32 +6,47 @@ export const PostSchemaName = "Post";
 export interface IPost extends IModelBase {
   title: string;
   description: string;
-  commentsPost: Types.Array<object>;
-  likesPost: Types.Array<object>;
+  userId: string;
+  commentsPost: Types.Array<object>; // 2
+  countLike: number;
+  countCommentPost: number;
+  topicId: string;
 }
 
 const PostSchema = new Schema(
   SchemaBase({
     title: {
       type: String,
-      default: true,
+      required: true,
     },
     description: {
       type: String,
-      default: true,
+      required: true,
+    },
+    userId: {
+      type: String,
+      required: true,
     },
     commentsPost: [
       {
         type: Object,
-        default: true,
+        required: true,
       },
     ],
-    likesPost: [
-      {
-        type: Object,
-        default: true,
-      },
-    ],
+    countLike: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    countCommentPost: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    topicId: {
+      type: String,
+      required: true,
+    },
   }),
   {
     timestamps: true,

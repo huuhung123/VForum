@@ -54,7 +54,7 @@ export class GroupController {
         return res.json(serialCreateGroup(group));
       }
 
-      return res.json({ Message: "You cannot create group" });
+      return res.json({ Error: "You cannot create group" });
     } catch (error) {
       return res.json({ Message: error });
     }

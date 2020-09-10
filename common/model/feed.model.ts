@@ -8,19 +8,21 @@ export interface IFeed extends IModelBase {
   description: string;
   tagging: Types.Array<object>;
   attachments: Types.Array<object>;
-  commentsFeed: Types.Array<object>;
-  likesFeed: Types.Array<object>;
+  commentsFeed: Types.Array<object>; // 2
+  userId: string;
+  countLike: number;
+  countCommentFeed: number;
 }
 
 const FeedSchema = new Schema(
   SchemaBase({
     title: {
       type: String,
-      default: true,
+      required: true,
     },
     description: {
       type: String,
-      default: true,
+      required: true,
     },
     tagging: {
       type: Object,
@@ -30,16 +32,25 @@ const FeedSchema = new Schema(
         type: Object,
       },
     ],
-    comments: [
+    commentsFeed: [
       {
         type: Object,
       },
     ],
-    likes: [
-      {
-        type: Object,
-      },
-    ],
+    userId: {
+      type: String,
+      required: true,
+    },
+    countLike: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    countCommentFeed: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
   }),
   {
     timestamps: true,

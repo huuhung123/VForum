@@ -36,8 +36,6 @@ class Server {
     dotenv.config();
     this.middlewares();
 
-    // this.app.use('/v1/api', this.userRoute.routes(this.app))
-
     this.userRoute.routes(this.app);
     this.topicRoute.routes(this.app);
     this.groupRoute.routes(this.app);

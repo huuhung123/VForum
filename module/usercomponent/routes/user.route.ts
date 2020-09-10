@@ -25,12 +25,11 @@ export class UserRoute {
       .route("/v1/api/login")
       .post(commonValidateBody(UserLoginSchema), this.userController.loginUser);
 
-    app
-      .route("/v1/api/refresh-token")
-      .post(this.userController.refreshToken);
+    app.route("/v1/api/refresh-token").post(this.userController.refreshToken); /// ???
 
     app
       .route("/v1/api/info")
+      .get(isAuth, this.userController.getUser)
       .patch(
         isAuth,
         commonValidateBody(UserChangeSchema),
@@ -39,7 +38,12 @@ export class UserRoute {
 
     app
       .route("/v1/api/admin/info")
-      .get(isAuth, this.userController.getUser);
+      .get(isAuth, this.userController.getAllUser)
+      .patch(
+        isAuth,
+        commonValidateBody(UserChangeSchema),
+        this.userController.updateUser
+      );
 
     app
       .route("/v1/api/admin/info/:user_id")

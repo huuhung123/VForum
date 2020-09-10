@@ -6,17 +6,22 @@ export const CommentPostSchemaName = "CommentPost";
 export interface ICommentPost extends IModelBase {
   postId: string;
   description: string;
+  countLike: number;
 }
 
 const CommentPostSchema = new Schema(
   SchemaBase({
     postId: {
-      type: Schema.Types.ObjectId,
-      default: true,
+      type: String,
+      required: true,
     },
     description: {
       type: String,
-      default: true,
+      required: true,
+    },
+    countLike: {
+      type: Number,
+      default: 0,
     },
   }),
   {

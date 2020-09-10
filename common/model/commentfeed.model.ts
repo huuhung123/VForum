@@ -5,23 +5,23 @@ export const CommentFeedSchemaName = "CommentFeed";
 
 export interface ICommentFeed extends IModelBase {
   feedId: string;
-  accountId: string;
   description: string;
+  countLike: number;
 }
 
 const CommentFeedSchema = new Schema(
   SchemaBase({
     feedId: {
-      type: Schema.Types.ObjectId,
-      default: true,
-    },
-    accountId: {
-      type: Schema.Types.ObjectId,
-      default: true,
+      type: String,
+      required: true,
     },
     description: {
       type: String,
-      default: true,
+      required: true,
+    },
+    countLike: {
+      type: Number,
+      default: 0,
     },
   }),
   {

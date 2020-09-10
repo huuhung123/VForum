@@ -20,19 +20,6 @@ export enum StatusCode {
   Active = "active",
   Deactive = "deactive",
 }
-
-// export enum GenderCode {
-//   Male = "male",
-//   Female = "female",
-//   Lgbt = "lgbt",
-// }
-
-// export enum RoleCode {
-//   Member = "member",
-//   Moderator = "moderator",
-//   Admin = "admin",
-// }
-
 export interface IModelBase extends Document {
   _id: string;
   status: string;
@@ -51,14 +38,10 @@ export function SchemaBase(schema: mongoose.SchemaDefinition) {
       required: true,
     },
     createdBy: {
-      // type: Schema.Types.ObjectId,
-      // ref: UserSchemaName,
       type: String,
     },
 
     updatedBy: {
-      // type: Schema.Types.ObjectId,
-      // ref: UserSchemaName,
       type: String,
     },
   };
