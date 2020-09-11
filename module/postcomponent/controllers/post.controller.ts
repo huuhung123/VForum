@@ -17,87 +17,102 @@ export class PostController {
 
   getAllPost = async (req: Request, res: Response) => {
     try {
-      const result = await Post.find({ status: StatusCode.Active });
+      const result = await Post.find(
+        { status: StatusCode.Active },
+        "title description createdBy createdAt countLike countCommentPost commentsPost"
+      );
       return res.json({ data: result });
     } catch (error) {
-      return res.json({ Message: error });
+      return res.json({ error });
     }
   };
 
   getPost = async (req: Request, res: Response) => {
     try {
       const { post_id } = req.params;
-      const result = await Post.find({
-        _id: post_id,
-        status: StatusCode.Active,
-      });
+      const result = await Post.find(
+        {
+          _id: post_id,
+          status: StatusCode.Active,
+        },
+        "title description createdBy createdAt countLike countCommentPost commentsPost"
+      );
       return res.json({ data: result });
     } catch (error) {
-      return res.json({ error: error });
+      return res.json({ error });
     }
   };
 
   createPost = async (req: Request, res: Response) => {
     try {
-      const { _id } = req.authorized_user;
+      const { _id, display_name } = req.authorized_user;
       const { group_id, topic_id } = req.params;
 
       const formPost: IPostCreateForm = req.body;
-      const check = await Post.find({ title: formPost.title, status: StatusCode.Active });
+      const check = await Post.find({
+        title: formPost.title,
+        description: formPost.description,
+        status: StatusCode.Active,
+      });
       if (check.length > 0) {
-        return res.json({ error: "Title is exist. Please enter again" });
+        return res.json({
+          error:
+            "Title, description has been existed. Please enter title, description again",
+        });
       }
 
+      formPost.createdBy = display_name;
       formPost.userId = _id;
       formPost.topicId = topic_id;
 
       const post = await this.postservice.create(formPost);
-      const newTopic = await Topic.findByIdAndUpdate(topic_id, {
-        $push: { posts: post._id },
-      });
 
-      await Group.findByIdAndUpdate(group_id, {
-        $push: {
-          topics: newTopic,
-        },
-      });
       return res.json({ message: "You have created post successfully" });
       // return res.json(serializeCreatePost(post));
     } catch (error) {
-      return res.json({ error: error });
+      return res.json({ error });
     }
   };
 
   updatePost = async (req: Request, res: Response) => {
     try {
-      const { _id } = req.authorized_user;
+      const { _id, display_name } = req.authorized_user;
       const { post_id } = req.params;
 
       const check: any = await Post.find({
         _id: post_id,
         status: StatusCode.Active,
       });
+
+      if (check[0].createdBy !== display_name) {
+        return res.json({
+          error: "You cannot update post, you aren't owner of topic",
+        });
+      }
+
       if (check.length === 0) {
         return res.json({
           error: "Post has been deleted. You can not update",
         });
       }
-      if (_id !== check.createdAt) {
-        return res.json({ error: "You cannot update post" });
-      }
 
       const formPost: IPostUpdateForm = req.body;
-      if (check.title === formPost.title) {
-        return res.json({ error: "Sorry!. Please enter title again" });
+      if (
+        check[0].title === formPost.title &&
+        check[0].description === formPost.description
+      ) {
+        return res.json({
+          error: "Sorry!. Please enter title, description again",
+        });
       }
 
-      const newPost: any = await Post.findByIdAndUpdate(
+      await Post.findByIdAndUpdate(
         post_id,
         {
           $set: {
             title: formPost.title,
             description: formPost.description,
-            updatedBy: _id,
+            updatedBy: display_name,
           },
         },
         {
@@ -108,34 +123,38 @@ export class PostController {
       return res.json({ message: "You have been updated post successfully" });
       // return res.json(serializeUpdatePost(newPost));
     } catch (error) {
-      return res.json({ error: error });
+      return res.json({ error });
     }
   };
 
   deletePost = async (req: Request, res: Response) => {
-    const { _id, role } = req.authorized_user;
-    const { post_id } = req.params;
+    try {
+      const { display_name, role } = req.authorized_user;
+      const { post_id } = req.params;
 
-    const check: any = await Post.find({
-      _id: post_id,
-      status: StatusCode.Active,
-    });
-    if (check.length === 0) {
-      return res.json({
-        error: "Post has been deleted. You can not delete",
+      const check: any = await Post.find({
+        _id: post_id,
+        status: StatusCode.Active,
       });
-    }
+      if (role === RoleCode.Admin || check[0].createdBy === display_name) {
+        if (check.length === 0) {
+          return res.json({
+            error: "Post has been deleted. You can not delete",
+          });
+        }
 
-    if (role === RoleCode.Admin || _id === check._id) {
-      await Post.findByIdAndUpdate(post_id, {
-        $set: {
-          status: StatusCode.Deactive,
-        },
-      });
-      this.postservice.callbackDeleteCommentPost(post_id);
+        await Post.findByIdAndUpdate(post_id, {
+          $set: {
+            status: StatusCode.Deactive,
+          },
+        });
 
-      return res.json({ message: "You have been deleted post successfully" });
+        // await this.postservice.callbackDeleteCommentPost(post_id);
+        return res.json({ message: "You deleted post successfully" });
+      }
+      return res.json({ error: "You cannot deleted post" });
+    } catch (error) {
+      return res.json({ error });
     }
-    return res.json({ error: "You cannot deleted post" });
   };
 }

@@ -109,7 +109,7 @@ export class TopicController {
         });
       }
 
-      const newTopic: any = await Topic.findByIdAndUpdate(
+      await Topic.findByIdAndUpdate(
         topic_id,
         {
           $set: {

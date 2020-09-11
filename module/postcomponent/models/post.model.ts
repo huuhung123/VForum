@@ -3,6 +3,7 @@ export interface IPostCreateForm {
   title: string;
   description: string;
   createdAt: string;
+  createdBy: string;
   topicId: string;
   userId: string;
 }
