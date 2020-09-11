@@ -45,6 +45,8 @@ export function SchemaBase(schema: mongoose.SchemaDefinition) {
 
     updatedBy: {
       type: String,
+      required: true,
+      default: true,
     },
   };
 

@@ -48,7 +48,7 @@ export class UserController {
       // return res.json(serializeCreateUser(user));
       return res.json({ message: "You have registered account successfully" });
     } catch (error) {
-      return res.json({ error: error });
+      return res.json({ error });
     }
   };
 
@@ -98,7 +98,7 @@ export class UserController {
       }
       return res.json({ error: "Email hasn't been existed" });
     } catch (error) {
-      res.json({ error: error });
+      res.json({ error });
     }
   };
 
@@ -180,7 +180,7 @@ export class UserController {
       }
       return res.json({ error: "Oldpassword user unsuccessfully" });
     } catch (error) {
-      return res.json({ error: error });
+      return res.json({ error });
     }
   };
 
@@ -210,7 +210,7 @@ export class UserController {
 
       return res.json({ error: "You cannot delete user, you aren't admin" });
     } catch (error) {
-      return res.json({ error: error });
+      return res.json({ error });
     }
   };
 
@@ -227,7 +227,7 @@ export class UserController {
       }
       return res.json({ error: "You cannot get user, you aren't admin" });
     } catch (error) {
-      return res.json({ error: error });
+      return res.json({ error });
     }
   };
 
@@ -240,7 +240,7 @@ export class UserController {
       );
       return res.json({ data: result });
     } catch (error) {
-      return res.json({ error: error });
+      return res.json({ error });
     }
   };
 
@@ -256,7 +256,7 @@ export class UserController {
       }
       return res.json({ error: "You cannot get all user, you aren't admin" });
     } catch (error) {
-      return res.json({ error: error });
+      return res.json({ error });
     }
   };
 
@@ -304,7 +304,7 @@ export class UserController {
         error: "You cannot change role user, you aren't admin",
       });
     } catch (error) {
-      return res.json({ error: "123" });
+      return res.json({ error });
     }
   };
 
@@ -312,14 +312,14 @@ export class UserController {
     try {
       //
     } catch (error) {
-      return res.json({ error: error });
+      return res.json({ error });
     }
   };
 
   patchRecover = async (req: Request, res: Response) => {
     const { group_id, topic_id, post_id, comment_id } = req.params;
     if (group_id !== undefined) {
-      Group.findByIdAndUpdate(
+    await  Group.findByIdAndUpdate(
         group_id,
         {
           $set: {
@@ -333,7 +333,7 @@ export class UserController {
       );
     }
     if (topic_id !== undefined) {
-      Topic.findByIdAndUpdate(
+    await  Topic.findByIdAndUpdate(
         topic_id,
         {
           $set: {
@@ -347,7 +347,7 @@ export class UserController {
       );
     }
     if (post_id !== undefined) {
-      Post.findByIdAndUpdate(
+    await  Post.findByIdAndUpdate(
         post_id,
         {
           $set: {
@@ -361,7 +361,7 @@ export class UserController {
       );
     }
     if (comment_id !== undefined) {
-      CommentPost.findByIdAndUpdate(
+    await  CommentPost.findByIdAndUpdate(
         comment_id,
         {
           $set: {

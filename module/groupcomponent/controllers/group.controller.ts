@@ -22,7 +22,7 @@ export class GroupController {
       );
       return res.json({ data: result });
     } catch (error) {
-      return res.json({ error: error });
+      return res.json({ error });
     }
   };
 
@@ -39,15 +39,14 @@ export class GroupController {
       );
       return res.json({ data: result });
     } catch (error) {
-      return res.json({ error: error });
+      return res.json({ error });
     }
   };
   // xoa roi tao cai moi thi ntn ???
   createGroup = async (req: Request, res: Response) => {
     try {
       const { role, display_name } = req.authorized_user;
-      console.log(role);
-      if (role === RoleCode.Admin || role === RoleCode.Moderator) {
+      if (role === RoleCode.Admin) {
         const formGroup: IGroupCreateForm = req.body;
 
         const check = await Group.find({
@@ -71,13 +70,13 @@ export class GroupController {
 
       return res.json({ error: "You cannot create group, you aren't admin" });
     } catch (error) {
-      return res.json({ error: error });
+      return res.json({ error });
     }
   };
 
   updateGroup = async (req: Request, res: Response) => {
     try {
-      const { role, _id } = req.authorized_user;
+      const { role, display_name } = req.authorized_user;
       const { group_id } = req.params;
 
       if (role === RoleCode.Admin || role === RoleCode.Moderator) {
@@ -93,7 +92,7 @@ export class GroupController {
           });
         }
 
-        if (check.name === formGroup.name) {
+        if (check[0].name === formGroup.name) {
           return res.json({ error: "Sorry!. Please enter name again" });
         }
 
@@ -102,7 +101,7 @@ export class GroupController {
           {
             $set: {
               name: formGroup.name,
-              updatedBy: _id,
+              updatedBy: display_name,
             },
           },
           {
@@ -117,16 +116,16 @@ export class GroupController {
         });
       }
 
-      return res.json({ message: "You cannot update group" });
+      return res.json({ error: "You cannot update group" });
     } catch (error) {
-      return res.json({ error: error });
+      return res.json({ error });
     }
   };
 
   deleteGroup = async (req: Request, res: Response) => {
     try {
       const { role } = req.authorized_user;
-      if (role == RoleCode.Admin) {
+      if (role === RoleCode.Admin || role === RoleCode.Moderator) {
         const { group_id } = req.params;
 
         const check: any = await Group.find({
@@ -144,16 +143,16 @@ export class GroupController {
             status: StatusCode.Deactive,
           },
         });
-        await this.groupService.callbackDeleteTopic(group_id);
-        await this.groupService.callbackDeletePost(group_id);
-        await this.groupService.callbackDeleteCommentPost(group_id);
+        // await this.groupService.callbackDeleteTopic(group_id);
+        // await this.groupService.callbackDeletePost(group_id);
+        // await this.groupService.callbackDeleteCommentPost(group_id);
 
-        return res.json({ message: "You Deleted group successfully" });
+        return res.json({ message: "You deleted group successfully" });
       }
 
       return res.json({ error: "You cannot delete group" });
     } catch (error) {
-      return res.json({ error: error });
+      return res.json({ error });
     }
   };
 }
