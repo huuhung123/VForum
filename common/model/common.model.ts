@@ -40,6 +40,7 @@ export function SchemaBase(schema: mongoose.SchemaDefinition) {
     createdBy: {
       type: String,
       required: true,
+      default: true,
     },
 
     updatedBy: {
