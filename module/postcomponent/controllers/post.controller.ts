@@ -17,8 +17,9 @@ export class PostController {
 
   getAllPost = async (req: Request, res: Response) => {
     try {
+      const { topic_id } = req.params;
       const result = await Post.find(
-        { status: StatusCode.Active },
+        { status: StatusCode.Active, topicId: topic_id },
         "title description createdBy createdAt countLike countCommentPost commentsPost"
       );
       return res.json({ data: result });
@@ -29,11 +30,12 @@ export class PostController {
 
   getPost = async (req: Request, res: Response) => {
     try {
-      const { post_id } = req.params;
+      const { post_id, topic_id } = req.params;
       const result = await Post.find(
         {
           _id: post_id,
           status: StatusCode.Active,
+          topicId: topic_id,
         },
         "title description createdBy createdAt countLike countCommentPost commentsPost"
       );
@@ -149,7 +151,8 @@ export class PostController {
           },
         });
 
-        // await this.postservice.callbackDeleteCommentPost(post_id);
+        this.postservice.callbackDeleteCommentPost(post_id);
+
         return res.json({ message: "You deleted post successfully" });
       }
       return res.json({ error: "You cannot deleted post" });

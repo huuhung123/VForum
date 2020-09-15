@@ -14,7 +14,7 @@ export class CommentPostRoute {
 
   public routes(app: express.Application): void {
     app
-      .route("/v1/api/group/:group_id/topic/topic_id/post/:post_id/comment")
+      .route("/v1/api/group/:group_id/topic/:topic_id/post/:post_id/comment")
       .get(isAuth, this.commentPostController.getAllCommentPost)
       .post(
         isAuth,
@@ -24,7 +24,7 @@ export class CommentPostRoute {
 
     app
       .route(
-        "/v1/api/group/:group_id/topic/topic_id/post/:post_id/comment/:comment_id"
+        "/v1/api/group/:group_id/topic/:topic_id/post/:post_id/comment/:comment_id"
       )
       .get(isAuth, this.commentPostController.getCommentPost)
       .patch(

@@ -25,6 +25,13 @@ import {
   verifyToken,
 } from "../../../middlewares/helper.middleware";
 
+import {
+  ACCESS_TOKEN_LIFE,
+  ACCESS_TOKEN_SECRET,
+  REFRESH_TOKEN_LIFE,
+  REFRESH_TOKEN_SECRET,
+} from "../../../config/env";
+
 export class UserController {
   public userService: UserService = new UserService(User);
 
@@ -62,25 +69,29 @@ export class UserController {
       if (user.length === 1) {
         const check = await bcrypt.compare(form.password, user[0].password);
         if (check) {
-          const accessTokenLife = "1h";
-          // process.env.ACCESS_TOKEN_LIFE
-          const accessTokenSecret = "secret";
-          // process.env.ACCESS_TOKEN_SECRET
-          const refreshTokenLife = "3650d";
-          // process.env.REFRESH_TOKEN_LIFE
-          const refreshTokenSecret = "secret";
-          // process.env.REFRESH_TOKEN_SECRET
+          // const accessTokenLife = "1h";
+          const accessTokenLife = ACCESS_TOKEN_LIFE;
+          // const accessTokenSecret = "secret";
+          const accessTokenSecret = ACCESS_TOKEN_SECRET;
+          // const refreshTokenLife = "2d";
+          const refreshTokenLife = REFRESH_TOKEN_LIFE;
+          // const refreshTokenSecret = "secret";
+          const refreshTokenSecret = REFRESH_TOKEN_SECRET;
 
           const accessToken = await generateToken(
             user[0],
-            accessTokenSecret,
-            accessTokenLife
+            // accessTokenSecret,
+            ACCESS_TOKEN_SECRET,
+            // accessTokenLife
+            ACCESS_TOKEN_LIFE
           );
 
           const refreshToken = await generateToken(
             user[0],
-            refreshTokenSecret,
-            refreshTokenLife
+            // refreshTokenSecret,
+            REFRESH_TOKEN_SECRET,
+            // refreshTokenLife
+            REFRESH_TOKEN_LIFE
           );
 
           const newToken = new Token({
@@ -319,7 +330,7 @@ export class UserController {
   patchRecover = async (req: Request, res: Response) => {
     const { group_id, topic_id, post_id, comment_id } = req.params;
     if (group_id !== undefined) {
-    await  Group.findByIdAndUpdate(
+      await Group.findByIdAndUpdate(
         group_id,
         {
           $set: {
@@ -333,7 +344,7 @@ export class UserController {
       );
     }
     if (topic_id !== undefined) {
-    await  Topic.findByIdAndUpdate(
+      await Topic.findByIdAndUpdate(
         topic_id,
         {
           $set: {
@@ -347,7 +358,7 @@ export class UserController {
       );
     }
     if (post_id !== undefined) {
-    await  Post.findByIdAndUpdate(
+      await Post.findByIdAndUpdate(
         post_id,
         {
           $set: {
@@ -361,7 +372,7 @@ export class UserController {
       );
     }
     if (comment_id !== undefined) {
-    await  CommentPost.findByIdAndUpdate(
+      await CommentPost.findByIdAndUpdate(
         comment_id,
         {
           $set: {

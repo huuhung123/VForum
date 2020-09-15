@@ -16,8 +16,9 @@ export class TopicController {
 
   getAllTopic = async (req: Request, res: Response) => {
     try {
+      const { group_id } = req.params;
       const result = await Topic.find(
-        { status: StatusCode.Active },
+        { status: StatusCode.Active, groupId: group_id },
         "name description createdBy createdAt"
       );
       return res.json({ data: result });
@@ -28,10 +29,11 @@ export class TopicController {
 
   getTopic = async (req: Request, res: Response) => {
     try {
-      const { topic_id } = req.params;
+      const { topic_id, group_id } = req.params;
       const result = await Topic.find(
         {
           _id: topic_id,
+          groupId: group_id,
           status: StatusCode.Active,
         },
         "name description createdBy createdAt"
@@ -153,8 +155,9 @@ export class TopicController {
           },
         });
 
-        // await this.topicService.callbackDeletePost(topic_id);
-        // await this.topicService.callbackDeleteCommentPost(topic_id);
+        await this.topicService.callbackDeletePost(topic_id);
+        await this.topicService.callbackDeleteCommentPost(topic_id);
+        
         return res.json({ message: "You deleted topic successfully" });
       }
       return res.json({ error: "You cannot deleted topic" });

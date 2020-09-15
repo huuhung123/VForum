@@ -11,6 +11,7 @@ import { Group } from "../../../common/model/group.model";
 import { StatusCode } from "../../../common/model/common.model";
 import { RoleCode } from "../../../common/model/user.model";
 
+import { success, error, raw } from "../../../common/service/response.service";
 export class GroupController {
   public groupService: GroupService = new GroupService(Group);
 
@@ -20,6 +21,7 @@ export class GroupController {
         { status: StatusCode.Active },
         "name createdBy createdAt"
       );
+      //  return success(res, result, 200, null);
       return res.json({ data: result });
     } catch (error) {
       return res.json({ error });
@@ -143,9 +145,10 @@ export class GroupController {
             status: StatusCode.Deactive,
           },
         });
-        // await this.groupService.callbackDeleteTopic(group_id);
-        // await this.groupService.callbackDeletePost(group_id);
-        // await this.groupService.callbackDeleteCommentPost(group_id);
+
+        await this.groupService.callbackDeleteTopic(group_id);
+        await this.groupService.callbackDeletePost(group_id);
+        await this.groupService.callbackDeleteCommentPost(group_id);
 
         return res.json({ message: "You deleted group successfully" });
       }

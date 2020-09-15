@@ -5,6 +5,7 @@ import { UserRoute } from "./module/usercomponent/routes/user.route";
 import { TopicRoute } from "./module/topiccomponent/routes/topic.route";
 import { GroupRoute } from "./module/groupcomponent/routes/group.route";
 import { PostRoute } from "./module/postcomponent/routes/post.route";
+import { CommentPostRoute } from "./module/commentpostcomponent/routes/commentpost.route";
 import { FeedRoute } from "./module/feedcomponent/routes/feed.route";
 import { CommentFeedRoute } from "./module/commentfeedcomponent/routes/commentfeed.route";
 
@@ -13,19 +14,21 @@ import * as dotenv from "dotenv";
 import cors from "cors";
 import session from "express-session";
 import connectMongo, { MongoStore } from "connect-mongo";
-import { any } from "joi";
 
+import { MONGO_URL, SESS_NAME, SESS_PASS, SESS_MAXAGE } from "./config/env";
 class Server {
   public app: express.Application;
-  public MONGODB_URL: string =
-    "mongodb+srv://huuhung:987654321@cluster0.g4atc.mongodb.net/test";
+  // public MONGODB_URL: string =
+  // "mongodb+srv://huuhung:987654321@cluster0.g4atc.mongodb.net/test";
 
+  public MONGODB_URL = MONGO_URL;
   public MongoStore = connectMongo(session);
 
   public userRoute: UserRoute = new UserRoute();
   public topicRoute: TopicRoute = new TopicRoute();
   public groupRoute: GroupRoute = new GroupRoute();
   public postRoute: PostRoute = new PostRoute();
+  public commentPostRoute: CommentPostRoute = new CommentPostRoute();
   public feedRoute: FeedRoute = new FeedRoute();
   public commentFeedRoute: CommentFeedRoute = new CommentFeedRoute();
 
@@ -40,6 +43,7 @@ class Server {
     this.topicRoute.routes(this.app);
     this.groupRoute.routes(this.app);
     this.postRoute.routes(this.app);
+    this.commentPostRoute.routes(this.app);
     this.feedRoute.routes(this.app);
     this.commentFeedRoute.routes(this.app);
   }
@@ -53,24 +57,27 @@ class Server {
   }
 
   private middlewares(): void {
-    const sessionStore = new this.MongoStore({
-      mongooseConnection: mongoose.createConnection(this.MONGODB_URL, {
-        useFindAndModify: false,
-        useUnifiedTopology: true,
-        useNewUrlParser: true,
-      }),
-      collection: "sessions",
-    });
+    // const sessionStore = new this.MongoStore({
+    //   mongooseConnection: mongoose.createConnection(this.MONGODB_URL, {
+    //     useFindAndModify: false,
+    //     useUnifiedTopology: true,
+    //     useNewUrlParser: true,
+    //   }),
+    //   collection: "sessions",
+    // });
 
     this.app.use(
       session({
-        name: "hung",
-        secret: "123456789",
+        // name: "hung",
+        name: SESS_NAME,
+        // secret: "123456789",
+        secret: SESS_PASS,
         resave: false,
         saveUninitialized: true,
-        store: sessionStore,
+        // store: sessionStore,
         cookie: {
-          maxAge: 1000 * 60 * 60,
+          // maxAge: 1000 * 60 * 60,
+          maxAge: SESS_MAXAGE,
           sameSite: true,
           secure: false,
         },

@@ -9,6 +9,8 @@ export class CommentFeedController {
     CommentFeedService
   );
 
+
+
   getAllCommentFeed = async (req: Request, res: Response) => {
     try {
       const result = await CommentFeed.find({}).populate("topics");

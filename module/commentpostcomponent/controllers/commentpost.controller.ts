@@ -21,33 +21,38 @@ export class CommentPostController {
 
   getAllCommentPost = async (req: Request, res: Response) => {
     try {
-      const result = await CommentPost.find({ status: StatusCode.Active });
+      const { post_id } = req.params;
+      const result = await CommentPost.find({
+        status: StatusCode.Active,
+        postId: post_id,
+      });
       return res.json({ data: result });
     } catch (error) {
-      return res.json({ error: error });
+      return res.json({ error });
     }
   };
 
   getCommentPost = async (req: Request, res: Response) => {
     try {
-      const { comment_id } = req.params;
+      const { comment_id, post_id } = req.params;
       const result = await CommentPost.find({
         _id: comment_id,
         status: StatusCode.Active,
+        postId: post_id,
       });
       return res.json({ data: result });
     } catch (error) {
-      return res.json({ error: error });
+      return res.json({ error });
     }
   };
 
   createCommentPost = async (req: Request, res: Response) => {
     try {
-      const { _id } = req.authorized_user;
+      const { _id, display_name } = req.authorized_user;
       const { post_id } = req.params;
       const formComment: ICommentPostCreateForm = req.body;
 
-      formComment.createdBy = _id;
+      formComment.createdBy = display_name;
       formComment.postId = post_id;
 
       const commentpost = await this.commentPostService.create(formComment);
@@ -59,7 +64,7 @@ export class CommentPostController {
       return res.json({ message: "You have created commentpost successfully" });
       // return res.json(serialCreateCommentPost(commentpost));
     } catch (error) {
-      return res.json({ error: error });
+      return res.json({ error });
     }
   };
 
@@ -153,7 +158,7 @@ export class CommentPostController {
       }
       return res.json({ error: "You cannot deleted commentpost" });
     } catch (error) {
-      return res.json({ error: error });
+      return res.json({ error });
     }
   };
 }

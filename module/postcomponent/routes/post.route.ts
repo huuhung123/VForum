@@ -5,7 +5,6 @@ import { commonValidateBody } from "../../../middlewares/validatebody.middleware
 import { isAuth } from "../../../middlewares/auth.middleware"
 
 import { PostCreateSchema, PostUpdateSchema } from "../DTO/post.dto";
-
 export class PostRoute {
   public postController: PostController = new PostController();
 
