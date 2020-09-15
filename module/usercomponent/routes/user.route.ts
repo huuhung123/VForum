@@ -21,12 +21,13 @@ export class UserRoute {
         this.userController.createUser
       );
 
-  
     app
       .route("/v1/api/login")
       .post(commonValidateBody(UserLoginSchema), this.userController.loginUser);
 
     app.route("/v1/api/refresh-token").post(this.userController.refreshToken); /// ???
+
+    app.route("/v1/api/logout").get(isAuth, this.userController.getLogout);
 
     app
       .route("/v1/api/info")

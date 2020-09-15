@@ -47,17 +47,11 @@ export class UserController {
         return error(res, messageError);
       }
 
-      const result = await User.find({ display_name: form.display_name });
-      if (result.length !== 0) {
-        const messageError = "Display_name has been existed";
-        return error(res, messageError);
-      }
-
       form.password = await bcrypt.hash(req.body.password, 10);
 
       const user = await this.userService.create(form);
-      const messageSuccess = "User has been registed successfully"
-      return success(res, serializeCreateUser(user), messageSuccess);
+      const messageSuccess = "User has been registed successfully";
+      return success(res, serializeCreateUser(user), messageSuccess, 201);
     } catch (err) {
       return error(res, err);
     }
@@ -93,15 +87,18 @@ export class UserController {
           const newToken = new Token({
             accessToken,
             refreshToken,
+            userId: user[0]._id,
           });
           await newToken.save();
 
           const result = {
             accessToken,
             refreshToken,
+            userId: user[0]._id,
           };
 
-          return success(res, result);
+          const messageSuccess = "Token has been created successfully";
+          return success(res, result, messageSuccess, 201);
         }
         const messageError = "Password error";
         return error(res, messageError);
@@ -129,17 +126,23 @@ export class UserController {
           refreshTokenSecret
         );
 
-        const accessToken = await generateToken(
+        const accessToken: any = await generateToken(
           decoded,
           accessTokenSecret,
           accessTokenLife
         );
+
+        await Token.updateOne(
+          { refreshToken: refreshTokenFromClient },
+          { $set: { accessToken: accessToken } }
+        );
+
         const result = {
           accessToken,
           refreshTokenFromClient,
         };
-
-        return success(res, result);
+        const messageSuccess = "Access-token has been updated successfully";
+        return success(res, result, messageSuccess, 201);
       } catch (error) {
         const messageError = "Invalid refresh token";
         return error(res, messageError);
@@ -148,6 +151,17 @@ export class UserController {
 
     const messageError = "No token provided";
     return error(res, messageError, 403);
+  };
+
+  getLogout = async (req: Request, res: Response) => {
+    try {
+      const { _id } = req.authorized_user;
+      await Token.remove({ userId: _id });
+      const messageSuccess = "You have logouted successfully";
+      return success(res, null, messageSuccess);
+    } catch (err) {
+      return error(res, err);
+    }
   };
 
   updateUser = async (req: Request, res: Response) => {
@@ -181,7 +195,7 @@ export class UserController {
 
           const result: any = await User.findById(_id);
           const messageSuccess = "User have been updated successfully";
-          return success(res, serializeUpdateUser(user), messageSuccess);
+          return success(res, serializeUpdateUser(user), messageSuccess, 201);
         }
         const messageError = "Re-password invalid";
         return error(res, messageError);
@@ -221,7 +235,7 @@ export class UserController {
       }
 
       const messageError = "You cannot delete user, you aren't admin";
-      return error(res, messageError);
+      return error(res, messageError, 403);
     } catch (err) {
       return error(res, err);
     }
@@ -236,10 +250,11 @@ export class UserController {
           user_id,
           "_id _email display_name gender role status"
         );
-        return success(res, result);
+        const messageSuccess = "You have get user by ID successfully";
+        return success(res, result, messageSuccess);
       }
       const messageError = "You cannot get user, you aren't admin";
-      return error(res, messageError);
+      return error(res, messageError, 403);
     } catch (err) {
       return error(res, err);
     }
@@ -252,7 +267,8 @@ export class UserController {
         _id,
         "_id email display_name gender role"
       );
-      return success(res, result);
+      const messageSuccess = "You have get user successfully";
+      return success(res, result, messageSuccess);
     } catch (err) {
       return error(res, err);
     }
@@ -266,10 +282,11 @@ export class UserController {
           {},
           "_id email display_name gender role status"
         );
-        return success(res, result);
+        const messageSuccess = "You have get all user successfully";
+        return success(res, result, messageSuccess);
       }
       const messageError = "You cannot get all user, you aren't admin";
-      return error(res, messageError);
+      return error(res, messageError, 403);
     } catch (err) {
       return error(res, err);
     }
@@ -316,7 +333,7 @@ export class UserController {
         return success(res, null, messageSuccess);
       }
       const messageError = "You cannot change role user, you aren't admin";
-      return error(res, messageError);
+      return error(res, messageError, 403);
     } catch (error) {
       return res.json({ error });
     }

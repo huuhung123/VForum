@@ -93,7 +93,6 @@ export class TopicController {
           "You cannot update topic, you aren't owner of topic";
         return error(res, messageError);
       }
-
       if (check.length === 0) {
         const messageError = "Topic has been deleted. You can not update";
         return error(res, messageError);

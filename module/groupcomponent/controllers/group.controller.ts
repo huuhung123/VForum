@@ -62,7 +62,7 @@ export class GroupController {
         formGroup.createdBy = display_name;
         const group = await this.groupService.create(formGroup);
         const messageSuccess = "You have been created group successfully"
-        return success(res, serialCreateGroup(group), messageSuccess);
+        return success(res, serialCreateGroup(group), messageSuccess, 201);
       }
       const messageError = "You cannot create group, you aren't admin";
       return error(res, messageError);

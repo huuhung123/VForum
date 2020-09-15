@@ -5,10 +5,13 @@ export const TokenSchemaName = "Token";
 export interface IToken extends Document {
   accessToken: string;
   refreshToken: string;
-  device_push_token: string;
-  device_identifier: string;
+  userId: string;
+  expire_access: string;
+  expire_refresh: string;
   createdAt: Date;
   updatedAt: Date;
+  // device_push_token: string;
+  // device_identifier: string;
 }
 
 const TokenSchema = new mongoose.Schema(
@@ -21,13 +24,28 @@ const TokenSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    userId: {
+      type: String,
+      required: true,
+    },
+    expire_access: {
+      type: String,
+      required: true,
+      default: "1h",
+    },
+    expire_refresh: {
+      type: String,
+      required: true,
+      default: "2h",
+    },
+
     // device_push_token: {
     //   type: String,
-    //   required: true
+    //  required: true
     // },
     // device_identifier: {
     //   type: String,
-    //   required: true
+    //  required: true
     // }
   },
   {

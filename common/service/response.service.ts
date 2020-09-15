@@ -28,17 +28,17 @@ export const error = (res: Response, message: any, code?: any, opts?: any) => {
   const result = {
     success: false,
     result: null,
+    message: message,
     code: code || 400,
-    error: message,
-    errorType: any,
+    options: opts || null
   };
   // Override to not show
-  if (opts) {
-    if (opts.errorType) {
-      result.errorType = opts.errorType;
-    }
-    // result.errorType = "Invalid";
-  }
+  // if (opts) {
+  //   if (opts.errorType) {
+  //     result.errorType = opts.errorType;
+  //   }
+  //   // result.errorType = "Invalid";
+  // }
 
   if ((!opts || !opts.loggingOnly) && !res.headersSent) {
     res.status(code || 400);

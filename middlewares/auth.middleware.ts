@@ -1,8 +1,9 @@
 import { generateToken, verifyToken } from "./helper.middleware";
 import { Request, Response, NextFunction } from "express";
-import { any } from "joi";
+import { Token } from "../common/model/token.model";
+import { ACCESS_TOKEN_SECRET } from "../config/env";
+import { error } from "../common/service/response.service";
 
-const accessTokenSecret = "secret";
 // process.env.ACCESS_TOKEN_SECRET
 
 export const isAuth = async (
@@ -17,14 +18,18 @@ export const isAuth = async (
       const bearer = tokenFromClient.split(" ");
       const bearerToken = bearer[1];
 
-      const decoded: any = await verifyToken(bearerToken, accessTokenSecret);
+      const check = await Token.find({ accessToken: bearerToken });
+      if (check.length == 0) {
+        const messageError = "Unauthorized";
+        return error(res, messageError, 401);
+      }
+
+      const decoded: any = await verifyToken(bearerToken, ACCESS_TOKEN_SECRET);
       req.authorized_user = decoded;
 
       next();
-    } catch (error) {
-      return res.status(401).json({
-        errorToken: "Unauthorized",
-      });
+    } catch (err) {
+      return error(res, err);
     }
   }
 

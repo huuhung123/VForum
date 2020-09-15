@@ -36,7 +36,6 @@ export const UserSchema = new mongoose.Schema(
     },
     display_name: {
       type: String,
-      unique: true,
       required: true,
     },
     gender: {
