@@ -18,8 +18,6 @@ import connectMongo, { MongoStore } from "connect-mongo";
 import { MONGO_URL, SESS_NAME, SESS_PASS, SESS_MAXAGE } from "./config/env";
 class Server {
   public app: express.Application;
-  // public MONGODB_URL: string =
-  // "mongodb+srv://huuhung:987654321@cluster0.g4atc.mongodb.net/test";
 
   public MONGODB_URL = MONGO_URL;
   public MongoStore = connectMongo(session);
@@ -68,15 +66,12 @@ class Server {
 
     this.app.use(
       session({
-        // name: "hung",
         name: SESS_NAME,
-        // secret: "123456789",
         secret: SESS_PASS,
         resave: false,
         saveUninitialized: true,
         // store: sessionStore,
         cookie: {
-          // maxAge: 1000 * 60 * 60,
           maxAge: SESS_MAXAGE,
           sameSite: true,
           secure: false,

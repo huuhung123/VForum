@@ -21,10 +21,9 @@ export class GroupController {
         { status: StatusCode.Active },
         "name createdBy createdAt"
       );
-      //  return success(res, result, 200, null);
-      return res.json({ data: result });
-    } catch (error) {
-      return res.json({ error });
+      return success(res, result);
+    } catch (err) {
+      return error(res, err);
     }
   };
 
@@ -39,9 +38,9 @@ export class GroupController {
         },
         "name createdBy createdAt"
       );
-      return res.json({ data: result });
-    } catch (error) {
-      return res.json({ error });
+      return success(res, result);
+    } catch (err) {
+      return error(res, err);
     }
   };
   // xoa roi tao cai moi thi ntn ???
@@ -56,23 +55,19 @@ export class GroupController {
           status: StatusCode.Active,
         });
         if (check.length > 0) {
-          return res.json({
-            error: "Name has been existed. Please enter name again",
-          });
+          const messageError = "Name has been existed. Please enter name again";
+          return error(res, messageError);
         }
 
         formGroup.createdBy = display_name;
         const group = await this.groupService.create(formGroup);
-
-        return res.json({
-          message: "You have been created group successfully",
-        });
-        // return res.json(serialCreateGroup(group));
+        const messageSuccess = "You have been created group successfully"
+        return success(res, serialCreateGroup(group), messageSuccess);
       }
-
-      return res.json({ error: "You cannot create group, you aren't admin" });
-    } catch (error) {
-      return res.json({ error });
+      const messageError = "You cannot create group, you aren't admin";
+      return error(res, messageError);
+    } catch (err) {
+      return error(res, err);
     }
   };
 
@@ -89,13 +84,13 @@ export class GroupController {
           status: StatusCode.Active,
         });
         if (check.length === 0) {
-          return res.json({
-            error: "Group has been deleted. You can not update",
-          });
+          const messageError = "Group has been deleted. You can not update";
+          return error(res, messageError);
         }
 
         if (check[0].name === formGroup.name) {
-          return res.json({ error: "Sorry!. Please enter name again" });
+          const messageError = "Sorry!. Please enter name again";
+          return error(res, messageError);
         }
 
         const group: any = await Group.findByIdAndUpdate(
@@ -111,16 +106,13 @@ export class GroupController {
             useFindAndModify: false,
           }
         );
-
-        // return res.json(serialUpdateGroup(group));
-        return res.json({
-          message: "You have been updated group successfully",
-        });
+        const messageSuccess = "Group have updated successfully";
+        return success(res, serialUpdateGroup(group), messageSuccess);
       }
-
-      return res.json({ error: "You cannot update group" });
-    } catch (error) {
-      return res.json({ error });
+      const messageError = "You cannot update group";
+      return error(res, messageError);
+    } catch (err) {
+      return error(res, err);
     }
   };
 
@@ -135,9 +127,8 @@ export class GroupController {
           status: StatusCode.Active,
         });
         if (check.length === 0) {
-          return res.json({
-            error: "Group has been deleted. You can not delete",
-          });
+          const messageError = "Group has been deleted. You can not delete";
+          return error(res, messageError);
         }
 
         await Group.findByIdAndUpdate(group_id, {
@@ -150,12 +141,14 @@ export class GroupController {
         await this.groupService.callbackDeletePost(group_id);
         await this.groupService.callbackDeleteCommentPost(group_id);
 
-        return res.json({ message: "You deleted group successfully" });
+        const messageSuccess = "You deleted group successfully";
+        return success(res, null, messageSuccess);
       }
 
-      return res.json({ error: "You cannot delete group" });
-    } catch (error) {
-      return res.json({ error });
+      const messageError = "You cannot delete group";
+      return error(res, messageError);
+    } catch (err) {
+      return error(res, err);
     }
   };
 }

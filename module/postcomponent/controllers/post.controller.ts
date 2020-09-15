@@ -12,6 +12,8 @@ import { Group } from "../../../common/model/group.model";
 import { RoleCode } from "../../../common/model/user.model";
 import { StatusCode } from "../../../common/model/common.model";
 
+import { success, error } from "../../../common/service/response.service";
+
 export class PostController {
   public postservice: PostService = new PostService(Post);
 
@@ -22,9 +24,9 @@ export class PostController {
         { status: StatusCode.Active, topicId: topic_id },
         "title description createdBy createdAt countLike countCommentPost commentsPost"
       );
-      return res.json({ data: result });
-    } catch (error) {
-      return res.json({ error });
+      return success(res, result);
+    } catch (err) {
+      return error(res, err);
     }
   };
 
@@ -39,9 +41,9 @@ export class PostController {
         },
         "title description createdBy createdAt countLike countCommentPost commentsPost"
       );
-      return res.json({ data: result });
-    } catch (error) {
-      return res.json({ error });
+      return success(res, result);
+    } catch (err) {
+      return error(res, err);
     }
   };
 
@@ -57,10 +59,9 @@ export class PostController {
         status: StatusCode.Active,
       });
       if (check.length > 0) {
-        return res.json({
-          error:
-            "Title, description has been existed. Please enter title, description again",
-        });
+        const messageError =
+          "Title, description has been existed. Please enter title, description again";
+        return error(res, messageError);
       }
 
       formPost.createdBy = display_name;
@@ -68,11 +69,10 @@ export class PostController {
       formPost.topicId = topic_id;
 
       const post = await this.postservice.create(formPost);
-
-      return res.json({ message: "You have created post successfully" });
-      // return res.json(serializeCreatePost(post));
-    } catch (error) {
-      return res.json({ error });
+      const messageSuccess = "You have been created post successfully"
+      return success(res, serializeCreatePost(post), messageSuccess);
+    } catch (err) {
+      return error(res, err);
     }
   };
 
@@ -87,15 +87,14 @@ export class PostController {
       });
 
       if (check[0].createdBy !== display_name) {
-        return res.json({
-          error: "You cannot update post, you aren't owner of topic",
-        });
+        const messageError =
+          "You cannot update post, you aren't owner of topic";
+        return error(res, messageError);
       }
 
       if (check.length === 0) {
-        return res.json({
-          error: "Post has been deleted. You can not update",
-        });
+        const messageError = "Post has been deleted. You can not update";
+        return error(res, messageError);
       }
 
       const formPost: IPostUpdateForm = req.body;
@@ -103,12 +102,11 @@ export class PostController {
         check[0].title === formPost.title &&
         check[0].description === formPost.description
       ) {
-        return res.json({
-          error: "Sorry!. Please enter title, description again",
-        });
+        const messageError = "Sorry!. Please enter title, description again";
+        return error(res, messageError);
       }
 
-      await Post.findByIdAndUpdate(
+      const newPost: any = await Post.findByIdAndUpdate(
         post_id,
         {
           $set: {
@@ -122,10 +120,10 @@ export class PostController {
           useFindAndModify: false,
         }
       );
-      return res.json({ message: "You have been updated post successfully" });
-      // return res.json(serializeUpdatePost(newPost));
-    } catch (error) {
-      return res.json({ error });
+      const messageSuccess = "Post have updated successfully";
+      return success(res, serializeUpdatePost(newPost), messageSuccess);
+    } catch (err) {
+      return error(res, err);
     }
   };
 
@@ -140,9 +138,8 @@ export class PostController {
       });
       if (role === RoleCode.Admin || check[0].createdBy === display_name) {
         if (check.length === 0) {
-          return res.json({
-            error: "Post has been deleted. You can not delete",
-          });
+          const messageError = "Post has been deleted. You can not delete";
+          return error(res, messageError);
         }
 
         await Post.findByIdAndUpdate(post_id, {
@@ -153,11 +150,12 @@ export class PostController {
 
         this.postservice.callbackDeleteCommentPost(post_id);
 
-        return res.json({ message: "You deleted post successfully" });
+        const messageSuccess = "You deleted post successfully";
+        return success(res, null, messageSuccess);
       }
       return res.json({ error: "You cannot deleted post" });
-    } catch (error) {
-      return res.json({ error });
+    } catch (err) {
+      return error(res, err);
     }
   };
 }

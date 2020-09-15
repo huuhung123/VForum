@@ -19,7 +19,7 @@ export class CommentPostRoute {
       .post(
         isAuth,
         commonValidateBody(CommentPostCreateSchema),
-        this.commentPostController.getAllCommentPost
+        this.commentPostController.createCommentPost
       );
 
     app

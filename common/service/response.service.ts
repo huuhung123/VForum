@@ -3,12 +3,19 @@ import { Response } from "express";
 import { any, string } from "joi";
 
 // Return response for API as okay or error as json to request
-export const success = (res: Response, data: any, code: any, options: any) => {
+export const success = (
+  res: Response,
+  data: any,
+  message?: any,
+  code?: any,
+  options?: any
+) => {
   if (!res.headersSent) {
     res.status(code || 200);
     res.json({
       success: true,
       result: data,
+      message,
       code: code || 200,
       options: options || null,
       error: null,
@@ -17,7 +24,7 @@ export const success = (res: Response, data: any, code: any, options: any) => {
   // application.log.debug("Res State", res.stateId, "After .send()");
 };
 
-export const error = (res: Response, message: any, code: any, opts: any) => {
+export const error = (res: Response, message: any, code?: any, opts?: any) => {
   const result = {
     success: false,
     result: null,

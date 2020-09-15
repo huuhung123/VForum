@@ -14,6 +14,8 @@ import { Post } from "../../../common/model/post.model";
 import { RoleCode } from "../../../common/model/user.model";
 import { StatusCode } from "../../../common/model/common.model";
 
+import { success, error } from "../../../common/service/response.service";
+
 export class CommentPostController {
   public commentPostService: CommentPostService = new CommentPostService(
     CommentPost
@@ -26,9 +28,9 @@ export class CommentPostController {
         status: StatusCode.Active,
         postId: post_id,
       });
-      return res.json({ data: result });
-    } catch (error) {
-      return res.json({ error });
+      return success(res, result);
+    } catch (err) {
+      return error(res, err);
     }
   };
 
@@ -40,9 +42,9 @@ export class CommentPostController {
         status: StatusCode.Active,
         postId: post_id,
       });
-      return res.json({ data: result });
-    } catch (error) {
-      return res.json({ error });
+      return success(res, result);
+    } catch (err) {
+      return error(res, err);
     }
   };
 
@@ -51,6 +53,16 @@ export class CommentPostController {
       const { _id, display_name } = req.authorized_user;
       const { post_id } = req.params;
       const formComment: ICommentPostCreateForm = req.body;
+
+      const check = await CommentPost.find({
+        description: formComment.description,
+        status: StatusCode.Active,
+      });
+      if (check.length > 0) {
+        const messageError =
+          "CommentPost has been existed. Please enter commentpost again";
+        return error(res, messageError);
+      }
 
       formComment.createdBy = display_name;
       formComment.postId = post_id;
@@ -61,10 +73,10 @@ export class CommentPostController {
         $push: { commentsPost: commentpost },
       });
 
-      return res.json({ message: "You have created commentpost successfully" });
-      // return res.json(serialCreateCommentPost(commentpost));
-    } catch (error) {
-      return res.json({ error });
+      const messageSuccess = "You have been created commentpost successfully";
+      return success(res, serialCreateCommentPost(commentpost), messageSuccess);
+    } catch (err) {
+      return error(res, err);
     }
   };
 
@@ -78,17 +90,18 @@ export class CommentPostController {
         status: StatusCode.Active,
       });
       if (check.length === 0) {
-        return res.json({
-          error: "CommentPost has been deleted. You can not update",
-        });
+        const messageError = "CommentPost has been deleted. You can not update";
+        return error(res, messageError);
       }
       if (_id !== check.createdAt) {
-        return res.json({ error: "You cannot update commentpost" });
+        const messageError = "You cannot update commentpost";
+        return error(res, messageError);
       }
 
       const form: ICommentPostUpdateForm = req.body;
       if (check.description === form.description) {
-        return res.json({ error: "Sorry!. Please enter description again" });
+        const messageError = "Sorry!. Please enter description again";
+        return error(res, messageError);
       }
 
       const newCommentPost: any = await CommentPost.findByIdAndUpdate(
@@ -113,13 +126,14 @@ export class CommentPostController {
           },
         }
       );
-
-      return res.json({
-        message: "You have been updated commentpost successfully",
-      });
-      // return res.json(serialUpdateCommentPost(newCommentPost));
-    } catch (error) {
-      return res.json({ error: error });
+      const messageSuccess = "Comment post have updated successfully";
+      return success(
+        res,
+        serialUpdateCommentPost(newCommentPost),
+        messageSuccess
+      );
+    } catch (err) {
+      return error(res, err);
     }
   };
 
@@ -133,9 +147,8 @@ export class CommentPostController {
         status: StatusCode.Active,
       });
       if (check.length === 0) {
-        return res.json({
-          error: "CommentPost has been deleted. You can not delete",
-        });
+        const messageError = "CommentPost has been deleted. You can not delete";
+        return error(res, messageError);
       }
 
       if (role === RoleCode.Admin || _id === check._id) {
@@ -154,11 +167,13 @@ export class CommentPostController {
           }
         );
 
-        return res.json({ message: "Deleted successfully" });
+        const messageSuccess = "Deleted successfully";
+        return success(res, null, messageSuccess);
       }
-      return res.json({ error: "You cannot deleted commentpost" });
-    } catch (error) {
-      return res.json({ error });
+      const messageError = "You cannot deleted commentpost";
+      return error(res, messageError);
+    } catch (err) {
+      return error(res, err);
     }
   };
 }

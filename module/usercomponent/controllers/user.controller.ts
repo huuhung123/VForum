@@ -32,6 +32,8 @@ import {
   REFRESH_TOKEN_SECRET,
 } from "../../../config/env";
 
+import { success, error } from "../../../common/service/response.service";
+
 export class UserController {
   public userService: UserService = new UserService(User);
 
@@ -41,21 +43,23 @@ export class UserController {
       const mailExist = await this.userService.findByEmail(form);
 
       if (mailExist.length === 1) {
-        return res.json({ error: "Email has been existed" });
+        const messageError = "Email has been existed";
+        return error(res, messageError);
       }
 
       const result = await User.find({ display_name: form.display_name });
       if (result.length !== 0) {
-        return res.json({ error: "Display_name has been existed" });
+        const messageError = "Display_name has been existed";
+        return error(res, messageError);
       }
 
       form.password = await bcrypt.hash(req.body.password, 10);
 
       const user = await this.userService.create(form);
-      // return res.json(serializeCreateUser(user));
-      return res.json({ message: "You have registered account successfully" });
-    } catch (error) {
-      return res.json({ error });
+      const messageSuccess = "User has been registed successfully"
+      return success(res, serializeCreateUser(user), messageSuccess);
+    } catch (err) {
+      return error(res, err);
     }
   };
 
@@ -69,28 +73,20 @@ export class UserController {
       if (user.length === 1) {
         const check = await bcrypt.compare(form.password, user[0].password);
         if (check) {
-          // const accessTokenLife = "1h";
           const accessTokenLife = ACCESS_TOKEN_LIFE;
-          // const accessTokenSecret = "secret";
           const accessTokenSecret = ACCESS_TOKEN_SECRET;
-          // const refreshTokenLife = "2d";
           const refreshTokenLife = REFRESH_TOKEN_LIFE;
-          // const refreshTokenSecret = "secret";
           const refreshTokenSecret = REFRESH_TOKEN_SECRET;
 
           const accessToken = await generateToken(
             user[0],
-            // accessTokenSecret,
             ACCESS_TOKEN_SECRET,
-            // accessTokenLife
             ACCESS_TOKEN_LIFE
           );
 
           const refreshToken = await generateToken(
             user[0],
-            // refreshTokenSecret,
             REFRESH_TOKEN_SECRET,
-            // refreshTokenLife
             REFRESH_TOKEN_LIFE
           );
 
@@ -100,16 +96,20 @@ export class UserController {
           });
           await newToken.save();
 
-          return res.status(200).json({
+          const result = {
             accessToken,
             refreshToken,
-          });
+          };
+
+          return success(res, result);
         }
-        return res.json({ error: "Password error" });
+        const messageError = "Password error";
+        return error(res, messageError);
       }
-      return res.json({ error: "Email hasn't been existed" });
-    } catch (error) {
-      res.json({ error });
+      const messageError = "Email hasn't been existed";
+      return error(res, messageError);
+    } catch (err) {
+      return error(res, err);
     }
   };
 
@@ -134,21 +134,20 @@ export class UserController {
           accessTokenSecret,
           accessTokenLife
         );
-
-        return res.json({
+        const result = {
           accessToken,
           refreshTokenFromClient,
-        });
+        };
+
+        return success(res, result);
       } catch (error) {
-        return res.status(403).send({
-          error: "Invalid refresh token",
-        });
+        const messageError = "Invalid refresh token";
+        return error(res, messageError);
       }
     }
 
-    return res.status(403).send({
-      error: "No token provided",
-    });
+    const messageError = "No token provided";
+    return error(res, messageError, 403);
   };
 
   updateUser = async (req: Request, res: Response) => {
@@ -163,12 +162,11 @@ export class UserController {
 
       if (check) {
         if (oldpassword === newpassword) {
-          return res.json({
-            error: "Newpassword has different from oldpassword",
-          });
+          const messageError = "Newpassword has different from oldpassword";
+          return error(res, messageError);
         }
         if (newpassword === renewpassword) {
-          await User.findByIdAndUpdate(
+          const user: any = await User.findByIdAndUpdate(
             _id,
             {
               $set: {
@@ -182,16 +180,16 @@ export class UserController {
           );
 
           const result: any = await User.findById(_id);
-          return res.json({
-            message: "You have updated account unsuccessfully",
-          });
-          //return res.json(serializeUpdateUser(result));
+          const messageSuccess = "User have been updated successfully";
+          return success(res, serializeUpdateUser(user), messageSuccess);
         }
-        return res.json({ error: "Re-password invalid" });
+        const messageError = "Re-password invalid";
+        return error(res, messageError);
       }
-      return res.json({ error: "Oldpassword user unsuccessfully" });
-    } catch (error) {
-      return res.json({ error });
+      const messageError = "Oldpassword user unsuccessfully";
+      return error(res, messageError);
+    } catch (err) {
+      return error(res, err);
     }
   };
 
@@ -203,11 +201,13 @@ export class UserController {
 
         const check: any = await User.findById(user_id);
         if (check.role === RoleCode.Admin) {
-          return res.json({ error: "You can not delete admin" });
+          const messageError = "You can not delete admin";
+          return error(res, messageError);
         }
 
         if (check.status === StatusCode.Deactive) {
-          return res.json({ error: "User has been deleted" });
+          const messageError = "User has been deleted";
+          return error(res, messageError);
         }
 
         await User.findByIdAndUpdate(user_id, {
@@ -216,12 +216,14 @@ export class UserController {
           },
         });
 
-        return res.json({ message: "You have deleted user successfully" });
+        const messageSuccess = "You have deleted user successfully";
+        return success(res, null, messageSuccess);
       }
 
-      return res.json({ error: "You cannot delete user, you aren't admin" });
-    } catch (error) {
-      return res.json({ error });
+      const messageError = "You cannot delete user, you aren't admin";
+      return error(res, messageError);
+    } catch (err) {
+      return error(res, err);
     }
   };
 
@@ -234,11 +236,12 @@ export class UserController {
           user_id,
           "_id _email display_name gender role status"
         );
-        return res.json({ data: result });
+        return success(res, result);
       }
-      return res.json({ error: "You cannot get user, you aren't admin" });
-    } catch (error) {
-      return res.json({ error });
+      const messageError = "You cannot get user, you aren't admin";
+      return error(res, messageError);
+    } catch (err) {
+      return error(res, err);
     }
   };
 
@@ -249,9 +252,9 @@ export class UserController {
         _id,
         "_id email display_name gender role"
       );
-      return res.json({ data: result });
-    } catch (error) {
-      return res.json({ error });
+      return success(res, result);
+    } catch (err) {
+      return error(res, err);
     }
   };
 
@@ -263,11 +266,12 @@ export class UserController {
           {},
           "_id email display_name gender role status"
         );
-        return res.json({ data: result });
+        return success(res, result);
       }
-      return res.json({ error: "You cannot get all user, you aren't admin" });
-    } catch (error) {
-      return res.json({ error });
+      const messageError = "You cannot get all user, you aren't admin";
+      return error(res, messageError);
+    } catch (err) {
+      return error(res, err);
     }
   };
 
@@ -279,7 +283,8 @@ export class UserController {
         const { user_id } = req.params;
         const user: any = await User.findById(user_id);
         if (newRole === user.role) {
-          return res.json({ error: "Newrole has been diffirent from oldrole" });
+          const messageError = "Newrole has been different from oldrole";
+          return error(res, messageError);
         }
         if (newRole == RoleCode.Admin) {
           await User.findByIdAndUpdate(user_id, {
@@ -287,18 +292,18 @@ export class UserController {
               role: RoleCode.Admin,
             },
           });
-          return res.json({
-            message: "You have changed user's role - admin successfully",
-          });
+          const messageSuccess =
+            "You have changed user's role - admin successfully";
+          return success(res, null, messageSuccess);
         } else if (newRole === RoleCode.Moderator) {
           await User.findByIdAndUpdate(user_id, {
             $set: {
               role: RoleCode.Moderator,
             },
           });
-          return res.json({
-            message: "You have changed user's role - moderator successfully",
-          });
+          const messageSuccess =
+            "You have changed user's role - moderator successfully";
+          return success(res, null, messageSuccess);
         }
 
         await User.findByIdAndUpdate(user_id, {
@@ -306,14 +311,12 @@ export class UserController {
             role: RoleCode.Member,
           },
         });
-        return res.json({
-          message: "You have changed user's role - member successfully",
-        });
+        const messageSuccess =
+          "You have changed user's role - member successfully";
+        return success(res, null, messageSuccess);
       }
-
-      return res.json({
-        error: "You cannot change role user, you aren't admin",
-      });
+      const messageError = "You cannot change role user, you aren't admin";
+      return error(res, messageError);
     } catch (error) {
       return res.json({ error });
     }
@@ -322,8 +325,8 @@ export class UserController {
   getRecover = async (req: Request, res: Response) => {
     try {
       //
-    } catch (error) {
-      return res.json({ error });
+    } catch (err) {
+      return error(res, err);
     }
   };
 
@@ -342,6 +345,8 @@ export class UserController {
           useFindAndModify: false,
         }
       );
+      const messageSuccess = "You have recovered group successfully";
+      return success(res, null, messageSuccess);
     }
     if (topic_id !== undefined) {
       await Topic.findByIdAndUpdate(
@@ -356,6 +361,8 @@ export class UserController {
           useFindAndModify: false,
         }
       );
+      const messageSuccess = "You have recovered topic successfully";
+      return success(res, null, messageSuccess);
     }
     if (post_id !== undefined) {
       await Post.findByIdAndUpdate(
@@ -370,6 +377,8 @@ export class UserController {
           useFindAndModify: false,
         }
       );
+      const messageSuccess = "You have recovered post successfully";
+      return success(res, null, messageSuccess);
     }
     if (comment_id !== undefined) {
       await CommentPost.findByIdAndUpdate(
@@ -384,6 +393,8 @@ export class UserController {
           useFindAndModify: false,
         }
       );
+      const messageSuccess = "You have recovered comment successfully";
+      return success(res, null, messageSuccess);
     }
   };
 }
