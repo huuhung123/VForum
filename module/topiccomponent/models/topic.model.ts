@@ -14,5 +14,6 @@ export interface ITopicUpdateForm {
   name: string;
   description: string;
   updatedAt: string;
-}
 
+  isUpdated: boolean;
+}

@@ -82,7 +82,7 @@ export class CommentPostController {
 
   updateCommentPost = async (req: Request, res: Response) => {
     try {
-      const { _id } = req.authorized_user;
+      const { _id, display_name } = req.authorized_user;
       const { post_id, comment_id } = req.params;
 
       const check: any = await CommentPost.find({
@@ -93,13 +93,13 @@ export class CommentPostController {
         const messageError = "CommentPost has been deleted. You can not update";
         return error(res, messageError);
       }
-      if (_id !== check.createdAt) {
+      if ( display_name !== check[0].createdBy) {
         const messageError = "You cannot update commentpost";
         return error(res, messageError);
       }
 
       const form: ICommentPostUpdateForm = req.body;
-      if (check.description === form.description) {
+      if (check[0].description === form.description) {
         const messageError = "Sorry!. Please enter description again";
         return error(res, messageError);
       }
@@ -109,7 +109,8 @@ export class CommentPostController {
         {
           $set: {
             description: req.body.description,
-            updatedBy: _id,
+            // updatedBy: _id,
+            isUpdated: true
           },
         },
         {
@@ -151,7 +152,7 @@ export class CommentPostController {
         return error(res, messageError);
       }
 
-      if (role === RoleCode.Admin || _id === check._id) {
+      if (role === RoleCode.Admin || _id === check._id || role === RoleCode.Moderator) {
         const newCommentPost = await CommentPost.findByIdAndUpdate(comment_id, {
           $set: {
             status: StatusCode.Deactive,

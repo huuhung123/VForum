@@ -18,5 +18,3 @@ export const UserChangeSchema = Joi.object({
   newpassword: Joi.string().min(8).required(),
   renewpassword: Joi.string().min(8).required(),
 });
-
-

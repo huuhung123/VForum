@@ -38,14 +38,13 @@ export class UserRoute {
         this.userController.updateUser
       );
 
+    app.route("/v1/api/admin/info").get(isAuth, this.userController.getAllUser);
+
     app
-      .route("/v1/api/admin/info")
-      .get(isAuth, this.userController.getAllUser)
-      .patch(
-        isAuth,
-        commonValidateBody(UserChangeSchema),
-        this.userController.updateUser
-      );
+      .route("/v1/api/admin/info/:user_id")
+      .get(isAuth, this.userController.getUserById)
+      .patch(isAuth, this.userController.changeRoleUser)
+      .delete(isAuth, this.userController.deleteUser);
 
     app
       .route("/v1/api/admin-info")
@@ -55,12 +54,6 @@ export class UserRoute {
         commonValidateBody(UserChangeSchema),
         this.userController.updateUser
       );
-
-    app
-      .route("/v1/api/admin/info/:user_id")
-      .get(isAuth, this.userController.getUserById)
-      .patch(isAuth, this.userController.changeRoleUser)
-      .delete(isAuth, this.userController.deleteUser);
 
     app
       .route("/v1/api/admin/recover")

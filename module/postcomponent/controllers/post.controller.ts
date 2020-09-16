@@ -13,6 +13,7 @@ import { RoleCode } from "../../../common/model/user.model";
 import { StatusCode } from "../../../common/model/common.model";
 
 import { success, error } from "../../../common/service/response.service";
+import { CommentPost } from "../../../common/model/commentpost.model";
 
 export class PostController {
   public postservice: PostService = new PostService(Post);
@@ -69,7 +70,7 @@ export class PostController {
       formPost.topicId = topic_id;
 
       const post = await this.postservice.create(formPost);
-      const messageSuccess = "You have been created post successfully"
+      const messageSuccess = "You have been created post successfully";
       return success(res, serializeCreatePost(post), messageSuccess);
     } catch (err) {
       return error(res, err);
@@ -86,14 +87,14 @@ export class PostController {
         status: StatusCode.Active,
       });
 
-      if (check[0].createdBy !== display_name) {
-        const messageError =
-          "You cannot update post, you aren't owner of topic";
+      if (check.length === 0) {
+        const messageError = "Post has been deleted. You can not update";
         return error(res, messageError);
       }
 
-      if (check.length === 0) {
-        const messageError = "Post has been deleted. You can not update";
+      if (check[0].createdBy !== display_name) {
+        const messageError =
+          "You cannot update post, you aren't owner of topic";
         return error(res, messageError);
       }
 
@@ -112,7 +113,8 @@ export class PostController {
           $set: {
             title: formPost.title,
             description: formPost.description,
-            updatedBy: display_name,
+            // updatedBy: display_name,
+            isUpdated: true,
           },
         },
         {
@@ -136,24 +138,38 @@ export class PostController {
         _id: post_id,
         status: StatusCode.Active,
       });
-      if (role === RoleCode.Admin || check[0].createdBy === display_name) {
-        if (check.length === 0) {
-          const messageError = "Post has been deleted. You can not delete";
-          return error(res, messageError);
-        }
-
+      if (check.length === 0) {
+        const messageError = "Post has been deleted. You can not delete";
+        return error(res, messageError);
+      }
+      if (
+        role === RoleCode.Admin ||
+        check[0].createdBy === display_name ||
+        role === RoleCode.Moderator
+      ) {
         await Post.findByIdAndUpdate(post_id, {
           $set: {
             status: StatusCode.Deactive,
           },
         });
 
-        this.postservice.callbackDeleteCommentPost(post_id);
+        await this.postservice.callbackDeleteCommentPost(post_id);
 
+        const arr: any = await CommentPost.find({ postId: post_id });
+
+        await Post.updateOne(
+          { _id: post_id },
+          {
+            $set: {
+              commentsPost: arr,
+            },
+          }
+        );
         const messageSuccess = "You deleted post successfully";
         return success(res, null, messageSuccess);
       }
-      return res.json({ error: "You cannot deleted post" });
+      const messageError = "You cannot deleted post";
+      return error(res, messageError);
     } catch (err) {
       return error(res, err);
     }

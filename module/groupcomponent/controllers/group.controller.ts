@@ -61,7 +61,7 @@ export class GroupController {
 
         formGroup.createdBy = display_name;
         const group = await this.groupService.create(formGroup);
-        const messageSuccess = "You have been created group successfully"
+        const messageSuccess = "You have been created group successfully";
         return success(res, serialCreateGroup(group), messageSuccess, 201);
       }
       const messageError = "You cannot create group, you aren't admin";
@@ -88,7 +88,9 @@ export class GroupController {
           return error(res, messageError);
         }
 
-        if (check[0].name === formGroup.name) {
+        const arr = await Group.find({ name: formGroup.name });
+
+        if (check[0].name === formGroup.name || arr.length > 0) {
           const messageError = "Sorry!. Please enter name again";
           return error(res, messageError);
         }
@@ -98,7 +100,8 @@ export class GroupController {
           {
             $set: {
               name: formGroup.name,
-              updatedBy: display_name,
+              // updatedBy: display_name,
+              isUpdated: true,
             },
           },
           {
@@ -119,7 +122,7 @@ export class GroupController {
   deleteGroup = async (req: Request, res: Response) => {
     try {
       const { role } = req.authorized_user;
-      if (role === RoleCode.Admin || role === RoleCode.Moderator) {
+      if (role === RoleCode.Admin) {
         const { group_id } = req.params;
 
         const check: any = await Group.find({
@@ -139,7 +142,7 @@ export class GroupController {
 
         await this.groupService.callbackDeleteTopic(group_id);
         await this.groupService.callbackDeletePost(group_id);
-        await this.groupService.callbackDeleteCommentPost(group_id);
+        // await this.groupService.callbackDeleteCommentPost(group_id);
 
         const messageSuccess = "You deleted group successfully";
         return success(res, null, messageSuccess);

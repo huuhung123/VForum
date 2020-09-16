@@ -19,7 +19,8 @@ export interface IUserUpdateForm {
   oldpassword: string;
   newpassword: string;
   renewpassword: string;
-  updatedBy: string;
+  // updatedBy: string;
+  isUpdated: boolean;
   updatedAt: string;
   id: string;
 }

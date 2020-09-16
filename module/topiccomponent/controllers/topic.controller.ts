@@ -88,13 +88,14 @@ export class TopicController {
         status: StatusCode.Active,
       });
 
+      if (check.length === 0) {
+        const messageError = "Topic has been deleted. You can not update";
+        return error(res, messageError);
+      }
+
       if (role === RoleCode.Member || check[0].createdBy !== display_name) {
         const messageError =
           "You cannot update topic, you aren't owner of topic";
-        return error(res, messageError);
-      }
-      if (check.length === 0) {
-        const messageError = "Topic has been deleted. You can not update";
         return error(res, messageError);
       }
 
@@ -113,7 +114,8 @@ export class TopicController {
           $set: {
             name: formTopic.name,
             description: formTopic.description,
-            updatedBy: display_name,
+            // updatedBy: display_name,
+            isUpdated: true,
           },
         },
         {
@@ -138,12 +140,12 @@ export class TopicController {
         status: StatusCode.Active,
       });
 
-      if (role === RoleCode.Admin || check[0].createdBy === display_name) {
-        if (check.length === 0) {
-          const messageError = "Topic has been deleted. You can not delete";
-          return error(res, messageError);
-        }
+      if (check.length === 0) {
+        const messageError = "Topic has been deleted. You can not delete";
+        return error(res, messageError);
+      }
 
+      if (role === RoleCode.Admin || check[0].createdBy === display_name) {
         await Topic.findByIdAndUpdate(topic_id, {
           $set: {
             status: StatusCode.Deactive,
@@ -151,7 +153,7 @@ export class TopicController {
         });
 
         await this.topicService.callbackDeletePost(topic_id);
-        await this.topicService.callbackDeleteCommentPost(topic_id);
+        // await this.topicService.callbackDeleteCommentPost(topic_id);
 
         const messageSuccess = "You deleted topic successfully";
         return success(res, null, messageSuccess);

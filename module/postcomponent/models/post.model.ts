@@ -13,5 +13,6 @@ export interface IPostUpdateForm {
   title: string;
   description: string;
   updatedAt: string;
-  updatedBy: string;
+  // updatedBy: string;
+  isUpdated: boolean;
 }

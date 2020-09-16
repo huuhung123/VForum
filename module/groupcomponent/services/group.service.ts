@@ -43,22 +43,22 @@ export class GroupService extends BaseService {
     }
   };
 
-  callbackDeleteCommentPost = async (group_id: string) => {
-    try {
-      const topics = await Topic.find({ groupId: group_id });
-      const topicsId = topics.map((item) => item._id);
-      const posts = await Post.find({ topicId: { $in: topicsId } });
-      const postsId = posts.map((item) => item._id);
-      await CommentPost.updateMany(
-        { postId: { $in: postsId } },
-        {
-          $set: {
-            status: StatusCode.Deactive,
-          },
-        }
-      );
-    } catch (error) {
-      return console.log(error);
-    }
-  };
+  // callbackDeleteCommentPost = async (group_id: string) => {
+  //   try {
+  //     const topics = await Topic.find({ groupId: group_id });
+  //     const topicsId = topics.map((item) => item._id);
+  //     const posts = await Post.find({ topicId: { $in: topicsId } });
+  //     const postsId = posts.map((item) => item._id);
+  //     await CommentPost.updateMany(
+  //       { postId: { $in: postsId } },
+  //       {
+  //         $set: {
+  //           status: StatusCode.Deactive,
+  //         },
+  //       }
+  //     );
+  //   } catch (error) {
+  //     return console.log(error);
+  //   }
+  // };
 }

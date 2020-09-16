@@ -21,6 +21,7 @@ export function serializeCreateUser(
 export interface IUserUpdateResponse {
   id: string;
   updatedAt: string;
+  isUpdated: boolean;
 }
 
 export function serializeUpdateUser(
@@ -32,5 +33,6 @@ export function serializeUpdateUser(
   return {
     id: model.id,
     updatedAt: model.updatedAt,
+    isUpdated: model.isUpdated,
   };
 }

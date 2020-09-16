@@ -33,6 +33,15 @@ import {
 } from "../../../config/env";
 
 import { success, error } from "../../../common/service/response.service";
+import { decryptRegister } from "../../../middlewares/authRSA.middleware";
+import {
+  SendGridEmail,
+  SendGridContent,
+  SendGridService,
+  SendGridMail,
+} from "../../../common/service/email.service";
+
+import * as sgMail from "@sendgrid/mail";
 
 export class UserController {
   public userService: UserService = new UserService(User);
@@ -41,12 +50,26 @@ export class UserController {
     try {
       const form: IUserCreateForm = req.body;
       const mailExist = await this.userService.findByEmail(form);
-
       if (mailExist.length === 1) {
         const messageError = "Email has been existed";
         return error(res, messageError);
       }
 
+      // const mail = new SendGridMail(
+      //   new SendGridEmail("from@example.com"),
+      //   "Sending with SendGrid is Fun",
+      //   new SendGridEmail("dupbolun2012@gmail.com"),
+      //   new SendGridContent("text/plain", "Email sent to to@example.com")
+      // );
+
+      // const sendGridService: SendGridService = new SendGridService(
+      //   "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"
+      // );
+      // sendGridService.send(mail);
+
+      // form.display_name = decryptRegister(form.display_name);
+      // form.email = decryptRegister(form.email);
+      // form.gender = decryptRegister(form.gender);
       form.password = await bcrypt.hash(req.body.password, 10);
 
       const user = await this.userService.create(form);
@@ -143,9 +166,9 @@ export class UserController {
         };
         const messageSuccess = "Access-token has been updated successfully";
         return success(res, result, messageSuccess, 201);
-      } catch (error) {
+      } catch (err) {
         const messageError = "Invalid refresh token";
-        return error(res, messageError);
+        return error(res, messageError, 403);
       }
     }
 
@@ -169,8 +192,7 @@ export class UserController {
       const { oldpassword, newpassword, renewpassword } = req.body;
       const form: IUserUpdateForm = req.body;
 
-      const { _id } = req.authorized_user;
-
+      const { _id, role } = req.authorized_user;
       const user: any = await User.findById(_id);
       const check = await bcrypt.compare(oldpassword, user.password);
 
@@ -262,7 +284,7 @@ export class UserController {
 
   getUser = async (req: Request, res: Response) => {
     try {
-      const { _id } = req.authorized_user;
+      const { _id, role } = req.authorized_user;
       const result = await User.findById(
         _id,
         "_id email display_name gender role"

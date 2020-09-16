@@ -22,6 +22,7 @@ export function serializeCreatePost(
 export interface IPostUpdateResponse {
   id: string;
   updatedAt: string;
+  isUpdated: boolean;
 }
 
 export function serializeUpdatePost(
@@ -33,5 +34,6 @@ export function serializeUpdatePost(
   return {
     id: model.id,
     updatedAt: model.updatedAt,
+    isUpdated: model.isUpdated
   };
 }

@@ -10,12 +10,12 @@ export class PostService extends BaseService {
 
   callbackDeleteCommentPost = async (post_id: string) => {
     try {
-      await CommentPost.updateMany(
+      CommentPost.updateMany(
         { postId: post_id },
         {
           $set: {
             status: StatusCode.Deactive,
-          },
+          }
         }
       );
     } catch (error) {

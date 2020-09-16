@@ -3,11 +3,13 @@ export interface ICommentPostCreateForm {
   description: string;
   postId: string;
   createdAt: string;
-  createdBy: string
+  createdBy: string;
 }
 
 export interface ICommentPostUpdateForm {
   id: string;
   description: string;
   updatedAt: string;
+  
+  isUpdated: boolean;
 }

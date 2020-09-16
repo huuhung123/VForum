@@ -2,7 +2,7 @@ import { ITopicCreateForm, ITopicUpdateForm } from "../models/topic.model";
 
 export interface ITopicCreateResponse {
   id: string;
-  groupId: string
+  groupId: string;
   createdAt: string;
   createdBy: string;
 }
@@ -24,6 +24,7 @@ export function serializeCreateTopic(
 export interface ITopicUpdateResponse {
   id: string;
   updatedAt: string;
+  isUpdated: boolean;
 }
 
 export function serializeUpdateTopic(
@@ -35,5 +36,6 @@ export function serializeUpdateTopic(
   return {
     id: model.id,
     updatedAt: model.updatedAt,
+    isUpdated: model.isUpdated,
   };
 }

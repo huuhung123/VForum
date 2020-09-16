@@ -24,7 +24,8 @@ export interface IModelBase extends Document {
   _id: string;
   status: string;
   createdBy: string;
-  updatedBy?: string;
+  // updatedBy?: string;
+  isUpdated: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -43,8 +44,13 @@ export function SchemaBase(schema: mongoose.SchemaDefinition) {
       default: true,
     },
 
-    updatedBy: {
-      type: String,
+    // updatedBy: {
+    //   type: String,
+    //   required: true,
+    //   default: true,
+    // },
+    isUpdated: {
+      type: Boolean,
       required: true,
       default: true,
     },
