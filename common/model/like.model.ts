@@ -36,12 +36,12 @@ const LikeSchema = new Schema(
     },
     likeReferenceId: {
       type: String,
-      enum: [
-        LikeReferenceId.PostId,
-        LikeReferenceId.CommentPostId,
-        LikeReferenceId.FeedId,
-        LikeReferenceId.CommentFeedId,
-      ],
+      // enum: [
+      //   LikeReferenceId.PostId,
+      //   LikeReferenceId.CommentPostId,
+      //   LikeReferenceId.FeedId,
+      //   LikeReferenceId.CommentFeedId,
+      // ],
       required: true,
     },
   }),

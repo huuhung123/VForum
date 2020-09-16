@@ -71,6 +71,7 @@ export class CommentPostController {
 
       await Post.findByIdAndUpdate(post_id, {
         $push: { commentsPost: commentpost },
+        $inc: { countCommentPost: 1 },
       });
 
       const messageSuccess = "You have been created commentpost successfully";
@@ -93,7 +94,7 @@ export class CommentPostController {
         const messageError = "CommentPost has been deleted. You can not update";
         return error(res, messageError, 200);
       }
-      if ( display_name !== check[0].createdBy) {
+      if (display_name !== check[0].createdBy) {
         const messageError = "You cannot update commentpost";
         return error(res, messageError, 200);
       }
@@ -110,7 +111,7 @@ export class CommentPostController {
           $set: {
             description: req.body.description,
             // updatedBy: _id,
-            isUpdated: true
+            isUpdated: true,
           },
         },
         {
@@ -138,6 +139,76 @@ export class CommentPostController {
     }
   };
 
+  addLike = async (req: Request, res: Response) => {
+    try {
+      const { post_id, comment_id } = req.params;
+
+      const check: any = await CommentPost.find({
+        _id: comment_id,
+        status: StatusCode.Active,
+      });
+
+      if (check.length === 0) {
+        const messageError =
+          "CommentPost has been deleted. You can not add like";
+        return error(res, messageError, 200);
+      }
+
+      await CommentPost.updateOne(
+        { _id: comment_id },
+        {
+          $inc: { countLike: 1 },
+        }
+      );
+
+      const result = await CommentPost.find(
+        {
+          _id: comment_id,
+          postId: post_id,
+        },
+        "title description createdBy createdAt countLike countCommentPost commentsPost"
+      );
+      return success(res, result);
+    } catch (err) {
+      return error(res, err, 200);
+    }
+  };
+
+  minusLike = async (req: Request, res: Response) => {
+    try {
+      const { post_id, comment_id } = req.params;
+
+      const check: any = await CommentPost.find({
+        _id: comment_id,
+        status: StatusCode.Active,
+      });
+
+      if (check.length === 0) {
+        const messageError =
+          "CommentPost has been deleted. You can not minus like";
+        return error(res, messageError, 200);
+      }
+
+      await CommentPost.updateOne(
+        { _id: comment_id },
+        {
+          $inc: { countLike: -1 },
+        }
+      );
+
+      const result = await CommentPost.find(
+        {
+          _id: comment_id,
+          postId: post_id,
+        },
+        "title description createdBy createdAt countLike countCommentPost commentsPost"
+      );
+      return success(res, result);
+    } catch (err) {
+      return error(res, err, 200);
+    }
+  };
+
   deleteCommentPost = async (req: Request, res: Response) => {
     try {
       const { _id, role } = req.authorized_user;
@@ -151,8 +222,11 @@ export class CommentPostController {
         const messageError = "CommentPost has been deleted. You can not delete";
         return error(res, messageError, 200);
       }
-
-      if (role === RoleCode.Admin || _id === check._id || role === RoleCode.Moderator) {
+      if (
+        role === RoleCode.Admin ||
+        _id === check._id ||
+        role === RoleCode.Moderator
+      ) {
         const newCommentPost = await CommentPost.findByIdAndUpdate(comment_id, {
           $set: {
             status: StatusCode.Deactive,
@@ -160,11 +234,9 @@ export class CommentPostController {
         });
 
         await Post.updateOne(
-          { _id: post_id, "commentsPost._id": comment_id },
+          { _id: post_id },
           {
-            $set: {
-              "commentsPost.$": newCommentPost,
-            },
+            $inc: { countCommentPost: -1 },
           }
         );
 

@@ -25,7 +25,7 @@ export class PostController {
       const { topic_id } = req.params;
       const result = await Post.find(
         { status: StatusCode.Active, topicId: topic_id },
-        "title description createdBy createdAt countLike countCommentPost commentsPost userId"
+        "title description createdBy createdAt countLike countCommentPost commentsPost"
       );
       return success(res, result);
     } catch (err) {
@@ -42,7 +42,7 @@ export class PostController {
           status: StatusCode.Active,
           topicId: topic_id,
         },
-        "title description createdBy createdAt countLike countCommentPost commentsPost userId"
+        "title description createdBy createdAt countLike countCommentPost commentsPost"
       );
       return success(res, result);
     } catch (err) {
@@ -75,8 +75,10 @@ export class PostController {
 
       const newLike = new Like({
         likeType: LikeType.Post,
-        likeReferenceId: LikeReferenceId.PostId,
+        likeReferenceId: post._id,
       });
+      await newLike.save();
+
       const messageSuccess = "You have been created post successfully";
       return success(res, serializeCreatePost(post), messageSuccess);
     } catch (err) {
@@ -136,7 +138,73 @@ export class PostController {
     }
   };
 
-  updateLike = async (req: Request, res: Response) => {};
+  addLike = async (req: Request, res: Response) => {
+    try {
+      const { post_id, topic_id } = req.params;
+
+      const check: any = await Post.find({
+        _id: post_id,
+        status: StatusCode.Active,
+      });
+
+      if (check.length === 0) {
+        const messageError = "Post has been deleted. You can not add like";
+        return error(res, messageError, 200);
+      }
+
+      await Post.updateOne(
+        { _id: post_id },
+        {
+          $inc: { countLike: 1 },
+        }
+      );
+
+      const result = await Post.find(
+        {
+          _id: post_id,
+          topicId: topic_id,
+        },
+        "title description createdBy createdAt countLike countCommentPost commentsPost"
+      );
+      return success(res, result);
+    } catch (err) {
+      return error(res, err, 200);
+    }
+  };
+
+  minusLike = async (req: Request, res: Response) => {
+    try {
+      const { post_id, topic_id } = req.params;
+
+      const check: any = await Post.find({
+        _id: post_id,
+        status: StatusCode.Active,
+      });
+
+      if (check.length === 0) {
+        const messageError = "Post has been deleted. You can not minus like";
+        return error(res, messageError, 200);
+      }
+
+      await Post.updateOne(
+        { _id: post_id },
+        {
+          $inc: { countLike: -1 },
+        }
+      );
+
+      const result = await Post.find(
+        {
+          _id: post_id,
+          topicId: topic_id,
+        },
+        "title description createdBy createdAt countLike countCommentPost commentsPost"
+      );
+      return success(res, result);
+    } catch (err) {
+      return error(res, err, 200);
+    }
+  };
 
   deletePost = async (req: Request, res: Response) => {
     try {

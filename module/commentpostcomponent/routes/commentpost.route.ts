@@ -33,5 +33,17 @@ export class CommentPostRoute {
         this.commentPostController.updateCommentPost
       )
       .delete(isAuth, this.commentPostController.deleteCommentPost);
+
+    app
+      .route(
+        "/v1/api/group/:group_id/topic/:topic_id/post/:post_id/comment/:comment_id/addlike"
+      )
+      .patch(isAuth, this.commentPostController.addLike);
+
+    app
+      .route(
+        "/v1/api/group/:group_id/topic/:topic_id/post/:post_id/comment/:comment_id/minuslike"
+      )
+      .patch(isAuth, this.commentPostController.minusLike);
   }
 }

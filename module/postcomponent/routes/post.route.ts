@@ -29,7 +29,11 @@ export class PostRoute {
       .delete(isAuth, this.postController.deletePost);
 
     app
-      .route("/v1/api/group/:group_id/topic/:topic_id/post/:post_id/likes")
-      .patch(isAuth, this.postController.updateLike);
+      .route("/v1/api/group/:group_id/topic/:topic_id/post/:post_id/addlike")
+      .patch(isAuth, this.postController.addLike);
+
+    app
+      .route("/v1/api/group/:group_id/topic/:topic_id/post/:post_id/minuslike")
+      .patch(isAuth, this.postController.minusLike);
   }
 }
