@@ -13,7 +13,9 @@ import { CommentPost } from "../../../common/model/commentpost.model";
 import { Post } from "../../../common/model/post.model";
 import { RoleCode } from "../../../common/model/user.model";
 import { StatusCode } from "../../../common/model/common.model";
+import { Like } from "../../../common/model/like.model";
 
+import { LikeType } from "../../../common/model/like.model";
 import { success, error } from "../../../common/service/response.service";
 
 export class CommentPostController {
@@ -27,7 +29,7 @@ export class CommentPostController {
       const result = await CommentPost.find({
         status: StatusCode.Active,
         postId: post_id,
-      });
+      }).sort({ updatedAt: -1 });
       return success(res, result);
     } catch (err) {
       return error(res, err, 200);
@@ -73,6 +75,12 @@ export class CommentPostController {
         $push: { commentsPost: commentpost },
         $inc: { countCommentPost: 1 },
       });
+
+      const newLike = new Like({
+        likeType: LikeType.CommentPost,
+        likeReferenceId: commentpost._id,
+      });
+      await newLike.save();
 
       const messageSuccess = "You have been created commentpost successfully";
       return success(res, serialCreateCommentPost(commentpost), messageSuccess);

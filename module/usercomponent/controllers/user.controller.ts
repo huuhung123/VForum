@@ -303,7 +303,7 @@ export class UserController {
         const result = await User.find(
           {},
           "_id email display_name gender role status"
-        );
+        ).sort({ role: 1 });
         const messageSuccess = "You have get all user successfully";
         return success(res, result, messageSuccess);
       }

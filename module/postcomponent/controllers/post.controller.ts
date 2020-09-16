@@ -26,7 +26,7 @@ export class PostController {
       const result = await Post.find(
         { status: StatusCode.Active, topicId: topic_id },
         "title description createdBy createdAt countLike countCommentPost commentsPost"
-      );
+      ).sort({ updatedAt: -1 });
       return success(res, result);
     } catch (err) {
       return error(res, err, 200);
@@ -108,9 +108,15 @@ export class PostController {
       }
 
       const formPost: IPostUpdateForm = req.body;
+      const arr = await Post.find({
+        title: formPost.title,
+        description: formPost.description,
+      });
+
       if (
-        check[0].title === formPost.title &&
-        check[0].description === formPost.description
+        (check[0].title === formPost.title &&
+          check[0].description === formPost.description) ||
+        arr.length > 0
       ) {
         const messageError = "Sorry!. Please enter title, description again";
         return error(res, messageError, 200);

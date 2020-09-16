@@ -21,7 +21,7 @@ export class TopicController {
       const result = await Topic.find(
         { status: StatusCode.Active, groupId: group_id },
         "name description createdBy createdAt"
-      );
+      ).sort({ updatedAt: -1 });
       return success(res, result);
     } catch (err) {
       return error(res, err, 200);
@@ -100,9 +100,14 @@ export class TopicController {
       }
 
       const formTopic: ITopicUpdateForm = req.body;
+      const arr = await Topic.find({
+        name: formTopic.name,
+        description: formTopic.description,
+      });
       if (
-        check[0].name === formTopic.name &&
-        check[0].description === formTopic.description
+        (check[0].name === formTopic.name &&
+          check[0].description === formTopic.description) ||
+        arr.length > 0
       ) {
         const messageError = "Sorry!. Please enter name, description again";
         return error(res, messageError, 200);

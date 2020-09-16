@@ -52,7 +52,7 @@ export function SchemaBase(schema: mongoose.SchemaDefinition) {
     isUpdated: {
       type: Boolean,
       required: true,
-      default: true,
+      default: false,
     },
   };
 
