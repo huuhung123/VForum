@@ -20,7 +20,7 @@ export class GroupController {
       const result = await Group.find(
         { status: StatusCode.Active },
         "name createdBy createdAt"
-      ).sort({ updatedAt: -1 });
+      ).sort({ updatedAt: 1 });
       return success(res, result);
     } catch (err) {
       return error(res, err, 200);
