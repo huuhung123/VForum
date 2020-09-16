@@ -24,7 +24,7 @@ export class TopicController {
       );
       return success(res, result);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 
@@ -41,7 +41,7 @@ export class TopicController {
       );
       return success(res, result);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 
@@ -51,7 +51,7 @@ export class TopicController {
       if (role === RoleCode.Member) {
         const messageError =
           "You cannot create topic, you aren't moderator or admin";
-        return error(res, messageError);
+        return error(res, messageError, 200);
       }
       const { group_id } = req.params;
       const formTopic: ITopicCreateForm = req.body;
@@ -64,7 +64,7 @@ export class TopicController {
       if (check.length > 0) {
         const messageError =
           "Name, description has been existed. Please enter name, description again";
-        return error(res, messageError);
+        return error(res, messageError, 200);
       }
 
       formTopic.createdBy = display_name;
@@ -74,7 +74,7 @@ export class TopicController {
       const messageSuccess = "You have been created topic successfully";
       return success(res, serializeCreateTopic(topic), messageSuccess);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 
@@ -90,13 +90,13 @@ export class TopicController {
 
       if (check.length === 0) {
         const messageError = "Topic has been deleted. You can not update";
-        return error(res, messageError);
+        return error(res, messageError, 200);
       }
 
       if (role === RoleCode.Member || check[0].createdBy !== display_name) {
         const messageError =
           "You cannot update topic, you aren't owner of topic";
-        return error(res, messageError);
+        return error(res, messageError, 200);
       }
 
       const formTopic: ITopicUpdateForm = req.body;
@@ -105,7 +105,7 @@ export class TopicController {
         check[0].description === formTopic.description
       ) {
         const messageError = "Sorry!. Please enter name, description again";
-        return error(res, messageError);
+        return error(res, messageError, 200);
       }
 
       const topic: any = await Topic.findByIdAndUpdate(
@@ -126,7 +126,7 @@ export class TopicController {
       const messageSuccess = "Topic have updated successfully";
       return success(res, serializeUpdateTopic(topic), messageSuccess);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 
@@ -142,7 +142,7 @@ export class TopicController {
 
       if (check.length === 0) {
         const messageError = "Topic has been deleted. You can not delete";
-        return error(res, messageError);
+        return error(res, messageError, 200);
       }
 
       if (role === RoleCode.Admin || check[0].createdBy === display_name) {
@@ -159,9 +159,9 @@ export class TopicController {
         return success(res, null, messageSuccess);
       }
       const messageError = "You cannot deleted topic";
-      return error(res, messageError);
+      return error(res, messageError, 200);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 }

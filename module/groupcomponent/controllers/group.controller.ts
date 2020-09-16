@@ -23,7 +23,7 @@ export class GroupController {
       );
       return success(res, result);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 
@@ -40,7 +40,7 @@ export class GroupController {
       );
       return success(res, result);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
   // xoa roi tao cai moi thi ntn ???
@@ -56,7 +56,7 @@ export class GroupController {
         });
         if (check.length > 0) {
           const messageError = "Name has been existed. Please enter name again";
-          return error(res, messageError);
+          return error(res, messageError, 200);
         }
 
         formGroup.createdBy = display_name;
@@ -65,9 +65,9 @@ export class GroupController {
         return success(res, serialCreateGroup(group), messageSuccess, 201);
       }
       const messageError = "You cannot create group, you aren't admin";
-      return error(res, messageError);
+      return error(res, messageError, 200);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 
@@ -85,14 +85,14 @@ export class GroupController {
         });
         if (check.length === 0) {
           const messageError = "Group has been deleted. You can not update";
-          return error(res, messageError);
+          return error(res, messageError, 200);
         }
 
         const arr = await Group.find({ name: formGroup.name });
 
         if (check[0].name === formGroup.name || arr.length > 0) {
           const messageError = "Sorry!. Please enter name again";
-          return error(res, messageError);
+          return error(res, messageError, 200);
         }
 
         const group: any = await Group.findByIdAndUpdate(
@@ -113,9 +113,9 @@ export class GroupController {
         return success(res, serialUpdateGroup(group), messageSuccess);
       }
       const messageError = "You cannot update group";
-      return error(res, messageError);
+      return error(res, messageError, 200);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 
@@ -131,7 +131,7 @@ export class GroupController {
         });
         if (check.length === 0) {
           const messageError = "Group has been deleted. You can not delete";
-          return error(res, messageError);
+          return error(res, messageError, 200);
         }
 
         await Group.findByIdAndUpdate(group_id, {
@@ -149,9 +149,9 @@ export class GroupController {
       }
 
       const messageError = "You cannot delete group";
-      return error(res, messageError);
+      return error(res, messageError, 200);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 }

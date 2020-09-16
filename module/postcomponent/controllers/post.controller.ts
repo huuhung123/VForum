@@ -27,7 +27,7 @@ export class PostController {
       );
       return success(res, result);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 
@@ -44,7 +44,7 @@ export class PostController {
       );
       return success(res, result);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 
@@ -62,7 +62,7 @@ export class PostController {
       if (check.length > 0) {
         const messageError =
           "Title, description has been existed. Please enter title, description again";
-        return error(res, messageError);
+        return error(res, messageError, 200);
       }
 
       formPost.createdBy = display_name;
@@ -73,7 +73,7 @@ export class PostController {
       const messageSuccess = "You have been created post successfully";
       return success(res, serializeCreatePost(post), messageSuccess);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 
@@ -89,13 +89,13 @@ export class PostController {
 
       if (check.length === 0) {
         const messageError = "Post has been deleted. You can not update";
-        return error(res, messageError);
+        return error(res, messageError, 200);
       }
 
       if (check[0].createdBy !== display_name) {
         const messageError =
           "You cannot update post, you aren't owner of topic";
-        return error(res, messageError);
+        return error(res, messageError, 200);
       }
 
       const formPost: IPostUpdateForm = req.body;
@@ -104,7 +104,7 @@ export class PostController {
         check[0].description === formPost.description
       ) {
         const messageError = "Sorry!. Please enter title, description again";
-        return error(res, messageError);
+        return error(res, messageError, 200);
       }
 
       const newPost: any = await Post.findByIdAndUpdate(
@@ -125,7 +125,7 @@ export class PostController {
       const messageSuccess = "Post have updated successfully";
       return success(res, serializeUpdatePost(newPost), messageSuccess);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 
@@ -140,7 +140,7 @@ export class PostController {
       });
       if (check.length === 0) {
         const messageError = "Post has been deleted. You can not delete";
-        return error(res, messageError);
+        return error(res, messageError, 200);
       }
       if (
         role === RoleCode.Admin ||
@@ -169,9 +169,9 @@ export class PostController {
         return success(res, null, messageSuccess);
       }
       const messageError = "You cannot deleted post";
-      return error(res, messageError);
+      return error(res, messageError, 200);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 }

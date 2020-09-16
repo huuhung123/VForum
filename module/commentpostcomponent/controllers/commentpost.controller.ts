@@ -30,7 +30,7 @@ export class CommentPostController {
       });
       return success(res, result);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 
@@ -44,7 +44,7 @@ export class CommentPostController {
       });
       return success(res, result);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 
@@ -61,7 +61,7 @@ export class CommentPostController {
       if (check.length > 0) {
         const messageError =
           "CommentPost has been existed. Please enter commentpost again";
-        return error(res, messageError);
+        return error(res, messageError, 200);
       }
 
       formComment.createdBy = display_name;
@@ -76,7 +76,7 @@ export class CommentPostController {
       const messageSuccess = "You have been created commentpost successfully";
       return success(res, serialCreateCommentPost(commentpost), messageSuccess);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 
@@ -91,17 +91,17 @@ export class CommentPostController {
       });
       if (check.length === 0) {
         const messageError = "CommentPost has been deleted. You can not update";
-        return error(res, messageError);
+        return error(res, messageError, 200);
       }
       if ( display_name !== check[0].createdBy) {
         const messageError = "You cannot update commentpost";
-        return error(res, messageError);
+        return error(res, messageError, 200);
       }
 
       const form: ICommentPostUpdateForm = req.body;
       if (check[0].description === form.description) {
         const messageError = "Sorry!. Please enter description again";
-        return error(res, messageError);
+        return error(res, messageError, 200);
       }
 
       const newCommentPost: any = await CommentPost.findByIdAndUpdate(
@@ -134,7 +134,7 @@ export class CommentPostController {
         messageSuccess
       );
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 
@@ -149,7 +149,7 @@ export class CommentPostController {
       });
       if (check.length === 0) {
         const messageError = "CommentPost has been deleted. You can not delete";
-        return error(res, messageError);
+        return error(res, messageError, 200);
       }
 
       if (role === RoleCode.Admin || _id === check._id || role === RoleCode.Moderator) {
@@ -172,9 +172,9 @@ export class CommentPostController {
         return success(res, null, messageSuccess);
       }
       const messageError = "You cannot deleted commentpost";
-      return error(res, messageError);
+      return error(res, messageError, 200);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 }

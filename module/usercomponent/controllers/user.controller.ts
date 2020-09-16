@@ -52,7 +52,7 @@ export class UserController {
       const mailExist = await this.userService.findByEmail(form);
       if (mailExist.length === 1) {
         const messageError = "Email has been existed";
-        return error(res, messageError);
+        return error(res, messageError, 200);
       }
 
       // const mail = new SendGridMail(
@@ -76,7 +76,7 @@ export class UserController {
       const messageSuccess = "User has been registed successfully";
       return success(res, serializeCreateUser(user), messageSuccess, 201);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 
@@ -124,12 +124,12 @@ export class UserController {
           return success(res, result, messageSuccess, 201);
         }
         const messageError = "Password error";
-        return error(res, messageError);
+        return error(res, messageError, 200);
       }
       const messageError = "Email hasn't been existed";
-      return error(res, messageError);
+      return error(res, messageError, 200);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 
@@ -181,9 +181,9 @@ export class UserController {
       const { _id } = req.authorized_user;
       await Token.remove({ userId: _id });
       const messageSuccess = "You have logouted successfully";
-      return success(res, null, messageSuccess);
+      return success(res, null, messageSuccess, 200);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 
@@ -199,7 +199,7 @@ export class UserController {
       if (check) {
         if (oldpassword === newpassword) {
           const messageError = "Newpassword has different from oldpassword";
-          return error(res, messageError);
+          return error(res, messageError, 200);
         }
         if (newpassword === renewpassword) {
           const user: any = await User.findByIdAndUpdate(
@@ -220,12 +220,12 @@ export class UserController {
           return success(res, serializeUpdateUser(user), messageSuccess, 201);
         }
         const messageError = "Re-password invalid";
-        return error(res, messageError);
+        return error(res, messageError, 200);
       }
       const messageError = "Oldpassword user unsuccessfully";
-      return error(res, messageError);
+      return error(res, messageError, 200);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 
@@ -238,12 +238,12 @@ export class UserController {
         const check: any = await User.findById(user_id);
         if (check.role === RoleCode.Admin) {
           const messageError = "You can not delete admin";
-          return error(res, messageError);
+          return error(res, messageError, 200);
         }
 
         if (check.status === StatusCode.Deactive) {
           const messageError = "User has been deleted";
-          return error(res, messageError);
+          return error(res, messageError, 200);
         }
 
         await User.findByIdAndUpdate(user_id, {
@@ -259,7 +259,7 @@ export class UserController {
       const messageError = "You cannot delete user, you aren't admin";
       return error(res, messageError, 403);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 
@@ -278,7 +278,7 @@ export class UserController {
       const messageError = "You cannot get user, you aren't admin";
       return error(res, messageError, 403);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 
@@ -292,7 +292,7 @@ export class UserController {
       const messageSuccess = "You have get user successfully";
       return success(res, result, messageSuccess);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 
@@ -310,7 +310,7 @@ export class UserController {
       const messageError = "You cannot get all user, you aren't admin";
       return error(res, messageError, 403);
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 
@@ -323,7 +323,7 @@ export class UserController {
         const user: any = await User.findById(user_id);
         if (newRole === user.role) {
           const messageError = "Newrole has been different from oldrole";
-          return error(res, messageError);
+          return error(res, messageError, 200);
         }
         if (newRole == RoleCode.Admin) {
           await User.findByIdAndUpdate(user_id, {
@@ -356,8 +356,8 @@ export class UserController {
       }
       const messageError = "You cannot change role user, you aren't admin";
       return error(res, messageError, 403);
-    } catch (error) {
-      return res.json({ error });
+    } catch (err) {
+      return error(res, err, 200);
     }
   };
 
@@ -365,7 +365,7 @@ export class UserController {
     try {
       //
     } catch (err) {
-      return error(res, err);
+      return error(res, err, 200);
     }
   };
 
