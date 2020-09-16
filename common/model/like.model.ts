@@ -50,4 +50,4 @@ const LikeSchema = new Schema(
   }
 );
 
-export const LikeFeed = mongoose.model<ILike>(LikeSchemaName, LikeSchema);
+export const Like = mongoose.model<ILike>(LikeSchemaName, LikeSchema);

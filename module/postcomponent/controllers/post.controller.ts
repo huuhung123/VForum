@@ -9,11 +9,13 @@ import {
 import { Post } from "../../../common/model/post.model";
 import { Topic } from "../../../common/model/topic.model";
 import { Group } from "../../../common/model/group.model";
+import { Like } from "../../../common/model/like.model";
+import { CommentPost } from "../../../common/model/commentpost.model";
+
 import { RoleCode } from "../../../common/model/user.model";
 import { StatusCode } from "../../../common/model/common.model";
-
 import { success, error } from "../../../common/service/response.service";
-import { CommentPost } from "../../../common/model/commentpost.model";
+import { LikeType, LikeReferenceId } from "../../../common/model/like.model";
 
 export class PostController {
   public postservice: PostService = new PostService(Post);
@@ -23,7 +25,7 @@ export class PostController {
       const { topic_id } = req.params;
       const result = await Post.find(
         { status: StatusCode.Active, topicId: topic_id },
-        "title description createdBy createdAt countLike countCommentPost commentsPost"
+        "title description createdBy createdAt countLike countCommentPost commentsPost userId"
       );
       return success(res, result);
     } catch (err) {
@@ -40,7 +42,7 @@ export class PostController {
           status: StatusCode.Active,
           topicId: topic_id,
         },
-        "title description createdBy createdAt countLike countCommentPost commentsPost"
+        "title description createdBy createdAt countLike countCommentPost commentsPost userId"
       );
       return success(res, result);
     } catch (err) {
@@ -70,6 +72,11 @@ export class PostController {
       formPost.topicId = topic_id;
 
       const post = await this.postservice.create(formPost);
+
+      const newLike = new Like({
+        likeType: LikeType.Post,
+        likeReferenceId: LikeReferenceId.PostId,
+      });
       const messageSuccess = "You have been created post successfully";
       return success(res, serializeCreatePost(post), messageSuccess);
     } catch (err) {
@@ -128,6 +135,8 @@ export class PostController {
       return error(res, err, 200);
     }
   };
+
+  updateLike = async (req: Request, res: Response) => {};
 
   deletePost = async (req: Request, res: Response) => {
     try {
