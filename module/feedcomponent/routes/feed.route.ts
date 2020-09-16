@@ -5,38 +5,29 @@ import { commonValidateBody } from "../../../middlewares/validatebody.middleware
 
 import { FeedCreateSchema, FeedUpdateSchema } from "../DTO/feed.dto";
 
+import { isAuth } from "../../../middlewares/auth.middleware";
+
 export class FeedRoute {
   public feedController: FeedController = new FeedController();
 
   public routes(app: express.Application): void {
     app
       .route("/v1/api/feed")
-      // .get(commonCheckAuth, this.feedController.getAllFeed)
-      .get(this.feedController.getAllFeed)
-      // .post(
-      //   commonCheckAuth,
-      //   commonValidateBody(FeedCreateSchema),
-      //   this.feedController.createFeed
-      // )
+      .get(isAuth, this.feedController.getAllFeed)
       .post(
+        isAuth,
         commonValidateBody(FeedCreateSchema),
         this.feedController.createFeed
       );
 
     app
       .route("/v1/api/feed/:feed_id")
-      // .get(commonCheckAuth, this.feedController.getFeed)
-      .get(this.feedController.getFeed)
-      // .patch(
-      //   commonCheckAuth,
-      //   commonValidateBody(FeedUpdateSchema),
-      //   this.feedController.updateFeed
-      // )
+      .get(isAuth, this.feedController.getFeed)
       .patch(
+        isAuth,
         commonValidateBody(FeedUpdateSchema),
         this.feedController.updateFeed
       )
-      // .delete(commonCheckAuth, this.feedController.deleteFeed)
-      .delete(this.feedController.deleteFeed);
+      .delete(isAuth, this.feedController.deleteFeed);
   }
 }
