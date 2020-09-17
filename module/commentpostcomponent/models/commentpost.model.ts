@@ -10,6 +10,5 @@ export interface ICommentPostUpdateForm {
   id: string;
   description: string;
   updatedAt: string;
-  
   isUpdated: boolean;
 }

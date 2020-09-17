@@ -25,7 +25,6 @@ export function serialCreateCommentPost(
 export interface ICommentPostUpdateResponse {
   id: string;
   updatedAt: string;
-
   isUpdated: boolean;
 }
 
@@ -38,7 +37,6 @@ export function serialUpdateCommentPost(
   return {
     id: model.id,
     updatedAt: model.updatedAt,
-    
-    isUpdated: model.isUpdated
+    isUpdated: model.isUpdated,
   };
 }

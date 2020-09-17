@@ -1,10 +1,12 @@
-import { ICommentFeedCreateForm } from "../models/commentfeed.model";
+import {
+  ICommentFeedCreateForm,
+  ICommentFeedUpdateForm,
+} from "../models/commentfeed.model";
 
 export interface ICommentFeedCreateResponse {
   id: string;
-  description: string;
   createdAt: string;
-  accountId: string;
+  createdBy: string;
 }
 
 export function serializeCommentFeed(
@@ -15,8 +17,26 @@ export function serializeCommentFeed(
 
   return {
     id: model.id,
-    description: model.description,
     createdAt: model.createdAt,
-    accountId: model.accountId,
+    createdBy: model.createdBy,
+  };
+}
+
+export interface ICommentFeedUpdateResponse {
+  id: string;
+  updatedAt: string;
+  isUpdated: boolean;
+}
+
+export function serialUpdateCommentFeed(
+  model: ICommentFeedUpdateForm
+): ICommentFeedUpdateResponse {
+  if (!model) {
+  }
+
+  return {
+    id: model.id,
+    updatedAt: model.updatedAt,
+    isUpdated: model.isUpdated,
   };
 }

@@ -27,6 +27,7 @@ export class GroupController {
     }
   };
 
+  
   getGroup = async (req: Request, res: Response) => {
     try {
       const { group_id } = req.params;

@@ -118,7 +118,6 @@ export class CommentPostController {
         {
           $set: {
             description: req.body.description,
-            // updatedBy: _id,
             isUpdated: true,
           },
         },
@@ -128,14 +127,6 @@ export class CommentPostController {
         }
       );
 
-      await Post.updateOne(
-        { _id: post_id, "commentsPost._id": comment_id },
-        {
-          $set: {
-            "commentsPost.$": newCommentPost,
-          },
-        }
-      );
       const messageSuccess = "Comment post have updated successfully";
       return success(
         res,
@@ -169,13 +160,9 @@ export class CommentPostController {
         }
       );
 
-      const result = await CommentPost.find(
-        {
-          _id: comment_id,
-          postId: post_id,
-        },
-        "title description createdBy createdAt countLike countCommentPost commentsPost"
-      );
+      const result = await CommentPost.find({
+        _id: comment_id,
+      });
       return success(res, result);
     } catch (err) {
       return error(res, err, 200);
@@ -204,13 +191,9 @@ export class CommentPostController {
         }
       );
 
-      const result = await CommentPost.find(
-        {
-          _id: comment_id,
-          postId: post_id,
-        },
-        "title description createdBy createdAt countLike countCommentPost commentsPost"
-      );
+      const result = await CommentPost.find({
+        _id: comment_id,
+      });
       return success(res, result);
     } catch (err) {
       return error(res, err, 200);

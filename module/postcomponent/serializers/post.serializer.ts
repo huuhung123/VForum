@@ -19,6 +19,7 @@ export function serializeCreatePost(
   };
 }
 
+
 export interface IPostUpdateResponse {
   id: string;
   updatedAt: string;

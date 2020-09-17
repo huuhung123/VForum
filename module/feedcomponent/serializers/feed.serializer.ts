@@ -2,10 +2,9 @@ import { IFeedCreateForm, IFeedUpdateForm } from "../models/feed.model";
 
 export interface IFeedCreateResponse {
   id: string;
-  title: string;
-  description: string;
+  userId: string;
   createdAt: string;
-  // createdBy: string
+  createdBy: string;
 }
 
 export function serializeCreateFeed(
@@ -16,19 +15,16 @@ export function serializeCreateFeed(
 
   return {
     id: model.id,
-    title: model.title,
-    description: model.description,
+    userId: model.userId,
     createdAt: model.createdAt,
-    // createdBy: string
+    createdBy: model.createdBy,
   };
 }
 
 export interface IFeedUpdateResponse {
   id: string;
-  title: string;
-  description: string;
   updatedAt: string;
-  // updatedBy: string
+  isUpdated: boolean;
 }
 
 export function serializeUpdateFeed(
@@ -39,9 +35,7 @@ export function serializeUpdateFeed(
 
   return {
     id: model.id,
-    title: model.title,
-    description: model.description,
     updatedAt: model.updatedAt,
-    // updatedBy: string
+    isUpdated: model.isUpdated,
   };
 }

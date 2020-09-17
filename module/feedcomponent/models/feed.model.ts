@@ -1,15 +1,15 @@
 export interface IFeedCreateForm {
-  id: string;
-  title: string;
   description: string;
+  attachments: any;
+  id: string;
+  userId: string;
   createdAt: string;
-  // createdBy: string;
+  createdBy: string;
 }
-
 export interface IFeedUpdateForm {
-  id: string;
-  title: string;
   description: string;
+  attachments: any;
+  id: string;
   updatedAt: string;
-  // updatedBy: string
+  isUpdated: boolean;
 }

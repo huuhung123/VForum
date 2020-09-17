@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { FeedService } from "../services/feed.service";
-import { IFeedCreateForm } from "../models/feed.model";
+import { IFeedCreateForm, IFeedUpdateForm } from "../models/feed.model";
 import {
   serializeCreateFeed,
   serializeUpdateFeed,
@@ -9,80 +9,238 @@ import {
 import { Feed } from "../../../common/model/feed.model";
 import { User } from "../../../common/model/user.model";
 
+import { success, error } from "../../../common/service/response.service";
+import { StatusCode } from "../../../common/model/common.model";
+import { RoleCode } from "../../../common/model/user.model";
+import { LikeType, Like } from "../../../common/model/like.model";
+import { CommentFeed } from "../../../common/model/commentfeed.model";
+
 export class FeedController {
   public feedService: FeedService = new FeedService(Feed);
 
   getAllFeed = async (req: Request, res: Response) => {
     try {
-      const result = await Feed.find({});
-      return res.json({ data: result });
-    } catch (error) {
-      return res.json({ error: error });
+      const result = await Feed.find(
+        { status: StatusCode.Active },
+        "description countLike countCommentFeed commentsFeed createdBy createdAt"
+      ).sort({
+        updatedAt: -1,
+      });
+      return success(res, result);
+    } catch (err) {
+      return error(res, err, 200);
     }
   };
 
   getFeed = async (req: Request, res: Response) => {
     try {
-      const { post_id } = req.params;
-      const result = await Feed.findById(post_id);
-      return res.json({ data: result });
-    } catch (error) {
-      return res.json({ error: error });
+      const { feed_id } = req.params;
+      const result = await Feed.find(
+        {
+          _id: feed_id,
+          status: StatusCode.Active,
+        },
+        "description countLike countCommentFeed commentsFeed createdBy createdAt"
+      );
+      return success(res, result);
+    } catch (err) {
+      return error(res, err, 200);
     }
   };
 
   createFeed = async (req: Request, res: Response) => {
     try {
-      // const { role, _id } = req!.session!.user;
-      // if (role === "admin" || role === "moderator") {
-      //   const form: IFeedCreateForm = req.body;
-      //   const check = await Feed.find({ title: form.title });
-      //   if (check.length > 0) {
-      //     return res.json({ Error: "Title is exist. Please enter again" });
-      //   }
-      //   // form.createdBy = _id;
-      //   const newFeed = await this.feedService.create(form);
-      //   User.findByIdAndUpdate(
-      //     _id,
-      //     {
-      //       $push: {
-      //         feeds: newFeed,
-      //       },
-      //     },
-      //     {
-      //       new: true,
-      //       useFindAndModify: false,
-      //     }
-      //   );
-      //   return res.json(serializeCreateFeed(newFeed));
-      // }
-      // return res.json({ Message: "You cannot create feed" });
-
-      const form: IFeedCreateForm = req.body;
-      const check = await Feed.find({ title: form.title });
+      const { _id, display_name } = req.authorized_user;
+      const formFeed: IFeedCreateForm = req.body;
+      const check = await Feed.find({
+        description: formFeed.description,
+        status: StatusCode.Active,
+      });
       if (check.length > 0) {
-        return res.json({ Error: "Name is exist. Please enter again" });
+        const messageError =
+          "Description has been existed. Please enter description again";
+        return error(res, messageError, 200);
       }
-      const newFeed = await this.feedService.create(form);
-      await User.findByIdAndUpdate(
-        "5f54a0fd94273a271497a1d",
+
+      formFeed.createdBy = display_name;
+      formFeed.userId = _id;
+
+      const feed = await this.feedService.create(formFeed);
+
+      const newLike = new Like({
+        likeType: LikeType.Feed,
+        likeReferenceId: feed._id,
+      });
+      await newLike.save();
+
+      const messageSuccess = "You have been created feed successfully";
+      return success(res, serializeCreateFeed(feed), messageSuccess);
+    } catch (err) {
+      return error(res, err, 200);
+    }
+  };
+
+  updateFeed = async (req: Request, res: Response) => {
+    try {
+      const { _id, display_name } = req.authorized_user;
+      const { feed_id } = req.params;
+
+      const check: any = await Feed.find({
+        _id: feed_id,
+        status: StatusCode.Active,
+      });
+
+      if (check.length === 0) {
+        const messageError = "Feed has been deleted. You can not Feed";
+        return error(res, messageError, 200);
+      }
+
+      if (check[0].createdBy !== display_name) {
+        const messageError = "You cannot update feed, you aren't owner of feed";
+        return error(res, messageError, 200);
+      }
+
+      const formFeed: IFeedUpdateForm = req.body;
+      const arr = await Feed.find({
+        description: formFeed.description,
+      });
+
+      if (check[0].description === formFeed.description || arr.length > 0) {
+        const messageError = "Sorry!. Please enter description again";
+        return error(res, messageError, 200);
+      }
+
+      const newFeed: any = await Feed.findByIdAndUpdate(
+        feed_id,
         {
-          $push: {
-            feeds: newFeed,
+          $set: {
+            description: formFeed.description,
+            // updatedBy: display_name,
+            attachments: formFeed.attachments,
+            isUpdated: true,
           },
         },
         {
           new: true,
+          useFindAndModify: false,
         }
       );
-
-      return res.json(serializeCreateFeed(newFeed));
-    } catch (error) {
-      return res.json({ Error: error });
+      const messageSuccess = "Feed have updated successfully";
+      return success(res, serializeUpdateFeed(newFeed), messageSuccess);
+    } catch (err) {
+      return error(res, err, 200);
     }
   };
 
-  updateFeed = async (req: Request, res: Response) => {};
+  addLike = async (req: Request, res: Response) => {
+    try {
+      const { feed_id } = req.params;
 
-  deleteFeed = async (req: Request, res: Response) => {};
+      const check: any = await Feed.find({
+        _id: feed_id,
+        status: StatusCode.Active,
+      });
+
+      if (check.length === 0) {
+        const messageError = "Feed has been deleted. You can not add like";
+        return error(res, messageError, 200);
+      }
+
+      await Feed.updateOne(
+        { _id: feed_id },
+        {
+          $inc: { countLike: 1 },
+        }
+      );
+
+      const result = await Feed.find(
+        {
+          _id: feed_id,
+        },
+        "description countLike countCommentFeed commentsFeed createdBy createdAt"
+      );
+      return success(res, result);
+    } catch (err) {
+      return error(res, err, 200);
+    }
+  };
+
+  minusLike = async (req: Request, res: Response) => {
+    try {
+      const { feed_id } = req.params;
+
+      const check: any = await Feed.find({
+        _id: feed_id,
+        status: StatusCode.Active,
+      });
+
+      if (check.length === 0) {
+        const messageError = "Feed has been deleted. You can not minus like";
+        return error(res, messageError, 200);
+      }
+
+      await Feed.updateOne(
+        { _id: feed_id },
+        {
+          $inc: { countLike: -1 },
+        }
+      );
+
+      const result = await Feed.find(
+        {
+          _id: feed_id,
+        },
+        "description countLike countCommentFeed commentsFeed createdBy createdAt"
+      );
+      return success(res, result);
+    } catch (err) {
+      return error(res, err, 200);
+    }
+  };
+
+  deleteFeed = async (req: Request, res: Response) => {
+    try {
+      const { display_name, role } = req.authorized_user;
+      const { feed_id } = req.params;
+
+      const check: any = await Feed.find({
+        _id: feed_id,
+        status: StatusCode.Active,
+      });
+      if (check.length === 0) {
+        const messageError = "Feed has been deleted. You can not delete";
+        return error(res, messageError, 200);
+      }
+      if (
+        role === RoleCode.Admin ||
+        check[0].createdBy === display_name ||
+        role === RoleCode.Moderator
+      ) {
+        await Feed.findByIdAndUpdate(feed_id, {
+          $set: {
+            status: StatusCode.Deactive,
+          },
+        });
+
+        await this.feedService.callbackDeleteCommentPost(feed_id);
+
+        const arr: any = await CommentFeed.find({ feedId: feed_id });
+
+        await Feed.updateOne(
+          { _id: feed_id },
+          {
+            $set: {
+              commentsFeed: arr,
+            },
+          }
+        );
+        const messageSuccess = "You deleted feed successfully";
+        return success(res, null, messageSuccess);
+      }
+      const messageError = "You cannot deleted feed";
+      return error(res, messageError, 200);
+    } catch (err) {
+      return error(res, err, 200);
+    }
+  };
 }

@@ -47,3 +47,5 @@ export class CommentPostRoute {
       .patch(isAuth, this.commentPostController.minusLike);
   }
 }
+
+

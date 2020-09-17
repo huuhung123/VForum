@@ -29,5 +29,13 @@ export class FeedRoute {
         this.feedController.updateFeed
       )
       .delete(isAuth, this.feedController.deleteFeed);
+
+    app
+      .route("/v1/api/feed/:feed_id/addlike")
+      .patch(isAuth, this.feedController.addLike);
+
+    app
+      .route("/v1/api/feed/:feed_id/minuslike")
+      .patch(isAuth, this.feedController.minusLike);
   }
 }
