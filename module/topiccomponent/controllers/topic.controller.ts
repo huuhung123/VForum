@@ -24,7 +24,7 @@ export class TopicController {
       ).sort({ updatedAt: -1 });
       return success(res, result);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -41,7 +41,7 @@ export class TopicController {
       );
       return success(res, result);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -74,7 +74,7 @@ export class TopicController {
       const messageSuccess = "You have been created topic successfully";
       return success(res, serializeCreateTopic(topic), messageSuccess);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -131,7 +131,7 @@ export class TopicController {
       const messageSuccess = "Topic have updated successfully";
       return success(res, serializeUpdateTopic(topic), messageSuccess);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -166,7 +166,7 @@ export class TopicController {
       const messageError = "You cannot deleted topic";
       return error(res, messageError, 200);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 }

@@ -76,7 +76,7 @@ export class UserController {
       const messageSuccess = "User has been registed successfully";
       return success(res, serializeCreateUser(user), messageSuccess, 201);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -129,7 +129,7 @@ export class UserController {
       const messageError = "Email hasn't been existed";
       return error(res, messageError, 200);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -183,7 +183,7 @@ export class UserController {
       const messageSuccess = "You have logouted successfully";
       return success(res, null, messageSuccess, 200);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -225,7 +225,7 @@ export class UserController {
       const messageError = "Oldpassword user unsuccessfully";
       return error(res, messageError, 200);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -259,7 +259,7 @@ export class UserController {
       const messageError = "You cannot delete user, you aren't admin";
       return error(res, messageError, 403);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -278,7 +278,7 @@ export class UserController {
       const messageError = "You cannot get user, you aren't admin";
       return error(res, messageError, 403);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -292,7 +292,7 @@ export class UserController {
       const messageSuccess = "You have get user successfully";
       return success(res, result, messageSuccess);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -310,7 +310,7 @@ export class UserController {
       const messageError = "You cannot get all user, you aren't admin";
       return error(res, messageError, 403);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -357,7 +357,7 @@ export class UserController {
       const messageError = "You cannot change role user, you aren't admin";
       return error(res, messageError, 403);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -365,7 +365,7 @@ export class UserController {
     try {
       //
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 

@@ -23,7 +23,7 @@ export class GroupController {
       ).sort({ updatedAt: -1 });
       return success(res, result);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -40,7 +40,7 @@ export class GroupController {
       );
       return success(res, result);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
   // xoa roi tao cai moi thi ntn ???
@@ -67,7 +67,7 @@ export class GroupController {
       const messageError = "You cannot create group, you aren't admin";
       return error(res, messageError, 200);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -115,7 +115,7 @@ export class GroupController {
       const messageError = "You cannot update group";
       return error(res, messageError, 200);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -151,7 +151,7 @@ export class GroupController {
       const messageError = "You cannot delete group";
       return error(res, messageError, 200);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 }

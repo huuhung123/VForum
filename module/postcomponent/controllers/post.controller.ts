@@ -29,7 +29,7 @@ export class PostController {
       ).sort({ updatedAt: -1 });
       return success(res, result);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -46,7 +46,7 @@ export class PostController {
       );
       return success(res, result);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -82,7 +82,7 @@ export class PostController {
       const messageSuccess = "You have been created post successfully";
       return success(res, serializeCreatePost(post), messageSuccess);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -140,7 +140,7 @@ export class PostController {
       const messageSuccess = "Post have updated successfully";
       return success(res, serializeUpdatePost(newPost), messageSuccess);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -174,7 +174,7 @@ export class PostController {
       );
       return success(res, result);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -208,7 +208,7 @@ export class PostController {
       );
       return success(res, result);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -254,7 +254,7 @@ export class PostController {
       const messageError = "You cannot deleted post";
       return error(res, messageError, 200);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 }

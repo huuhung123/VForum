@@ -24,13 +24,18 @@ export const success = (
   // application.log.debug("Res State", res.stateId, "After .send()");
 };
 
-export const error = (res: Response, message: any, code?: any, opts?: any) => {
+export const error = (
+  res: Response,
+  message: string,
+  code?: any,
+  opts?: any
+) => {
   const result = {
     success: false,
     result: null,
-    message: message,
+    message: message || "Error",
     code: code || 400,
-    options: opts || null
+    options: opts || null,
   };
   // Override to not show
   // if (opts) {

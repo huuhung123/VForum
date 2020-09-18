@@ -32,7 +32,7 @@ export class CommentPostController {
       }).sort({ updatedAt: -1 });
       return success(res, result);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -46,7 +46,7 @@ export class CommentPostController {
       });
       return success(res, result);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -85,7 +85,7 @@ export class CommentPostController {
       const messageSuccess = "You have been created commentpost successfully";
       return success(res, serialCreateCommentPost(commentpost), messageSuccess);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -134,7 +134,7 @@ export class CommentPostController {
         messageSuccess
       );
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -165,7 +165,7 @@ export class CommentPostController {
       });
       return success(res, result);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -196,7 +196,7 @@ export class CommentPostController {
       });
       return success(res, result);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
@@ -237,7 +237,7 @@ export class CommentPostController {
       const messageError = "You cannot deleted commentpost";
       return error(res, messageError, 200);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 }
