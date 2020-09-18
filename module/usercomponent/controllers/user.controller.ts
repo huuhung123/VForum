@@ -360,7 +360,7 @@ export class UserController {
       return error(res, "Error", 200);
     }
   };
-
+  
   getRecover = async (req: Request, res: Response) => {
     try {
       //

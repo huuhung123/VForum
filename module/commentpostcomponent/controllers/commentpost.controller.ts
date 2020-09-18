@@ -215,7 +215,7 @@ export class CommentPostController {
       }
       if (
         role === RoleCode.Admin ||
-        _id === check._id ||
+        _id === check[0]._id ||
         role === RoleCode.Moderator
       ) {
         const newCommentPost = await CommentPost.findByIdAndUpdate(comment_id, {
