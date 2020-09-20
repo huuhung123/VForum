@@ -1,8 +1,9 @@
 import express from "express";
-import { GroupController } from "../controllers/group.controller";
 
 import { commonValidateBody } from "../../../middlewares/validatebody.middleware";
 import { isAuth } from "../../../middlewares/auth.middleware";
+
+import { GroupController } from "../controllers/group.controller";
 
 import { GroupCreateSchema, GroupUpdateSchema } from "../DTO/group.dto";
 

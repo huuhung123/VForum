@@ -1,6 +1,3 @@
-import { Request, Response } from "express";
-import mongoose from "mongoose";
-
 export abstract class BaseService {
   model: any;
 

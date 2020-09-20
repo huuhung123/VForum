@@ -1,5 +1,5 @@
-import { IModelBase, SchemaBase } from "./common.model";
 import mongoose, { Document } from "mongoose";
+
 export const TokenSchemaName = "Token";
 
 export interface IToken extends Document {
@@ -10,8 +10,6 @@ export interface IToken extends Document {
   expire_refresh: string;
   createdAt: Date;
   updatedAt: Date;
-  // device_push_token: string;
-  // device_identifier: string;
 }
 
 const TokenSchema = new mongoose.Schema(
@@ -38,15 +36,6 @@ const TokenSchema = new mongoose.Schema(
       required: true,
       default: "2h",
     },
-
-    // device_push_token: {
-    //   type: String,
-    //  required: true
-    // },
-    // device_identifier: {
-    //   type: String,
-    //  required: true
-    // }
   },
   {
     timestamps: true,

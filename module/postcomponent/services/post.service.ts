@@ -1,6 +1,7 @@
 import { BaseService } from "../../../common/service/common.service";
-import { CommentPost } from "../../../common/model/commentpost.model";
+
 import { StatusCode } from "../../../common/model/common.model";
+import { CommentPost } from "../../../common/model/commentpost.model";
 
 export class PostService extends BaseService {
   constructor(Post: any) {
@@ -14,7 +15,7 @@ export class PostService extends BaseService {
         {
           $set: {
             status: StatusCode.Deactive,
-          }
+          },
         }
       );
     } catch (error) {

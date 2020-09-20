@@ -1,4 +1,5 @@
 import express from "express";
+
 import { CommentPostController } from "../controllers/commentpost.controller";
 
 import { commonValidateBody } from "../../../middlewares/validatebody.middleware";
@@ -47,5 +48,3 @@ export class CommentPostRoute {
       .patch(isAuth, this.commentPostController.minusLike);
   }
 }
-
-

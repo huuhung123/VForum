@@ -19,7 +19,6 @@ export function serializeCreatePost(
   };
 }
 
-
 export interface IPostUpdateResponse {
   id: string;
   updatedAt: string;
@@ -35,6 +34,6 @@ export function serializeUpdatePost(
   return {
     id: model.id,
     updatedAt: model.updatedAt,
-    isUpdated: model.isUpdated
+    isUpdated: model.isUpdated,
   };
 }

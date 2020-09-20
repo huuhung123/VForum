@@ -1,4 +1,5 @@
 import express from "express";
+
 import { TopicController } from "../controllers/topic.controller";
 
 import { commonValidateBody } from "../../../middlewares/validatebody.middleware";

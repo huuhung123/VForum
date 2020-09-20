@@ -1,8 +1,8 @@
-import { IModelBase, SchemaBase } from "./common.model";
 import mongoose, { Schema } from "mongoose";
 
-export const CommentFeedSchemaName = "CommentFeed";
+import { IModelBase, SchemaBase } from "./common.model";
 
+export const CommentFeedSchemaName = "CommentFeed";
 export interface ICommentFeed extends IModelBase {
   feedId: string;
   description: string;

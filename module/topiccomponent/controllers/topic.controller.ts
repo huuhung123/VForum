@@ -1,17 +1,18 @@
 import { Request, Response } from "express";
+
 import { TopicService } from "../services/topic.service";
+import { success, error } from "../../../common/service/response.service";
+
+import { StatusCode } from "../../../common/model/common.model";
+import { Topic } from "../../../common/model/topic.model";
+import { RoleCode } from "../../../common/model/user.model";
+
 import { ITopicCreateForm, ITopicUpdateForm } from "../models/topic.model";
 import {
   serializeCreateTopic,
   serializeUpdateTopic,
 } from "../serializers/topic.serializer";
 
-import { Topic } from "../../../common/model/topic.model";
-import { Group } from "../../../common/model/group.model";
-import { StatusCode } from "../../../common/model/common.model";
-import { RoleCode, User } from "../../../common/model/user.model";
-
-import { success, error } from "../../../common/service/response.service";
 export class TopicController {
   public topicService: TopicService = new TopicService(Topic);
 
@@ -81,7 +82,7 @@ export class TopicController {
   updateTopic = async (req: Request, res: Response) => {
     try {
       const { display_name, role } = req.authorized_user;
-      const { group_id, topic_id } = req.params;
+      const { topic_id } = req.params;
 
       const check: any = await Topic.find({
         _id: topic_id,
@@ -119,7 +120,6 @@ export class TopicController {
           $set: {
             name: formTopic.name,
             description: formTopic.description,
-            // updatedBy: display_name,
             isUpdated: true,
           },
         },
@@ -138,7 +138,7 @@ export class TopicController {
   deleteTopic = async (req: Request, res: Response) => {
     try {
       const { display_name, role } = req.authorized_user;
-      const { group_id, topic_id } = req.params;
+      const { topic_id } = req.params;
 
       const check: any = await Topic.find({
         _id: topic_id,
@@ -158,7 +158,6 @@ export class TopicController {
         });
 
         await this.topicService.callbackDeletePost(topic_id);
-        // await this.topicService.callbackDeleteCommentPost(topic_id);
 
         const messageSuccess = "You deleted topic successfully";
         return success(res, null, messageSuccess);

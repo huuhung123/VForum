@@ -1,5 +1,15 @@
 import { Request, Response } from "express";
+
 import { CommentPostService } from "../services/commentpost.service";
+import { success, error } from "../../../common/service/response.service";
+
+import { StatusCode } from "../../../common/model/common.model";
+import { CommentPost } from "../../../common/model/commentpost.model";
+import { Post } from "../../../common/model/post.model";
+import { RoleCode } from "../../../common/model/user.model";
+import { Like } from "../../../common/model/like.model";
+import { LikeType } from "../../../common/model/like.model";
+
 import {
   ICommentPostCreateForm,
   ICommentPostUpdateForm,
@@ -8,15 +18,6 @@ import {
   serialCreateCommentPost,
   serialUpdateCommentPost,
 } from "../serializers/commentpost.serializer";
-
-import { CommentPost } from "../../../common/model/commentpost.model";
-import { Post } from "../../../common/model/post.model";
-import { RoleCode } from "../../../common/model/user.model";
-import { StatusCode } from "../../../common/model/common.model";
-import { Like } from "../../../common/model/like.model";
-
-import { LikeType } from "../../../common/model/like.model";
-import { success, error } from "../../../common/service/response.service";
 
 export class CommentPostController {
   public commentPostService: CommentPostService = new CommentPostService(
@@ -52,7 +53,7 @@ export class CommentPostController {
 
   createCommentPost = async (req: Request, res: Response) => {
     try {
-      const { _id, display_name } = req.authorized_user;
+      const { display_name } = req.authorized_user;
       const { post_id } = req.params;
       const formComment: ICommentPostCreateForm = req.body;
 
@@ -91,7 +92,7 @@ export class CommentPostController {
 
   updateCommentPost = async (req: Request, res: Response) => {
     try {
-      const { _id, display_name } = req.authorized_user;
+      const { display_name } = req.authorized_user;
       const { post_id, comment_id } = req.params;
 
       const check: any = await CommentPost.find({
@@ -140,7 +141,7 @@ export class CommentPostController {
 
   addLike = async (req: Request, res: Response) => {
     try {
-      const { post_id, comment_id } = req.params;
+      const { comment_id } = req.params;
 
       const check: any = await CommentPost.find({
         _id: comment_id,
@@ -171,7 +172,7 @@ export class CommentPostController {
 
   minusLike = async (req: Request, res: Response) => {
     try {
-      const { post_id, comment_id } = req.params;
+      const { comment_id } = req.params;
 
       const check: any = await CommentPost.find({
         _id: comment_id,
@@ -218,7 +219,7 @@ export class CommentPostController {
         _id === check[0]._id ||
         role === RoleCode.Moderator
       ) {
-        const newCommentPost = await CommentPost.findByIdAndUpdate(comment_id, {
+        await CommentPost.findByIdAndUpdate(comment_id, {
           $set: {
             status: StatusCode.Deactive,
           },

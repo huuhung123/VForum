@@ -1,21 +1,20 @@
 import { Request, Response } from "express";
+
 import { PostService } from "../services/post.service";
+import { success, error } from "../../../common/service/response.service";
+
+import { StatusCode } from "../../../common/model/common.model";
+import { Post } from "../../../common/model/post.model";
+import { Like } from "../../../common/model/like.model";
+import { CommentPost } from "../../../common/model/commentpost.model";
+import { RoleCode } from "../../../common/model/user.model";
+import { LikeType } from "../../../common/model/like.model";
+
 import { IPostCreateForm, IPostUpdateForm } from "../models/post.model";
 import {
   serializeCreatePost,
   serializeUpdatePost,
 } from "../serializers/post.serializer";
-
-import { Post } from "../../../common/model/post.model";
-import { Topic } from "../../../common/model/topic.model";
-import { Group } from "../../../common/model/group.model";
-import { Like } from "../../../common/model/like.model";
-import { CommentPost } from "../../../common/model/commentpost.model";
-
-import { RoleCode } from "../../../common/model/user.model";
-import { StatusCode } from "../../../common/model/common.model";
-import { success, error } from "../../../common/service/response.service";
-import { LikeType, LikeReferenceId } from "../../../common/model/like.model";
 
 export class PostController {
   public postservice: PostService = new PostService(Post);
@@ -53,7 +52,7 @@ export class PostController {
   createPost = async (req: Request, res: Response) => {
     try {
       const { _id, display_name } = req.authorized_user;
-      const { group_id, topic_id } = req.params;
+      const { topic_id } = req.params;
 
       const formPost: IPostCreateForm = req.body;
       const check = await Post.find({
@@ -88,7 +87,7 @@ export class PostController {
 
   updatePost = async (req: Request, res: Response) => {
     try {
-      const { _id, display_name } = req.authorized_user;
+      const { display_name } = req.authorized_user;
       const { post_id } = req.params;
 
       const check: any = await Post.find({
@@ -128,7 +127,6 @@ export class PostController {
           $set: {
             title: formPost.title,
             description: formPost.description,
-            // updatedBy: display_name,
             isUpdated: true,
           },
         },

@@ -1,4 +1,5 @@
 import express from "express";
+
 import { PostController } from "../controllers/post.controller";
 
 import { commonValidateBody } from "../../../middlewares/validatebody.middleware";

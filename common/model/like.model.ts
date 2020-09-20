@@ -1,5 +1,6 @@
-import { IModelBase, SchemaBase } from "./common.model";
 import mongoose, { Schema } from "mongoose";
+
+import { IModelBase, SchemaBase } from "./common.model";
 
 export const LikeSchemaName = "Like";
 
@@ -36,12 +37,6 @@ const LikeSchema = new Schema(
     },
     likeReferenceId: {
       type: String,
-      // enum: [
-      //   LikeReferenceId.PostId,
-      //   LikeReferenceId.CommentPostId,
-      //   LikeReferenceId.FeedId,
-      //   LikeReferenceId.CommentFeedId,
-      // ],
       required: true,
     },
   }),

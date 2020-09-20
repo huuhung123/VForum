@@ -1,17 +1,18 @@
 import { Request, Response } from "express";
+
 import { GroupService } from "../services/group.service";
+import { success, error } from "../../../common/service/response.service";
+
+import { StatusCode } from "../../../common/model/common.model";
+import { Group } from "../../../common/model/group.model";
+import { RoleCode } from "../../../common/model/user.model";
+
 import { IGroupCreateForm, IGroupUpdateForm } from "../models/group.model";
 import {
   serialCreateGroup,
   serialUpdateGroup,
 } from "../serializers/group.serializer";
 
-import { Group } from "../../../common/model/group.model";
-
-import { StatusCode } from "../../../common/model/common.model";
-import { RoleCode } from "../../../common/model/user.model";
-
-import { success, error, raw } from "../../../common/service/response.service";
 export class GroupController {
   public groupService: GroupService = new GroupService(Group);
 
@@ -43,7 +44,7 @@ export class GroupController {
       return error(res, "Error", 200);
     }
   };
-  // xoa roi tao cai moi thi ntn ???
+
   createGroup = async (req: Request, res: Response) => {
     try {
       const { role, display_name } = req.authorized_user;
@@ -73,7 +74,7 @@ export class GroupController {
 
   updateGroup = async (req: Request, res: Response) => {
     try {
-      const { role, display_name } = req.authorized_user;
+      const { role } = req.authorized_user;
       const { group_id } = req.params;
 
       if (role === RoleCode.Admin || role === RoleCode.Moderator) {
@@ -100,7 +101,6 @@ export class GroupController {
           {
             $set: {
               name: formGroup.name,
-              // updatedBy: display_name,
               isUpdated: true,
             },
           },
@@ -142,7 +142,6 @@ export class GroupController {
 
         await this.groupService.callbackDeleteTopic(group_id);
         await this.groupService.callbackDeletePost(group_id);
-        // await this.groupService.callbackDeleteCommentPost(group_id);
 
         const messageSuccess = "You deleted group successfully";
         return success(res, null, messageSuccess);

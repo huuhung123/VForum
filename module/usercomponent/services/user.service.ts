@@ -4,5 +4,4 @@ export class UserService extends BaseService {
   constructor(User: any) {
     super(User);
   }
-
 }

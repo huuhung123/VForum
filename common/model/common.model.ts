@@ -1,10 +1,4 @@
-import mongoose, {
-  Document,
-  SchemaDefinition,
-  SchemaTypes,
-  Schema,
-  Types,
-} from "mongoose";
+import mongoose, { Document, SchemaDefinition } from "mongoose";
 
 export const UserSchemaName = "User";
 export const GroupSchemaName = "Group";
@@ -24,7 +18,6 @@ export interface IModelBase extends Document {
   _id: string;
   status: string;
   createdBy: string;
-  // updatedBy?: string;
   isUpdated: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -43,12 +36,6 @@ export function SchemaBase(schema: mongoose.SchemaDefinition) {
       required: true,
       default: true,
     },
-
-    // updatedBy: {
-    //   type: String,
-    //   required: true,
-    //   default: true,
-    // },
     isUpdated: {
       type: Boolean,
       required: true,

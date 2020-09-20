@@ -1,14 +1,14 @@
-import { IModelBase, SchemaBase } from "./common.model";
 import mongoose, { Types, Schema } from "mongoose";
 
-export const FeedSchemaName = "Feed";
+import { IModelBase, SchemaBase } from "./common.model";
 
+export const FeedSchemaName = "Feed";
 export interface IFeed extends IModelBase {
   description: string;
   tagging: Types.Array<object>;
   userId: string;
   attachments: Types.Array<object>;
-  commentsFeed: Types.Array<object>; // 2
+  commentsFeed: Types.Array<object>;
   countLike: number;
   countCommentFeed: number;
 }

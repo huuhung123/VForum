@@ -1,5 +1,6 @@
+import mongoose from "mongoose";
+
 import { IModelBase, SchemaBase } from "./common.model";
-import mongoose, { Types } from "mongoose";
 
 export enum GenderCode {
   Male = "male",

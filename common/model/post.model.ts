@@ -1,5 +1,6 @@
-import { IModelBase, SchemaBase } from "./common.model";
 import mongoose, { Types, Schema } from "mongoose";
+
+import { IModelBase, SchemaBase } from "./common.model";
 
 export const PostSchemaName = "Post";
 
@@ -7,7 +8,7 @@ export interface IPost extends IModelBase {
   title: string;
   description: string;
   userId: string;
-  commentsPost: Types.Array<object>; // 2
+  commentsPost: Types.Array<object>;
   countLike: number;
   countCommentPost: number;
   topicId: string;

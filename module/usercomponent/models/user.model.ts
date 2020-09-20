@@ -1,5 +1,4 @@
 import { RoleCode } from "../../../common/model/user.model";
-import { string } from "joi";
 
 export interface IUserCreateForm {
   id: string;
@@ -19,7 +18,6 @@ export interface IUserUpdateForm {
   oldpassword: string;
   newpassword: string;
   renewpassword: string;
-  // updatedBy: string;
   isUpdated: boolean;
   updatedAt: string;
   id: string;

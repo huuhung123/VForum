@@ -1,8 +1,8 @@
-import { IModelBase, SchemaBase } from "./common.model";
 import mongoose, { Schema } from "mongoose";
 
-export const CommentPostSchemaName = "CommentPost";
+import { IModelBase, SchemaBase } from "./common.model";
 
+export const CommentPostSchemaName = "CommentPost";
 export interface ICommentPost extends IModelBase {
   postId: string;
   description: string;

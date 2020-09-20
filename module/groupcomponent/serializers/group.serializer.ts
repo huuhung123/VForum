@@ -21,7 +21,6 @@ export function serialCreateGroup(
 export interface IGroupUpdateResponse {
   id: string;
   updatedAt: string;
-  // updatedBy: string;
   isUpdated: boolean;
 }
 

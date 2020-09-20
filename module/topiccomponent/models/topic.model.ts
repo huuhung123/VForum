@@ -1,5 +1,3 @@
-import { Types } from "mongoose";
-
 export interface ITopicCreateForm {
   id: string;
   name: string;
@@ -14,6 +12,5 @@ export interface ITopicUpdateForm {
   name: string;
   description: string;
   updatedAt: string;
-
   isUpdated: boolean;
 }

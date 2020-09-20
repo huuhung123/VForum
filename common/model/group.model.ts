@@ -1,5 +1,6 @@
+import mongoose from "mongoose";
+
 import { IModelBase, SchemaBase } from "./common.model";
-import mongoose, { Types, Schema } from "mongoose";
 
 export const GroupSchemaName = "Group";
 

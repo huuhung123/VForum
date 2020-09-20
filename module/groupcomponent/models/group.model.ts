@@ -9,6 +9,5 @@ export interface IGroupUpdateForm {
   id: string;
   name: string;
   updatedAt: string;
-  // updatedBy: string;
   isUpdated: boolean;
 }

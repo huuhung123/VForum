@@ -1,8 +1,6 @@
 // response.service.ts
 import { Response } from "express";
-import { any, string } from "joi";
 
-// Return response for API as okay or error as json to request
 export const success = (
   res: Response,
   data: any,
@@ -21,7 +19,6 @@ export const success = (
       error: null,
     });
   }
-  // application.log.debug("Res State", res.stateId, "After .send()");
 };
 
 export const error = (
@@ -37,13 +34,6 @@ export const error = (
     code: code || 400,
     options: opts || null,
   };
-  // Override to not show
-  // if (opts) {
-  //   if (opts.errorType) {
-  //     result.errorType = opts.errorType;
-  //   }
-  //   // result.errorType = "Invalid";
-  // }
 
   if ((!opts || !opts.loggingOnly) && !res.headersSent) {
     res.status(code || 400);

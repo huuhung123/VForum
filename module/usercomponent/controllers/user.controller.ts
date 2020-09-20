@@ -1,5 +1,24 @@
 import { Request, Response } from "express";
+import bcrypt from "bcrypt";
+
+import { StatusCode } from "../../../common/model/common.model";
+import { User, RoleCode } from "../../../common/model/user.model";
+import { Token } from "../../../common/model/token.model";
+
 import { UserService } from "../services/user.service";
+import { success, error } from "../../../common/service/response.service";
+import {
+  ACCESS_TOKEN_LIFE,
+  ACCESS_TOKEN_SECRET,
+  REFRESH_TOKEN_LIFE,
+  REFRESH_TOKEN_SECRET,
+} from "../../../config/env";
+
+import {
+  generateToken,
+  verifyToken,
+} from "../../../middlewares/helper.middleware";
+
 import {
   IUserCreateForm,
   IUserLoginForm,
@@ -9,39 +28,6 @@ import {
   serializeCreateUser,
   serializeUpdateUser,
 } from "../serializers/user.serializer";
-
-import bcrypt from "bcrypt";
-
-import { User, RoleCode } from "../../../common/model/user.model";
-import { StatusCode } from "../../../common/model/common.model";
-import { Group } from "../../../common/model/group.model";
-import { Topic } from "../../../common/model/topic.model";
-import { Post } from "../../../common/model/post.model";
-import { CommentPost } from "../../../common/model/commentpost.model";
-
-import { Token } from "../../../common/model/token.model";
-import {
-  generateToken,
-  verifyToken,
-} from "../../../middlewares/helper.middleware";
-
-import {
-  ACCESS_TOKEN_LIFE,
-  ACCESS_TOKEN_SECRET,
-  REFRESH_TOKEN_LIFE,
-  REFRESH_TOKEN_SECRET,
-} from "../../../config/env";
-
-import { success, error } from "../../../common/service/response.service";
-import { decryptRegister } from "../../../middlewares/authRSA.middleware";
-import {
-  SendGridEmail,
-  SendGridContent,
-  SendGridService,
-  SendGridMail,
-} from "../../../common/service/email.service";
-
-import * as sgMail from "@sendgrid/mail";
 
 export class UserController {
   public userService: UserService = new UserService(User);
@@ -55,21 +41,6 @@ export class UserController {
         return error(res, messageError, 200);
       }
 
-      // const mail = new SendGridMail(
-      //   new SendGridEmail("from@example.com"),
-      //   "Sending with SendGrid is Fun",
-      //   new SendGridEmail("dupbolun2012@gmail.com"),
-      //   new SendGridContent("text/plain", "Email sent to to@example.com")
-      // );
-
-      // const sendGridService: SendGridService = new SendGridService(
-      //   "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"
-      // );
-      // sendGridService.send(mail);
-
-      // form.display_name = decryptRegister(form.display_name);
-      // form.email = decryptRegister(form.email);
-      // form.gender = decryptRegister(form.gender);
       form.password = await bcrypt.hash(req.body.password, 10);
 
       const user = await this.userService.create(form);
@@ -317,7 +288,7 @@ export class UserController {
   changeRoleUser = async (req: Request, res: Response) => {
     try {
       const { role } = req.authorized_user;
-      const { newRole } = req.body; // ???
+      const { newRole } = req.body;
       if (role === RoleCode.Admin) {
         const { user_id } = req.params;
         const user: any = await User.findById(user_id);
@@ -358,82 +329,6 @@ export class UserController {
       return error(res, messageError, 403);
     } catch (err) {
       return error(res, "Error", 200);
-    }
-  };
-  
-  getRecover = async (req: Request, res: Response) => {
-    try {
-      //
-    } catch (err) {
-      return error(res, "Error", 200);
-    }
-  };
-
-  patchRecover = async (req: Request, res: Response) => {
-    const { group_id, topic_id, post_id, comment_id } = req.params;
-    if (group_id !== undefined) {
-      await Group.findByIdAndUpdate(
-        group_id,
-        {
-          $set: {
-            status: StatusCode.Active,
-          },
-        },
-        {
-          new: true,
-          useFindAndModify: false,
-        }
-      );
-      const messageSuccess = "You have recovered group successfully";
-      return success(res, null, messageSuccess);
-    }
-    if (topic_id !== undefined) {
-      await Topic.findByIdAndUpdate(
-        topic_id,
-        {
-          $set: {
-            status: StatusCode.Active,
-          },
-        },
-        {
-          new: true,
-          useFindAndModify: false,
-        }
-      );
-      const messageSuccess = "You have recovered topic successfully";
-      return success(res, null, messageSuccess);
-    }
-    if (post_id !== undefined) {
-      await Post.findByIdAndUpdate(
-        post_id,
-        {
-          $set: {
-            status: StatusCode.Active,
-          },
-        },
-        {
-          new: true,
-          useFindAndModify: false,
-        }
-      );
-      const messageSuccess = "You have recovered post successfully";
-      return success(res, null, messageSuccess);
-    }
-    if (comment_id !== undefined) {
-      await CommentPost.findByIdAndUpdate(
-        comment_id,
-        {
-          $set: {
-            status: StatusCode.Active,
-          },
-        },
-        {
-          new: true,
-          useFindAndModify: false,
-        }
-      );
-      const messageSuccess = "You have recovered comment successfully";
-      return success(res, null, messageSuccess);
     }
   };
 }

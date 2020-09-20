@@ -9,4 +9,3 @@ export const TopicUpdateSchema = Joi.object({
   name: Joi.string().min(3).required(),
   description: Joi.string().min(3).required(),
 });
-
