@@ -89,6 +89,7 @@ export class UserController {
             accessToken,
             refreshToken,
             userId: user[0]._id,
+            role: user[0].role,
           };
 
           const messageSuccess = "Token has been created successfully";
