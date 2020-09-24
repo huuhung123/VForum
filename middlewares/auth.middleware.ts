@@ -1,4 +1,4 @@
-import { generateToken, verifyToken } from "./helper.middleware";
+import { verifyToken } from "./helper.middleware";
 import { Request, Response, NextFunction } from "express";
 import { Token } from "../common/model/token.model";
 import { ACCESS_TOKEN_SECRET } from "../config/env";

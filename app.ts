@@ -1,4 +1,4 @@
-import express, { Router } from "express";
+import express from "express";
 import mongoose from "mongoose";
 
 import { UserRoute } from "./module/usercomponent/routes/user.route";
@@ -13,7 +13,7 @@ import morgan from "morgan";
 import * as dotenv from "dotenv";
 import cors from "cors";
 import session from "express-session";
-import connectMongo, { MongoStore } from "connect-mongo";
+import connectMongo from "connect-mongo";
 
 import { MONGO_URL, SESS_NAME, SESS_PASS, SESS_MAXAGE } from "./config/env";
 class Server {

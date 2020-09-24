@@ -7,7 +7,6 @@ import {
 } from "../serializers/feed.serializer";
 
 import { Feed } from "../../../common/model/feed.model";
-import { User } from "../../../common/model/user.model";
 
 import { success, error } from "../../../common/service/response.service";
 import { StatusCode } from "../../../common/model/common.model";
@@ -19,6 +18,7 @@ export class FeedController {
   public feedService: FeedService = new FeedService(Feed);
 
   getAllFeed = async (req: Request, res: Response) => {
+    const { _id } = req.authorized_user;
     try {
       const result = await Feed.find(
         { status: StatusCode.Active },
@@ -82,7 +82,7 @@ export class FeedController {
 
   updateFeed = async (req: Request, res: Response) => {
     try {
-      const { _id, display_name } = req.authorized_user;
+      const { display_name } = req.authorized_user;
       const { feed_id } = req.params;
 
       const check: any = await Feed.find({

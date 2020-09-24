@@ -7,7 +7,7 @@ import { StatusCode } from "../../../common/model/common.model";
 import { Post } from "../../../common/model/post.model";
 import { Like } from "../../../common/model/like.model";
 import { CommentPost } from "../../../common/model/commentpost.model";
-import { RoleCode, User } from "../../../common/model/user.model";
+import { RoleCode } from "../../../common/model/user.model";
 import { LikeType } from "../../../common/model/like.model";
 
 import { IPostCreateForm, IPostUpdateForm } from "../models/post.model";
@@ -37,7 +37,6 @@ export class PostController {
   getPost = async (req: Request, res: Response) => {
     try {
       const { post_id, topic_id } = req.params;
-      const { _id } = req.authorized_user;
       const result = await Post.find(
         {
           _id: post_id,

@@ -61,11 +61,6 @@ export class UserController {
       if (user.length === 1) {
         const check = await bcrypt.compare(form.password, user[0].password);
         if (check) {
-          const accessTokenLife = ACCESS_TOKEN_LIFE;
-          const accessTokenSecret = ACCESS_TOKEN_SECRET;
-          const refreshTokenLife = REFRESH_TOKEN_LIFE;
-          const refreshTokenSecret = REFRESH_TOKEN_SECRET;
-
           const accessToken = await generateToken(
             user[0],
             ACCESS_TOKEN_SECRET,
@@ -162,9 +157,8 @@ export class UserController {
   updateUser = async (req: Request, res: Response) => {
     try {
       const { oldpassword, newpassword, renewpassword } = req.body;
-      const form: IUserUpdateForm = req.body;
 
-      const { _id, role } = req.authorized_user;
+      const { _id } = req.authorized_user;
       const user: any = await User.findById(_id);
       const check = await bcrypt.compare(oldpassword, user.password);
 
@@ -187,7 +181,6 @@ export class UserController {
             }
           );
 
-          const result: any = await User.findById(_id);
           const messageSuccess = "User have been updated successfully";
           return success(res, serializeUpdateUser(user), messageSuccess, 201);
         }
@@ -256,7 +249,7 @@ export class UserController {
 
   getUser = async (req: Request, res: Response) => {
     try {
-      const { _id, role } = req.authorized_user;
+      const { _id } = req.authorized_user;
       const result = await User.findById(
         _id,
         "_id email display_name gender role"

@@ -1,4 +1,4 @@
-import mongoose, { Types } from "mongoose";
+import mongoose from "mongoose";
 
 import { IModelBase, SchemaBase } from "./common.model";
 

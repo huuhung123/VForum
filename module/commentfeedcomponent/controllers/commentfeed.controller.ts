@@ -37,7 +37,7 @@ export class CommentFeedController {
 
   getCommentFeed = async (req: Request, res: Response) => {
     try {
-      const { feed_id, comment_id } = req.params;
+      const { comment_id } = req.params;
       const result = await CommentFeed.find({
         _id: comment_id,
         status: StatusCode.Active,
@@ -90,7 +90,7 @@ export class CommentFeedController {
   updateCommentFeed = async (req: Request, res: Response) => {
     try {
       const { display_name } = req.authorized_user;
-      const { feed_id, comment_id } = req.params;
+      const { comment_id } = req.params;
 
       const check: any = await CommentFeed.find({
         _id: comment_id,
@@ -138,7 +138,7 @@ export class CommentFeedController {
 
   addLike = async (req: Request, res: Response) => {
     try {
-      const { feed_id, comment_id } = req.params;
+      const { comment_id } = req.params;
 
       const check: any = await CommentFeed.find({
         _id: comment_id,
@@ -169,7 +169,7 @@ export class CommentFeedController {
 
   minusLike = async (req: Request, res: Response) => {
     try {
-      const { feed_id, comment_id } = req.params;
+      const { comment_id } = req.params;
 
       const check: any = await CommentFeed.find({
         _id: comment_id,
@@ -216,12 +216,6 @@ export class CommentFeedController {
         _id === check._id ||
         role === RoleCode.Moderator
       ) {
-        const newCommentFeed = await CommentFeed.findByIdAndUpdate(comment_id, {
-          $set: {
-            status: StatusCode.Deactive,
-          },
-        });
-
         await Feed.updateOne(
           { _id: feed_id },
           {

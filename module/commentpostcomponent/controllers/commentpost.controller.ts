@@ -6,7 +6,6 @@ import { success, error } from "../../../common/service/response.service";
 import { StatusCode } from "../../../common/model/common.model";
 import { CommentPost } from "../../../common/model/commentpost.model";
 import { Post } from "../../../common/model/post.model";
-import { User } from "../../../common/model/user.model";
 import { RoleCode } from "../../../common/model/user.model";
 import { Like } from "../../../common/model/like.model";
 import { LikeType } from "../../../common/model/like.model";
@@ -96,7 +95,7 @@ export class CommentPostController {
   updateCommentPost = async (req: Request, res: Response) => {
     try {
       const { display_name } = req.authorized_user;
-      const { post_id, comment_id } = req.params;
+      const { comment_id } = req.params;
 
       const check: any = await CommentPost.find({
         _id: comment_id,
