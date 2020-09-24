@@ -18,8 +18,9 @@ export class FeedController {
   public feedService: FeedService = new FeedService(Feed);
 
   getAllFeed = async (req: Request, res: Response) => {
-    const { _id } = req.authorized_user;
     try {
+      const { _id } = req.params;
+      console.log(_id);
       const result = await Feed.find(
         { status: StatusCode.Active },
         "description countLike countCommentFeed commentsFeed createdBy createdAt"

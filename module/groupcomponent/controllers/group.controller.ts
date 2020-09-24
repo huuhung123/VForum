@@ -18,7 +18,8 @@ export class GroupController {
 
   getAllGroup = async (req: Request, res: Response) => {
     try {
-      const {_id } = req.authorized_user
+      const { _id } = req.authorized_user;
+      console.log(_id);
       const result = await Group.find(
         { status: StatusCode.Active },
         "name createdBy createdAt"

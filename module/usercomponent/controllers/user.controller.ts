@@ -19,11 +19,7 @@ import {
   verifyToken,
 } from "../../../middlewares/helper.middleware";
 
-import {
-  IUserCreateForm,
-  IUserLoginForm,
-  IUserUpdateForm,
-} from "../models/user.model";
+import { IUserCreateForm, IUserLoginForm } from "../models/user.model";
 import {
   serializeCreateUser,
   serializeUpdateUser,
