@@ -165,14 +165,23 @@ export class CommentPostController {
         }
       );
 
-      await User.updateOne(
-        { _id: _id },
+      await CommentPost.updateOne(
+        { _id: comment_id },
         {
           $addToSet: {
-            likeCommentPost: comment_id,
+            flags: _id,
           },
         }
       );
+
+      // await User.updateOne(
+      //   { _id: _id },
+      //   {
+      //     $addToSet: {
+      //       likeCommentPost: comment_id,
+      //     },
+      //   }
+      // );
 
       const result = await CommentPost.find({
         _id: comment_id,
@@ -206,11 +215,20 @@ export class CommentPostController {
         }
       );
 
-      await User.updateOne(
-        { _id: _id },
+      // await User.updateOne(
+      //   { _id: _id },
+      //   {
+      //     $pull: {
+      //       likeCommentPost: Types.ObjectId(comment_id),
+      //     },
+      //   }
+      // );
+
+      await CommentPost.updateOne(
+        { _id: comment_id },
         {
           $pull: {
-            likeCommentPost: Types.ObjectId(comment_id),
+            flags: Types.ObjectId(_id),
           },
         }
       );

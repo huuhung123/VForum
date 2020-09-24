@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
 
 import { IModelBase, SchemaBase } from "./common.model";
 
@@ -7,6 +7,7 @@ export interface ICommentPost extends IModelBase {
   postId: string;
   description: string;
   countLike: number;
+  flags: Types.Array<string>;
 }
 
 const CommentPostSchema = new Schema(
@@ -23,6 +24,13 @@ const CommentPostSchema = new Schema(
       type: Number,
       default: 0,
     },
+    flags: [
+      {
+        type: String,
+        required: true,
+        default: true,
+      },
+    ],
   }),
   {
     timestamps: true,

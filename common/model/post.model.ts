@@ -12,6 +12,7 @@ export interface IPost extends IModelBase {
   countLike: number;
   countCommentPost: number;
   topicId: string;
+  flags: Types.Array<string>;
 }
 
 const PostSchema = new Schema(
@@ -49,6 +50,13 @@ const PostSchema = new Schema(
       type: String,
       required: true,
     },
+    flags: [
+      {
+        type: String,
+        required: true,
+        default: true,
+      },
+    ],
   }),
   {
     timestamps: true,

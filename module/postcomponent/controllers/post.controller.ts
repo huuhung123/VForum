@@ -167,14 +167,23 @@ export class PostController {
         }
       );
 
-      await User.updateOne(
-        { _id: _id },
+      await Post.updateOne(
+        { _id: post_id },
         {
           $addToSet: {
-            likePost: post_id,
+            flags: _id,
           },
         }
       );
+
+      // await User.updateOne(
+      //   { _id: _id },
+      //   {
+      //     $addToSet: {
+      //       likePost: post_id,
+      //     },
+      //   }
+      // );
 
       const result = await Post.find(
         {
@@ -219,10 +228,19 @@ export class PostController {
         "title description createdBy createdAt countLike countCommentPost commentsPost"
       );
 
-      await User.updateOne(
-        { _id: _id },
-        { $pull: { likePost: Types.ObjectId(post_id) } }
+      await Post.updateOne(
+        { _id: post_id },
+        {
+          $pull: {
+            flags: Types.ObjectId(_id),
+          },
+        }
       );
+
+      // await User.updateOne(
+      //   { _id: _id },
+      //   { $pull: { likePost: Types.ObjectId(post_id) } }
+      // );
 
       return success(res, result);
     } catch (err) {
@@ -276,3 +294,5 @@ export class PostController {
     }
   };
 }
+
+
