@@ -7,7 +7,7 @@ import { StatusCode } from "../../../common/model/common.model";
 import { Post } from "../../../common/model/post.model";
 import { Like } from "../../../common/model/like.model";
 import { CommentPost } from "../../../common/model/commentpost.model";
-import { RoleCode } from "../../../common/model/user.model";
+import { RoleCode, User } from "../../../common/model/user.model";
 import { LikeType } from "../../../common/model/like.model";
 
 import { IPostCreateForm, IPostUpdateForm } from "../models/post.model";
@@ -15,6 +15,8 @@ import {
   serializeCreatePost,
   serializeUpdatePost,
 } from "../serializers/post.serializer";
+
+import { Types } from "mongoose";
 
 export class PostController {
   public postservice: PostService = new PostService(Post);
@@ -145,6 +147,7 @@ export class PostController {
   addLike = async (req: Request, res: Response) => {
     try {
       const { post_id, topic_id } = req.params;
+      const { _id } = req.authorized_user;
 
       const check: any = await Post.find({
         _id: post_id,
@@ -160,6 +163,15 @@ export class PostController {
         { _id: post_id },
         {
           $inc: { countLike: 1 },
+        }
+      );
+
+      await User.updateOne(
+        { _id: _id },
+        {
+          $addToSet: {
+            likePost: post_id,
+          },
         }
       );
 
@@ -179,6 +191,7 @@ export class PostController {
   minusLike = async (req: Request, res: Response) => {
     try {
       const { post_id, topic_id } = req.params;
+      const { _id } = req.authorized_user;
 
       const check: any = await Post.find({
         _id: post_id,
@@ -204,6 +217,12 @@ export class PostController {
         },
         "title description createdBy createdAt countLike countCommentPost commentsPost"
       );
+
+      await User.updateOne(
+        { _id: _id },
+        { $pull: { likePost: Types.ObjectId(post_id) } }
+      );
+
       return success(res, result);
     } catch (err) {
       return error(res, "Error", 200);

@@ -90,6 +90,8 @@ export class UserController {
             refreshToken,
             userId: user[0]._id,
             role: user[0].role,
+            likePost: user[0].likePost,
+            likeCommentPost: user[0].likeCommentPost,
           };
 
           const messageSuccess = "Token has been created successfully";

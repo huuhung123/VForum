@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 
 import { IModelBase, SchemaBase } from "./common.model";
 
@@ -21,6 +21,8 @@ export interface IUser extends IModelBase {
   display_name: string;
   gender: string;
   role: string;
+  likePost: Types.Array<string>;
+  likeCommentPost: Types.Array<string>;
 }
 
 export const UserSchema = new mongoose.Schema(
@@ -50,6 +52,20 @@ export const UserSchema = new mongoose.Schema(
       default: RoleCode.Member,
       required: true,
     },
+    likePost: [
+      {
+        type: String,
+        required: true,
+        default: true,
+      },
+    ],
+    likeCommentPost: [
+      {
+        type: String,
+        required: true,
+        default: true,
+      },
+    ],
   }),
   {
     timestamps: true,

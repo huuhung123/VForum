@@ -6,6 +6,7 @@ import { success, error } from "../../../common/service/response.service";
 import { StatusCode } from "../../../common/model/common.model";
 import { CommentPost } from "../../../common/model/commentpost.model";
 import { Post } from "../../../common/model/post.model";
+import { User } from "../../../common/model/user.model";
 import { RoleCode } from "../../../common/model/user.model";
 import { Like } from "../../../common/model/like.model";
 import { LikeType } from "../../../common/model/like.model";
@@ -18,6 +19,8 @@ import {
   serialCreateCommentPost,
   serialUpdateCommentPost,
 } from "../serializers/commentpost.serializer";
+
+import { Types } from "mongoose";
 
 export class CommentPostController {
   public commentPostService: CommentPostService = new CommentPostService(
@@ -142,6 +145,7 @@ export class CommentPostController {
   addLike = async (req: Request, res: Response) => {
     try {
       const { comment_id } = req.params;
+      const { _id } = req.authorized_user;
 
       const check: any = await CommentPost.find({
         _id: comment_id,
@@ -161,6 +165,15 @@ export class CommentPostController {
         }
       );
 
+      await User.updateOne(
+        { _id: _id },
+        {
+          $addToSet: {
+            likeCommentPost: comment_id,
+          },
+        }
+      );
+
       const result = await CommentPost.find({
         _id: comment_id,
       });
@@ -173,6 +186,7 @@ export class CommentPostController {
   minusLike = async (req: Request, res: Response) => {
     try {
       const { comment_id } = req.params;
+      const { _id } = req.authorized_user;
 
       const check: any = await CommentPost.find({
         _id: comment_id,
@@ -189,6 +203,15 @@ export class CommentPostController {
         { _id: comment_id },
         {
           $inc: { countLike: -1 },
+        }
+      );
+
+      await User.updateOne(
+        { _id: _id },
+        {
+          $pull: {
+            likeCommentPost: Types.ObjectId(comment_id),
+          },
         }
       );
 

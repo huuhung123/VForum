@@ -1,9 +1,3 @@
-// import { resolve } from "path";
-
-// import { config } from "dotenv";
-
-// config({ path: resolve(__dirname, "../.env") });
-
 export const MONGO_URL =
   "mongodb+srv://huuhung:987654321@cluster0.g4atc.mongodb.net/test";
 
