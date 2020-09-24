@@ -37,13 +37,14 @@ export class PostController {
   getPost = async (req: Request, res: Response) => {
     try {
       const { post_id, topic_id } = req.params;
+      const { _id } = req.authorized_user;
       const result = await Post.find(
         {
           _id: post_id,
           status: StatusCode.Active,
           topicId: topic_id,
         },
-        "title description createdBy createdAt countLike countCommentPost commentsPost"
+        "title description createdBy createdAt countLike countCommentPost commentsPost userId"
       );
       return success(res, result);
     } catch (err) {
