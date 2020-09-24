@@ -44,7 +44,7 @@ export class PostController {
           status: StatusCode.Active,
           topicId: topic_id,
         },
-        "title description createdBy createdAt countLike countCommentPost commentsPost userId"
+        "title description createdBy createdAt countLike countCommentPost commentsPost userId flags"
       );
       return success(res, result);
     } catch (err) {
@@ -294,5 +294,3 @@ export class PostController {
     }
   };
 }
-
-
