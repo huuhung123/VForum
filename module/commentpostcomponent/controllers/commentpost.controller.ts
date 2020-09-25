@@ -32,7 +32,7 @@ export class CommentPostController {
       const result = await CommentPost.find({
         status: StatusCode.Active,
         postId: post_id,
-      }).sort({ updatedAt: -1 });
+      }).sort({ createdAt: -1 });
       return success(res, result);
     } catch (err) {
       return error(res, "Error", 200);
