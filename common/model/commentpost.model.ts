@@ -8,6 +8,7 @@ export interface ICommentPost extends IModelBase {
   description: string;
   countLike: number;
   flags: Types.Array<string>;
+  userId: string;
 }
 
 const CommentPostSchema = new Schema(
@@ -23,6 +24,10 @@ const CommentPostSchema = new Schema(
     countLike: {
       type: Number,
       default: 0,
+    },
+    userId: {
+      type: String,
+      required: true,
     },
     flags: [
       {

@@ -7,6 +7,7 @@ export interface ICommentPostCreateResponse {
   id: string;
   createdAt: string;
   createdBy: string;
+  userId: string;
 }
 
 export function serialCreateCommentPost(
@@ -19,6 +20,7 @@ export function serialCreateCommentPost(
     id: model.id,
     createdAt: model.createdAt,
     createdBy: model.createdBy,
+    userId: model.userId,
   };
 }
 

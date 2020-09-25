@@ -55,7 +55,7 @@ export class CommentPostController {
 
   createCommentPost = async (req: Request, res: Response) => {
     try {
-      const { display_name } = req.authorized_user;
+      const { display_name, _id } = req.authorized_user;
       const { post_id } = req.params;
       const formComment: ICommentPostCreateForm = req.body;
 
@@ -71,6 +71,7 @@ export class CommentPostController {
 
       formComment.createdBy = display_name;
       formComment.postId = post_id;
+      formComment.userId = _id;
 
       const commentpost = await this.commentPostService.create(formComment);
 

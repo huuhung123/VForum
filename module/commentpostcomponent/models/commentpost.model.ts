@@ -4,6 +4,7 @@ export interface ICommentPostCreateForm {
   postId: string;
   createdAt: string;
   createdBy: string;
+  userId: string;
 }
 
 export interface ICommentPostUpdateForm {
