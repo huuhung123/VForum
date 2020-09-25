@@ -59,17 +59,6 @@ export class CommentPostController {
       const { post_id } = req.params;
       const formComment: ICommentPostCreateForm = req.body;
 
-      const check = await CommentPost.find({
-        postId: post_id,
-        description: formComment.description,
-        status: StatusCode.Active,
-      });
-      if (check.length > 0) {
-        const messageError =
-          "CommentPost has been existed. Please enter commentpost again";
-        return error(res, messageError, 200);
-      }
-
       formComment.createdBy = display_name;
       formComment.postId = post_id;
       formComment.userId = _id;
