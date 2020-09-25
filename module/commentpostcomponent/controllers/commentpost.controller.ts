@@ -60,6 +60,7 @@ export class CommentPostController {
       const formComment: ICommentPostCreateForm = req.body;
 
       const check = await CommentPost.find({
+        postId: post_id,
         description: formComment.description,
         status: StatusCode.Active,
       });
