@@ -175,15 +175,6 @@ export class PostController {
         }
       );
 
-      // await User.updateOne(
-      //   { _id: _id },
-      //   {
-      //     $addToSet: {
-      //       likePost: post_id,
-      //     },
-      //   }
-      // );
-
       const result = await Post.find(
         {
           _id: post_id,
@@ -235,11 +226,6 @@ export class PostController {
           },
         }
       );
-
-      // await User.updateOne(
-      //   { _id: _id },
-      //   { $pull: { likePost: Types.ObjectId(post_id) } }
-      // );
 
       return success(res, result);
     } catch (err) {

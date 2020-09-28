@@ -17,6 +17,7 @@ import { Like } from "../../../common/model/like.model";
 import { LikeType } from "../../../common/model/like.model";
 import { success, error } from "../../../common/service/response.service";
 
+import { Types } from "mongoose";
 export class CommentFeedController {
   public commentfeedService: CommentFeedService = new CommentFeedService(
     CommentFeed
@@ -140,6 +141,7 @@ export class CommentFeedController {
   addLike = async (req: Request, res: Response) => {
     try {
       const { comment_id } = req.params;
+      const { _id } = req.authorized_user;
 
       const check: any = await CommentFeed.find({
         _id: comment_id,
@@ -159,18 +161,26 @@ export class CommentFeedController {
         }
       );
 
+      await CommentFeed.updateOne(
+        { _id: comment_id },
+        {
+          $addToSet: { flags: _id },
+        }
+      );
+
       const result = await CommentFeed.find({
         _id: comment_id,
       });
       return success(res, result);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
   minusLike = async (req: Request, res: Response) => {
     try {
       const { comment_id } = req.params;
+      const { _id } = req.authorized_user;
 
       const check: any = await CommentFeed.find({
         _id: comment_id,
@@ -190,12 +200,21 @@ export class CommentFeedController {
         }
       );
 
+      await CommentFeed.updateOne(
+        { _id: comment_id },
+        {
+          $pull: {
+            flags: Types.ObjectId(_id),
+          },
+        }
+      );
+
       const result = await CommentFeed.find({
         _id: comment_id,
       });
       return success(res, result);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 

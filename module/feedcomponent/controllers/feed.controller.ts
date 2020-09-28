@@ -14,6 +14,8 @@ import { RoleCode } from "../../../common/model/user.model";
 import { LikeType, Like } from "../../../common/model/like.model";
 import { CommentFeed } from "../../../common/model/commentfeed.model";
 
+import { Types } from "mongoose";
+
 export class FeedController {
   public feedService: FeedService = new FeedService(Feed);
 
@@ -136,6 +138,7 @@ export class FeedController {
   addLike = async (req: Request, res: Response) => {
     try {
       const { feed_id } = req.params;
+      const { _id } = req.authorized_user;
 
       const check: any = await Feed.find({
         _id: feed_id,
@@ -154,6 +157,15 @@ export class FeedController {
         }
       );
 
+      await Feed.updateOne(
+        { _id: feed_id },
+        {
+          $addToSet: {
+            flags: _id,
+          },
+        }
+      );
+
       const result = await Feed.find(
         {
           _id: feed_id,
@@ -162,13 +174,14 @@ export class FeedController {
       );
       return success(res, result);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
   minusLike = async (req: Request, res: Response) => {
     try {
       const { feed_id } = req.params;
+      const { _id } = req.authorized_user;
 
       const check: any = await Feed.find({
         _id: feed_id,
@@ -187,6 +200,15 @@ export class FeedController {
         }
       );
 
+      await Feed.updateOne(
+        { _id: feed_id },
+        {
+          $pull: {
+            flags: Types.ObjectId(_id),
+          },
+        }
+      );
+
       const result = await Feed.find(
         {
           _id: feed_id,
@@ -195,7 +217,7 @@ export class FeedController {
       );
       return success(res, result);
     } catch (err) {
-      return error(res, err, 200);
+      return error(res, "Error", 200);
     }
   };
 
