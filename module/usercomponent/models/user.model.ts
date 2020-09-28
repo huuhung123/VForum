@@ -22,3 +22,13 @@ export interface IUserUpdateForm {
   updatedAt: string;
   id: string;
 }
+
+export interface IUserEmailLoginForm {
+  id: string;
+  email: string;
+  password: string;
+  display_name: string;
+  gender: string;
+  role: RoleCode;
+  createdAt: string;
+}

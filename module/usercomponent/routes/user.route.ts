@@ -9,6 +9,7 @@ import {
   UserCreateSchema,
   UserLoginSchema,
   UserChangeSchema,
+  UserEmailLoginSchema,
 } from "../DTO/user.dto";
 
 export class UserRoute {
@@ -25,6 +26,13 @@ export class UserRoute {
     app
       .route("/v1/api/login")
       .post(commonValidateBody(UserLoginSchema), this.userController.loginUser);
+
+    app
+      .route("/v1/api/login-email")
+      .post(
+        commonValidateBody(UserEmailLoginSchema),
+        this.userController.loginUserByEmail
+      );
 
     app.route("/v1/api/refresh-token").post(this.userController.refreshToken);
 

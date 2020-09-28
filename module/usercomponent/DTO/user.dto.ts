@@ -13,6 +13,14 @@ export const UserLoginSchema = Joi.object({
   password: Joi.string().min(8).required(),
 });
 
+export const UserEmailLoginSchema = Joi.object({
+  email: Joi.string().email().min(10).required(),
+  password: Joi.string().min(8).required(),
+  display_name: Joi.string().min(1).required(),
+  gender: Joi.string().required(),
+  role: Joi.string(),
+});
+
 export const UserChangeSchema = Joi.object({
   oldpassword: Joi.string().min(8).required(),
   newpassword: Joi.string().min(8).required(),

@@ -3,6 +3,8 @@ import bcrypt from "bcrypt";
 
 import { StatusCode } from "../../../common/model/common.model";
 import { User, RoleCode } from "../../../common/model/user.model";
+import { UserEmail } from "../../../common/model/user-email";
+
 import { Token } from "../../../common/model/token.model";
 
 import { UserService } from "../services/user.service";
@@ -19,7 +21,11 @@ import {
   verifyToken,
 } from "../../../middlewares/helper.middleware";
 
-import { IUserCreateForm, IUserLoginForm } from "../models/user.model";
+import {
+  IUserCreateForm,
+  IUserLoginForm,
+  IUserEmailLoginForm,
+} from "../models/user.model";
 import {
   serializeCreateUser,
   serializeUpdateUser,
@@ -91,6 +97,50 @@ export class UserController {
       }
       const messageError = "Email hasn't been existed";
       return error(res, messageError, 200);
+    } catch (err) {
+      return error(res, "Error", 200);
+    }
+  };
+
+  loginUserByEmail = async (req: Request, res: Response) => {
+    try {
+      const form: IUserEmailLoginForm = req.body;
+      const accessToken = await generateToken(
+        req.body,
+        ACCESS_TOKEN_SECRET,
+        ACCESS_TOKEN_LIFE
+      );
+
+      const refreshToken = await generateToken(
+        req.body,
+        REFRESH_TOKEN_SECRET,
+        REFRESH_TOKEN_LIFE
+      );
+
+      const newUser = new UserEmail(req.body);
+      newUser.save();
+
+      const user = await UserEmail.find({
+        email: form.email,
+      });
+
+      const newToken = new Token({
+        accessToken,
+        refreshToken,
+        userId: user[0]._id,
+      });
+
+      await newToken.save();
+
+      const result = {
+        accessToken,
+        refreshToken,
+        userId: user[0]._id,
+        role: user[0].role,
+      };
+
+      const messageSuccess = "Token has been created successfully";
+      return success(res, result, messageSuccess, 201);
     } catch (err) {
       return error(res, "Error", 200);
     }
