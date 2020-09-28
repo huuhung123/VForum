@@ -23,7 +23,7 @@ export class FeedController {
       console.log(_id);
       const result = await Feed.find(
         { status: StatusCode.Active },
-        "description countLike countCommentFeed commentsFeed createdBy createdAt"
+        "description countLike countCommentFeed commentsFeed createdBy createdAt userId attachments"
       ).sort({
         updatedAt: -1,
       });
@@ -41,7 +41,7 @@ export class FeedController {
           _id: feed_id,
           status: StatusCode.Active,
         },
-        "description countLike countCommentFeed commentsFeed createdBy createdAt"
+        "description countLike countCommentFeed commentsFeed createdBy createdAt userId attachments"
       );
       return success(res, result);
     } catch (err) {

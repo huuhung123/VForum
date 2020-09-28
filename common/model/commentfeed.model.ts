@@ -7,6 +7,7 @@ export interface ICommentFeed extends IModelBase {
   feedId: string;
   description: string;
   countLike: number;
+  userId: string;
 }
 
 const CommentFeedSchema = new Schema(
@@ -16,6 +17,10 @@ const CommentFeedSchema = new Schema(
       required: true,
     },
     description: {
+      type: String,
+      required: true,
+    },
+    userId: {
       type: String,
       required: true,
     },

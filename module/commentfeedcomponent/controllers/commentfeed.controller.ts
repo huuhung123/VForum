@@ -50,7 +50,7 @@ export class CommentFeedController {
 
   createCommentFeed = async (req: Request, res: Response) => {
     try {
-      const { display_name } = req.authorized_user;
+      const { display_name, _id } = req.authorized_user;
       const { feed_id } = req.params;
       const formComment: ICommentFeedCreateForm = req.body;
 
@@ -66,6 +66,7 @@ export class CommentFeedController {
 
       formComment.createdBy = display_name;
       formComment.feedId = feed_id;
+      formComment.userId = _id;
 
       const commentfeed = await this.commentfeedService.create(formComment);
 
