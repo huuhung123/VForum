@@ -25,7 +25,7 @@ const CommentFeedSchema = new Schema(
     avatar: {
       type: String,
       required: true,
-      default: true,
+      default: "",
     },
     countLike: {
       type: Number,

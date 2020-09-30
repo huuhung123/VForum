@@ -36,7 +36,7 @@ const FeedSchema = new Schema(
     avatar: {
       type: String,
       required: true,
-      default: true,
+      default: "",
     },
     commentsFeed: [
       {
