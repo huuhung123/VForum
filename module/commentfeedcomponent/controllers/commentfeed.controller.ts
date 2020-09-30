@@ -26,10 +26,13 @@ export class CommentFeedController {
   getAllCommentFeed = async (req: Request, res: Response) => {
     try {
       const { feed_id } = req.params;
-      const result = await CommentFeed.find({
-        feedId: feed_id,
-        status: StatusCode.Active,
-      }).sort({ updatedAt: -1 });
+      const result = await CommentFeed.find(
+        {
+          feedId: feed_id,
+          status: StatusCode.Active,
+        },
+        "description countLike flags userId avatar createdBy createdAt"
+      ).sort({ updatedAt: -1 });
       return success(res, result);
     } catch (err) {
       return error(res, err, 200);
@@ -39,10 +42,13 @@ export class CommentFeedController {
   getCommentFeed = async (req: Request, res: Response) => {
     try {
       const { comment_id } = req.params;
-      const result = await CommentFeed.find({
-        _id: comment_id,
-        status: StatusCode.Active,
-      });
+      const result = await CommentFeed.find(
+        {
+          _id: comment_id,
+          status: StatusCode.Active,
+        },
+        "description countLike flags userId avatar createdBy createdAt"
+      );
       return success(res, result);
     } catch (err) {
       return error(res, err, 200);
@@ -51,7 +57,7 @@ export class CommentFeedController {
 
   createCommentFeed = async (req: Request, res: Response) => {
     try {
-      const { display_name, _id } = req.authorized_user;
+      const { display_name, _id, avatar } = req.authorized_user;
       const { feed_id } = req.params;
       const formComment: ICommentFeedCreateForm = req.body;
 
@@ -68,6 +74,7 @@ export class CommentFeedController {
       formComment.createdBy = display_name;
       formComment.feedId = feed_id;
       formComment.userId = _id;
+      formComment.avatar = avatar;
 
       const commentfeed = await this.commentfeedService.create(formComment);
 

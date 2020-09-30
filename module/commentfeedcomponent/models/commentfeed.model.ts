@@ -5,6 +5,7 @@ export interface ICommentFeedCreateForm {
   createdAt: string;
   createdBy: string;
   userId: string;
+  avatar: string;
 }
 
 export interface ICommentFeedUpdateForm {

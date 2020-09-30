@@ -4,6 +4,8 @@ declare namespace Express {
       role: string;
       _id: string;
       display_name: string;
+      gender: string;
+      avatar: string;
     };
   }
 }

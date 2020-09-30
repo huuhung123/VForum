@@ -12,6 +12,7 @@ export interface IFeed extends IModelBase {
   countLike: number;
   countCommentFeed: number;
   flags: Types.Array<string>;
+  avatar: string;
 }
 
 const FeedSchema = new Schema(
@@ -32,6 +33,11 @@ const FeedSchema = new Schema(
         required: true,
       },
     ],
+    avatar: {
+      type: String,
+      required: true,
+      default: true,
+    },
     commentsFeed: [
       {
         type: Object,

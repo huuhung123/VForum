@@ -11,6 +11,8 @@ export const generateToken = async (
       email: user.email,
       role: user.role,
       display_name: user.display_name,
+      gender: user.gender,
+      avatar: user.avatar,
     };
 
     jwt.sign(

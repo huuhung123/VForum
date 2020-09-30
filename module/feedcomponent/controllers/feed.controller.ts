@@ -25,7 +25,7 @@ export class FeedController {
       console.log(_id);
       const result = await Feed.find(
         { status: StatusCode.Active },
-        "description countLike countCommentFeed commentsFeed createdBy createdAt userId attachments"
+        "description countLike flags countCommentFeed commentsFeed createdBy createdAt userId attachments gender avatar"
       ).sort({
         updatedAt: -1,
       });
@@ -43,7 +43,7 @@ export class FeedController {
           _id: feed_id,
           status: StatusCode.Active,
         },
-        "description countLike countCommentFeed commentsFeed createdBy createdAt userId attachments"
+        "description countLike flags countCommentFeed commentsFeed createdBy createdAt userId attachments gender avatar"
       );
       return success(res, result);
     } catch (err) {
@@ -53,7 +53,7 @@ export class FeedController {
 
   createFeed = async (req: Request, res: Response) => {
     try {
-      const { _id, display_name } = req.authorized_user;
+      const { _id, display_name, avatar, gender } = req.authorized_user;
       const formFeed: IFeedCreateForm = req.body;
       const check = await Feed.find({
         description: formFeed.description,
@@ -67,6 +67,8 @@ export class FeedController {
 
       formFeed.createdBy = display_name;
       formFeed.userId = _id;
+      formFeed.avatar = avatar;
+      formFeed.gender = gender;
 
       const feed = await this.feedService.create(formFeed);
 
