@@ -87,6 +87,7 @@ export class UserController {
             refreshToken,
             userId: user[0]._id,
             role: user[0].role,
+            avatar: user[0].avatar,
           };
 
           const messageSuccess = "Token has been created successfully";

@@ -21,6 +21,7 @@ export interface IUser extends IModelBase {
   display_name: string;
   gender: string;
   role: string;
+  avatar: string;
 }
 
 export const UserSchema = new mongoose.Schema(
@@ -38,6 +39,11 @@ export const UserSchema = new mongoose.Schema(
     display_name: {
       type: String,
       required: true,
+    },
+    avatar: {
+      type: String,
+      required: true,
+      default: true,
     },
     gender: {
       type: String,
