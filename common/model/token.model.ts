@@ -29,12 +29,12 @@ const TokenSchema = new mongoose.Schema(
     expire_access: {
       type: String,
       required: true,
-      default: "1h",
+      default: "7d",
     },
     expire_refresh: {
       type: String,
       required: true,
-      default: "2h",
+      default: "14d",
     },
   },
   {

@@ -7,11 +7,11 @@ export const SESS_PASS = "123456789";
 
 export const SESS_MAXAGE = 2 * 60 * 60 * 1000;
 
-export const ACCESS_TOKEN_LIFE = "1h";
+export const ACCESS_TOKEN_LIFE = "7d";
 
 export const ACCESS_TOKEN_SECRET = "secret";
 
-export const REFRESH_TOKEN_LIFE = "2h";
+export const REFRESH_TOKEN_LIFE = "14d";
 
 export const REFRESH_TOKEN_SECRET = "secret";
 
