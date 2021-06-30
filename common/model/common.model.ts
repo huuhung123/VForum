@@ -1,4 +1,5 @@
 import mongoose, { Document, SchemaDefinition } from "mongoose";
+import { StatusCode  } from '../../utils/constants'
 
 export const UserSchemaName = "User";
 export const GroupSchemaName = "Group";
@@ -10,15 +11,12 @@ export const FeedSchemaName = "Feed";
 export const CommentFeedSchemaName = "CommentFeed";
 export const LikeFeedSchemaName = "LikeFeed";
 
-export enum StatusCode {
-  Active = "active",
-  Deactive = "deactive",
-}
+
 export interface IModelBase extends Document {
   _id: string;
   status: string;
   createdBy: string;
-  isUpdated: boolean;
+  // isUpdated: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -35,11 +33,6 @@ export function SchemaBase(schema: mongoose.SchemaDefinition) {
       type: String,
       required: true,
       default: true,
-    },
-    isUpdated: {
-      type: Boolean,
-      required: true,
-      default: false,
     },
   };
 
