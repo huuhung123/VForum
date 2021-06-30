@@ -1,12 +1,8 @@
+import { error } from "console";
 import { Request, Response } from "express";
 import { Wallet } from "../../../../common/model/wallet.model";
-import { error, success } from "../../../../common/service/response.service";
-import { StatusCode } from "../../../../utils/constants";
+import { errorHandler, successHandler } from "../../../../common/service/response.service";
 import { IWalletCreateForm, IWalletUpdateForm } from "../models/wallet.model";
-import {
-  serializeCreateWallet,
-  serializeUpdateWallet
-} from "../serializers/wallet.serializer";
 import { WalletService } from "../services/wallet.service";
 
 
@@ -15,111 +11,72 @@ export class WalletController {
 
   getAllWallet = async (req: Request, res: Response) => {
     try {
-      const result = await Wallet.find(
-        { status: StatusCode.Active },
-        "walletId userId type amount"
-      )
-      return success(res, result);
-    } catch (err) {
-      return error(res, err, 200);
+      const filter = {}
+      const {data, error} = await this.walletService.getAll(filter);
+      if (data) {
+        successHandler(res, data, "Get all data successfully", 200)
+      }
+      errorHandler(req, res, error, 404)
+      } catch (err) {
+      errorHandler(req, res, err, 404)
     }
   };
 
-  getWallet = async (req: Request, res: Response) => {
+  getWalletById = async (req: Request, res: Response) => {
     try {
       const { wallet_id } = req.params;
-      const result = await Wallet.find(
-        {
-          _id: wallet_id,
-          status: StatusCode.Active,
-        },
-        "walletId userId type amount"
-      );
-      return success(res, result);
-    } catch (err) {
-      return error(res, err, 200);
+      const {data, error} = await this.walletService.getById(wallet_id);
+      if (data) {
+        successHandler(res, data, "Get data successfully", 200)
+      }
+      errorHandler(req, res, error, 404)
+      } catch (err) {
+      errorHandler(req, res, err, 404)
     }
   };
 
   createWallet = async (req: Request, res: Response) => {
     try {
       const formWallet: IWalletCreateForm = req.body;
-      const check = await Wallet.find({
-        type: formWallet.type,
-        status: StatusCode.Active,
-      });
-      if (check.length > 0) {
-        const messageError =
-          "Wallet type has been existed. Please enter type again";
-        return error(res, messageError, 200);
+      const filter = { amount: formWallet.amount}
+
+      const { data, error } = await this.walletService.create(formWallet, filter); 
+      if (data) {
+        successHandler(res, data, "Create successfully", 201)
       }
-      const wallet = await this.walletService.create(formWallet);
-      const messageSuccess = "You have been created feed successfully";
-      return success(res, serializeCreateWallet(wallet), messageSuccess);
+      errorHandler(req, res, error, 404)
     } catch (err) {
-      return error(res, err, 200);
+      errorHandler(req, res, err, 404)
     }
   };
 
   updateWallet = async (req: Request, res: Response) => {
     try {
       const { wallet_id } = req.params;
-
-      const check: any = await Wallet.find({
-        _id: wallet_id,
-        status: StatusCode.Deactive,
-      });
-
-      if (check.length > 0) {
-        const messageError = "Wallet has been deleted. You can not update Wallet";
-        return error(res, messageError, 200);
-      }
-
       const formWallet: IWalletUpdateForm = req.body;
+      const filter = {}
 
-      const newWallet: any = await Wallet.findByIdAndUpdate(
-        wallet_id,
-        {
-          $set: {
-            type: formWallet.type,
-            amount: formWallet.amount
-          },
-        },
-        {
-          new: true,
-          useFindAndModify: false,
-        }
-      );
-      const messageSuccess = "Feed have updated successfully";
-      return success(res, serializeUpdateWallet(newWallet), messageSuccess);
-    } catch (err) {
-      return error(res, err, 200);
+      const {data, error} = await this.walletService.update(wallet_id, formWallet, filter);
+      if (data) {
+        successHandler(res, data, "Update successfully", 202)
+      }
+      errorHandler(req, res, error, 404)
+      } catch (err) {
+      errorHandler(req, res ,err, 500);
     }
-  };
+  }
 
   deleteWallet = async (req: Request, res: Response) => {
     try {
       const { wallet_id } = req.params;
 
-      const check: any = await Wallet.find({
-        _id: wallet_id,
-        status: StatusCode.Active,
-      });
-      if (check.length === 0) {
-        const messageError = "Wallet has been deleted. You can not delete";
-        return error(res, messageError, 200);
+      const {result, error} = await this.walletService.deleteById(wallet_id);
+      if (result) {
+        successHandler(res, "", "Delete successfully", 202)
       }
-        await Wallet.findByIdAndUpdate(wallet_id, {
-          $set: {
-            status: StatusCode.Deactive,
-          },
-        });
-
-        const messageSuccess = "You deleted wallet successfully";
-        return success(res, null, messageSuccess);
-      }
-    catch (err) {
-      return error(res, err, 200);
+      errorHandler(req, res, error, 404)
+      } catch (err) {
+      errorHandler(req, res ,err, 500);
     }
-  };
+  }
 }

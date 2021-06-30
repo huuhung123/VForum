@@ -1,8 +1,8 @@
-import express, {Application} from "express";
-import morgan from "morgan";
 import cors from "cors";
-import * as swaggerUi from "swagger-ui-express"
-import {docs} from "../docs/index"
+import express, { Application } from "express";
+import morgan from "morgan";
+import * as swaggerUi from "swagger-ui-express";
+import { docs } from "../docs/index";
 
 export default function config(app: Application): void {
     app.set("port", process.env.PORT || 4000);

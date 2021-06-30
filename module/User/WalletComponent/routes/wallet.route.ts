@@ -3,10 +3,6 @@ import { commonValidateBody } from "../../../../middlewares/validatebody.middlew
 import { WalletController } from "../controllers/wallet.controller";
 import { WalletCreateSchema, WalletUpdateSchema } from "../DTO/wallet.dto";
 
-
-
-// import { isAuth } from "../../../../middlewares/auth.middleware";
-
 export class WalletRoute {
   public walletControler: WalletController = new WalletController();
 
@@ -21,7 +17,7 @@ export class WalletRoute {
 
     app
       .route("/v1/api/wallet/:wallet_id")
-      .get(this.walletControler.getWallet)
+      .get(this.walletControler.getWalletById)
       .patch(
         commonValidateBody(WalletUpdateSchema),
         this.walletControler.updateWallet
@@ -29,4 +25,5 @@ export class WalletRoute {
       .delete(this.walletControler.deleteWallet);
 
   }
+
 }

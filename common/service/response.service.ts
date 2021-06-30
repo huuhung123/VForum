@@ -1,7 +1,7 @@
 // response.service.ts
-import { Response } from "express";
+import { Request, Response } from "express";
 
-export const success = (
+export const successHandler = (
   res: Response,
   data: any,
   message?: any,
@@ -21,17 +21,17 @@ export const success = (
   }
 };
 
-export const error = (
+export const errorHandler = (
+  req: Request,
   res: Response,
-  message: string,
+  error: any,
   code?: any,
-  opts?: any
+  opts?: any,
 ) => {
   const result = {
     success: false,
-    result: null,
-    message: message || "Error",
-    code: code || 400,
+    message: error.message || "Internal server",
+    code: code || 500,
     options: opts || null,
   };
 
@@ -39,10 +39,4 @@ export const error = (
     res.status(code || 400);
     res.json(result);
   }
-};
-
-export const raw = (res: Response, message: any, code: any) => {
-  res.status(code || 400);
-  res.write(message);
-  res.end();
 };

@@ -1,11 +1,9 @@
-import express from "express";
 import * as dotenv from "dotenv";
-import session from "express-session";
-import connectMongo from "connect-mongo";
-
+import express from "express";
+import { mongoSetup } from "./config/connection";
 import config from "./config/general";
-import {mongoSetup} from "./config/connection";
-import { WalletRoute } from "./module/User/WalletComponent/routes/wallet.route"
+import { WalletRoute } from "./module/User/WalletComponent/routes/wallet.route";
+
 class Server {
   public app: express.Application;
 
@@ -20,6 +18,7 @@ class Server {
     config(this.app)
     mongoSetup(this.MONGO_URL)
     this.walletRoute.routes(this.app)
+
   }
 
   start() {
