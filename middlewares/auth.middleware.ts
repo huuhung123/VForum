@@ -1,8 +1,8 @@
 import { verifyToken } from "./helper.middleware";
 import { Request, Response, NextFunction } from "express";
-import { Token } from "../common/model/token.model";
-import { ACCESS_TOKEN_SECRET } from "../config/env";
-import { error } from "../common/service/response.service";
+// import { Token } from "../common/entity/token.model";
+// import { ACCESS_TOKEN_SECRET } from "../config/env";
+import { errorHandler } from "../common/service/response.service";
 
 // process.env.ACCESS_TOKEN_SECRET
 

@@ -1,18 +1,17 @@
-import { error } from "console";
 import { Request, Response } from "express";
-import { Wallet } from "../../../../common/model/wallet.model";
-import { errorHandler, successHandler } from "../../../../common/service/response.service";
+import { getManager } from "typeorm";
+import { Wallet } from "../../../common/entity/wallet.entity";
+import { errorHandler, successHandler } from "../../../common/service/response.service";
 import { IWalletCreateForm, IWalletUpdateForm } from "../models/wallet.model";
-import { WalletService } from "../services/wallet.service";
+import { WalletRepository } from "../services/wallet.service";
 
 
 export class WalletController {
-  public walletService: WalletService = new WalletService(Wallet);
+  public walletService: WalletRepository = new WalletRepository(getManager().getRepository(Wallet))
 
   getAllWallet = async (req: Request, res: Response) => {
     try {
-      const filter = {}
-      const {data, error} = await this.walletService.getAll(filter);
+      const {data, error}: any = await this.walletService.getAll();
       if (data) {
         successHandler(res, data, "Get all data successfully", 200)
       }
@@ -38,9 +37,7 @@ export class WalletController {
   createWallet = async (req: Request, res: Response) => {
     try {
       const formWallet: IWalletCreateForm = req.body;
-      const filter = { amount: formWallet.amount}
-
-      const { data, error } = await this.walletService.create(formWallet, filter); 
+      const {error, data} : any = await this.walletService.create(formWallet)
       if (data) {
         successHandler(res, data, "Create successfully", 201)
       }
@@ -54,9 +51,8 @@ export class WalletController {
     try {
       const { wallet_id } = req.params;
       const formWallet: IWalletUpdateForm = req.body;
-      const filter = {}
 
-      const {data, error} = await this.walletService.update(wallet_id, formWallet, filter);
+      const {data, error}: any = await this.walletService.updateById(wallet_id, formWallet);
       if (data) {
         successHandler(res, data, "Update successfully", 202)
       }
@@ -70,11 +66,12 @@ export class WalletController {
     try {
       const { wallet_id } = req.params;
 
-      const {result, error} = await this.walletService.deleteById(wallet_id);
-      if (result) {
-        successHandler(res, "", "Delete successfully", 202)
+      const {data, error} = await this.walletService.deleteById(wallet_id);
+      console.log("Data", data)
+      if (data) {
+        successHandler(res, data, "Delete successfully", 202)
       }
-      errorHandler(req, res, error, 404)
+      errorHandler(req, res, error , 404)
       } catch (err) {
       errorHandler(req, res ,err, 500);
     }

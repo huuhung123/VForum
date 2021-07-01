@@ -1,5 +1,5 @@
 import express from "express";
-import { commonValidateBody } from "../../../../middlewares/validatebody.middleware";
+import { commonValidateBody } from "../../../middlewares/validatebody.middleware";
 import { WalletController } from "../controllers/wallet.controller";
 import { WalletCreateSchema, WalletUpdateSchema } from "../DTO/wallet.dto";
 
@@ -23,7 +23,6 @@ export class WalletRoute {
         this.walletControler.updateWallet
       )
       .delete(this.walletControler.deleteWallet);
-
   }
 
 }
