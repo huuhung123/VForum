@@ -48,7 +48,12 @@ export abstract class BaseAbstractRepository<T> {
 
   public async getById(id: any): Promise<T | undefined | any> {
     try {
-      const data = await this.entity.findOne(id)      
+      const data = await this.entity.findOne({
+        where: {
+          id,
+          status: StatusCode.Active
+        }
+      })      
       if (data) {
         return {
           data
@@ -60,12 +65,12 @@ export abstract class BaseAbstractRepository<T> {
     }
   }
 
-  public async updateById(id: any, data: object, filter: object = {}): Promise<T | undefined | any> {
+  public async updateById(id: any, data: object): Promise<T | undefined | any> {
     try {
       const check = await this.entity.findOne({
         where: {
           id,
-          ...filter
+          status: StatusCode.Active
         }
       })      
       if (check) {
@@ -86,8 +91,8 @@ export abstract class BaseAbstractRepository<T> {
   public async deleteById(id: any): Promise<T | any | undefined> {
     return await this.updateById(
       id, 
-      {status: StatusCode.Deactive}, 
-      {status: StatusCode.Active})
+      {status: StatusCode.Deactive}
+    ) 
   }
 
   // public async  findWithRelations(relations: any): Promise<T[]> {

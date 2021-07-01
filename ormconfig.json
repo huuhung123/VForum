@@ -6,6 +6,5 @@
     "password": "mysql",
     "database": "db_tokigames",
     "entities": ["common/entity/*.entity.ts"],
-    "logging": true,
     "synchronize": true
 }
